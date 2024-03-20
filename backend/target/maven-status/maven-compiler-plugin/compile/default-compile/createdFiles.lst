@@ -1,4 +1,4 @@
-AppearanceRequestController.class
-ReportController.class
+edu/tcu/cs/superfrogscheduler/controller/UserController.class
 edu/tcu/cs/superfrogscheduler/SuperfrogScheduler.class
-UserController.class
+edu/tcu/cs/superfrogscheduler/controller/AppearanceRequestController.class
+edu/tcu/cs/superfrogscheduler/controller/ReportController.class
