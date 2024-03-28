@@ -8,7 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-// model for student info like name address and such
+// model for Spirit Director info like name address and such
 @Document
 public class SuperFrogSpiritDirector {
 
