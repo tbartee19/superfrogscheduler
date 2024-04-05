@@ -1,4 +1,5 @@
 package edu.tcu.cs.superfrogscheduler.model;
+import java.time.LocalDateTime;
 
 public class SuperFrogAppearance {
     
