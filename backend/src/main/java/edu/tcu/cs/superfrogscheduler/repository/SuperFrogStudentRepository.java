@@ -9,4 +9,7 @@ public interface SuperFrogStudentRepository extends MongoRepository<SuperFrogStu
     
     // example to list students by last name
     List<SuperFrogStudent> findByLastName(String lastName);
+
+    class SuperFrogAppearanceRequestRepository {
+    }
 }

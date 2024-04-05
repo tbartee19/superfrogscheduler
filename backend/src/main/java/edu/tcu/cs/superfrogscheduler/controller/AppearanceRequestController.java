@@ -2,15 +2,11 @@ package edu.tcu.cs.superfrogscheduler.controller;
 
 import javax.validation.Valid;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearance;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
-import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.Result;
-import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceService;
 
 
 // AppearanceRequestController

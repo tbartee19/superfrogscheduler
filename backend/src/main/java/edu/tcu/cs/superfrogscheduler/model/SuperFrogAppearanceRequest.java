@@ -58,6 +58,14 @@ public class SuperFrogAppearanceRequest {
         this.email = email;
     }
 
+    public EventType getEventType(){
+        return eventType;
+    }
+
+    public void setEventType(EventType eventType){
+        this.eventType = eventType;
+    }
+
     public String getEventTitle(){
         return eventTitle;
     }
