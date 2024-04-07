@@ -2,7 +2,7 @@ package edu.tcu.cs.superfrogscheduler.system;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
-import edu.tcu.cs.superfrogscheduler.repository.SuperFrogStudentRepository;
+import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +12,14 @@ import java.util.List;
 @Service
 @Transactional
 public class SuperFrogAppearanceRequestService {
-    private final SuperFrogStudentRepository.SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
-    public SuperFrogAppearanceRequestService(SuperFrogStudentRepository.SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository){
+    private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
+    public SuperFrogAppearanceRequestService(SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository){
         this.superFrogAppearanceRequestRepository = superFrogAppearanceRequestRepository;
     }
 
-    public SuperFrogAppearanceRequest findById(Integer requestId){
+    public SuperFrogAppearanceRequest findById(Integer requestId) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
     }
 
     public List<SuperFrogAppearanceRequest> findAll(){
@@ -34,7 +34,11 @@ public class SuperFrogAppearanceRequestService {
         return this.superFrogAppearanceRequestRepository.findByStatusAndStudent(status, student);
     }
 
-    public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update){
+    public SuperFrogAppearanceRequest save(SuperFrogAppearanceRequest newSuperFrogAppearanceRequest){
+        return this.superFrogAppearanceRequestRepository.save(newSuperFrogAppearanceRequest);
+    }
+
+    public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
                     oldRequest.setContactFirstName(update.getContactFirstName());
@@ -50,22 +54,23 @@ public class SuperFrogAppearanceRequestService {
                     oldRequest.setExpenses(update.getExpenses());
                     oldRequest.setOutsideOrgs(update.getOutsideOrgs());
                     oldRequest.setDescription(update.getDescription());
+                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
     }
 
-    public void delete(Integer requestId){
+    public void delete(Integer requestId) {
         this.superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
         this.superFrogAppearanceRequestRepository.deleteById(requestId);
     }
 
-    public SuperFrogAppearanceRequest updateStatus(Integer requestId, RequestStatus status){
+    public SuperFrogAppearanceRequest updateStatus(Integer requestId, RequestStatus status) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
                     oldRequest.setStatus(status);
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogapperancerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
     }
 }

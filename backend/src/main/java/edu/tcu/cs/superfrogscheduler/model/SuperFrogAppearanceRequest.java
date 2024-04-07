@@ -1,5 +1,7 @@
 package edu.tcu.cs.superfrogscheduler.model;
 
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -25,7 +27,15 @@ public class SuperFrogAppearanceRequest {
     private String expenses;
     private String outsideOrgs;
     private String description;
+    private RequestStatus status;
 
+    public Integer getRequestId(){
+        return requestId;
+    }
+
+    public void setRequestId(Integer requestId){
+        this.requestId = requestId;
+    }
     public String getContactFirstName(){
         return contactFirstName;
     }
@@ -130,11 +140,19 @@ public class SuperFrogAppearanceRequest {
         this.description = description;
     }
 
+    public RequestStatus getStatus(){
+        return status;
+    }
+
+    public void setStatus(RequestStatus status) {
+        this.status = status;
+    }
+
     public SuperFrogAppearanceRequest(){
 
     }
 
-    public SuperFrogAppearanceRequest(Integer requestId, String contactFirstName, String contactLastName, String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address, String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description){
+    public SuperFrogAppearanceRequest(Integer requestId, String contactFirstName, String contactLastName, String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address, String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description, RequestStatus status){
         this.requestId = requestId;
         this.contactFirstName = contactFirstName;
         this.contactLastName = contactLastName;
@@ -149,5 +167,7 @@ public class SuperFrogAppearanceRequest {
         this.expenses = expenses;
         this.outsideOrgs = outsideOrgs;
         this.description = description;
+        this.status = status;
     }
+
 }
