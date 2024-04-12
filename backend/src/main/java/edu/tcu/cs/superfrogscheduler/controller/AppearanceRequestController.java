@@ -3,6 +3,7 @@ package edu.tcu.cs.superfrogscheduler.controller;
 import javax.validation.Valid;
 
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,31 @@ public class AppearanceRequestController {
         SuperFrogAppearanceRequest savedAppearance = this.superFrogAppearanceRequestService.save(newAppearance);
         SuperFrogAppearanceRequestDto savedAppearanceDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedAppearance);
         return new Result(true, HttpStatusCode.SUCCESS, "Add Success", savedAppearanceDto);
+    }
+
+
+    // use case 2 - Customer edits request details
+    @PutMapping("/api/superfrogappearancerequests/{requestId}")
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto){
+        SuperFrogAppearanceRequest update = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(superFrogAppearanceRequestDto);
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.update(requestId, update);
+        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Update Success", updatedRequestDto);
+    }
+
+    @PutMapping("/api/superfrogappearancerequests/{requestId}/status/{status}")
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @PathVariable RequestStatus status){
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.updateStatus(requestId, status);
+        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
+    }
+
+
+    // use case 3 - Customer cancels a submitted request
+    @DeleteMapping("/api/superfrogappearancerequests/{requestId}")
+    public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId){
+        this.superFrogAppearanceRequestService.delete(requestId);
+        return new Result(true, HttpStatusCode.SUCCESS, "Delete Success");
     }
 
     // other methods
