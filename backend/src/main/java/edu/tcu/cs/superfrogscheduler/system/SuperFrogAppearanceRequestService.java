@@ -30,9 +30,9 @@ public class SuperFrogAppearanceRequestService {
         return this.superFrogAppearanceRequestRepository.findByStatus(status);
     }
 
-    public List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status, SuperFrogStudent student){
-        return this.superFrogAppearanceRequestRepository.findByStatusAndStudent(status, student);
-    }
+//    public List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status, SuperFrogStudent student){
+//        return this.superFrogAppearanceRequestRepository.findByStatusAndStudent(status, student);
+//    }
 
     public SuperFrogAppearanceRequest save(SuperFrogAppearanceRequest newSuperFrogAppearanceRequest){
         return this.superFrogAppearanceRequestRepository.save(newSuperFrogAppearanceRequest);

@@ -12,7 +12,10 @@ import javax.validation.constraints.Pattern;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
 // SuperFrogAppearanceRequest includes event-related information
+@Entity
 public class SuperFrogAppearanceRequest {
+    // likely will need to add date and time of the event to this class
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer requestId;

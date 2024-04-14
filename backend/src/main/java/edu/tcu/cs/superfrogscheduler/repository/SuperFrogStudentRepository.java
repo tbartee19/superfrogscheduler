@@ -15,34 +15,34 @@ public interface SuperFrogStudentRepository extends MongoRepository<SuperFrogStu
 
     class SuperFrogAppearanceRequestRepository {
 
-        public List<SuperFrogAppearanceRequest> findAll() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-        }
-
-        public Object findById(Integer requestId) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'findById'");
-        }
-
-        public List<SuperFrogAppearanceRequest> findByStatus(RequestStatus status) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'findByStatus'");
-        }
-
-        public List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status, SuperFrogStudent student) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'findByStatusAndStudent'");
-        }
-
-        public void deleteById(Integer requestId) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
-        }
-
-        public SuperFrogAppearanceRequest save(SuperFrogAppearanceRequest newSuperFrogAppearanceRequest) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
-        }
+//        public List<SuperFrogAppearanceRequest> findAll() {
+//            // TODO Auto-generated method stub
+//            throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+//        }
+//
+//        public Object findById(Integer requestId) {
+//            // TODO Auto-generated method stub
+//            throw new UnsupportedOperationException("Unimplemented method 'findById'");
+//        }
+//
+//        public List<SuperFrogAppearanceRequest> findByStatus(RequestStatus status) {
+//            // TODO Auto-generated method stub
+//            throw new UnsupportedOperationException("Unimplemented method 'findByStatus'");
+//        }
+//
+//        public List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status, SuperFrogStudent student) {
+//            // TODO Auto-generated method stub
+//            throw new UnsupportedOperationException("Unimplemented method 'findByStatusAndStudent'");
+//        }
+//
+//        public void deleteById(Integer requestId) {
+//            // TODO Auto-generated method stub
+//            throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+//        }
+//
+//        public SuperFrogAppearanceRequest save(SuperFrogAppearanceRequest newSuperFrogAppearanceRequest) {
+//            // TODO Auto-generated method stub
+//            throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+//        }
     }
 }

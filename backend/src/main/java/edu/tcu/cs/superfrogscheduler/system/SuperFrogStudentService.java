@@ -14,31 +14,31 @@ import java.util.Base64;
 @Service
 public class SuperFrogStudentService {
 
-    @Autowired
+    // @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
+    // @Autowired
     private SuperFrogStudentRepository studentRepository;
 
-    @Autowired
+    // @Autowired
     private AccountRepository accountRepository;
 
     public SuperFrogStudent createSuperFrogStudent(SuperFrogStudent newStudent) {
         if (accountRepository.existsByEmail(newStudent.getAccount().getEmail())) {
             throw new IllegalArgumentException("Email already in use.");
         }
-        
+
         // set role for new account to student so it can be differentiated from spirit directors later
         newStudent.getAccount().setRole("SUPERFROG_STUDENT");
-        
+
         String tempPassword = generateTemporaryPassword();
         newStudent.getAccount().setPasswordHash(passwordEncoder.encode(tempPassword));
-    
+
         // save student to student repository and their account credentials to account
         Account savedAccount = accountRepository.save(newStudent.getAccount());
         newStudent.setAccount(savedAccount);
         SuperFrogStudent savedStudent = studentRepository.save(newStudent);
-    
+
         // temporary logging temp password here for future implementation
         System.out.println("Temporary Password for " + savedStudent.getFirstName() + ": " + tempPassword);
 
