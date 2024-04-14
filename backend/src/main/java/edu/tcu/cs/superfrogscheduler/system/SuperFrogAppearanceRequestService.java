@@ -13,7 +13,9 @@ import java.util.List;
 @Transactional
 public class SuperFrogAppearanceRequestService {
     private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
-    public SuperFrogAppearanceRequestService(SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository){
+
+    public SuperFrogAppearanceRequestService(
+            SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository) {
         this.superFrogAppearanceRequestRepository = superFrogAppearanceRequestRepository;
     }
 
@@ -22,19 +24,22 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
     }
 
-    public List<SuperFrogAppearanceRequest> findAll(){
+    public List<SuperFrogAppearanceRequest> findAll() {
         return this.superFrogAppearanceRequestRepository.findAll();
     }
 
-    public List<SuperFrogAppearanceRequest> findByStatus(RequestStatus status){
+    public List<SuperFrogAppearanceRequest> findByStatus(RequestStatus status) {
         return this.superFrogAppearanceRequestRepository.findByStatus(status);
     }
 
-//    public List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status, SuperFrogStudent student){
-//        return this.superFrogAppearanceRequestRepository.findByStatusAndStudent(status, student);
-//    }
+    // public List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus
+    // status, SuperFrogStudent student){
+    // return
+    // this.superFrogAppearanceRequestRepository.findByStatusAndStudent(status,
+    // student);
+    // }
 
-    public SuperFrogAppearanceRequest save(SuperFrogAppearanceRequest newSuperFrogAppearanceRequest){
+    public SuperFrogAppearanceRequest save(SuperFrogAppearanceRequest newSuperFrogAppearanceRequest) {
         return this.superFrogAppearanceRequestRepository.save(newSuperFrogAppearanceRequest);
     }
 
@@ -45,7 +50,7 @@ public class SuperFrogAppearanceRequestService {
                     oldRequest.setContactLastName(update.getContactLastName());
                     oldRequest.setPhoneNumber(update.getPhoneNumber());
                     oldRequest.setEmail(update.getEmail());
-                    oldRequest.setEventType(update.getEventType());
+                    oldRequest.setEventType(update.getEventType().toString());
                     oldRequest.setEventTitle(update.getEventTitle());
                     oldRequest.setNameOfOrg(update.getNameOfOrg());
                     oldRequest.setAddress(update.getAddress());
@@ -54,6 +59,7 @@ public class SuperFrogAppearanceRequestService {
                     oldRequest.setExpenses(update.getExpenses());
                     oldRequest.setOutsideOrgs(update.getOutsideOrgs());
                     oldRequest.setDescription(update.getDescription());
+                    // TODO status isnt updated
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));

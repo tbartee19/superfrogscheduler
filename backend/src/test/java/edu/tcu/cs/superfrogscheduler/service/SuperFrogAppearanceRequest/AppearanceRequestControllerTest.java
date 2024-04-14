@@ -42,7 +42,7 @@ public class AppearanceRequestControllerTest {
     List<SuperFrogAppearanceRequest> superFrogAppearanceRequests;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         this.superFrogAppearanceRequests = new ArrayList<>();
 
         SuperFrogAppearanceRequest sfar1 = new SuperFrogAppearanceRequest();
@@ -51,7 +51,7 @@ public class AppearanceRequestControllerTest {
         sfar1.setContactLastName("Doe");
         sfar1.setPhoneNumber("(123) 456-7890");
         sfar1.setEmail("johndoe@gmail.com");
-        sfar1.setEventType(EventType.PRIVATE);
+        sfar1.setEventType("PRIVATE");
         sfar1.setEventTitle("wedding");
         sfar1.setNameOfOrg("wedding company");
         sfar1.setAddress("200 Texas Street, Fort Worth TX 76102");
@@ -65,7 +65,7 @@ public class AppearanceRequestControllerTest {
         sfar2.setContactLastName("Smith");
         sfar2.setPhoneNumber("(999) 999-9999");
         sfar2.setEmail("tomsmith@gmail.com");
-        sfar2.setEventType(EventType.TCU);
+        sfar2.setEventType("TCU");
         sfar2.setEventTitle("game day");
         sfar2.setNameOfOrg("TCU");
         sfar2.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
@@ -79,7 +79,7 @@ public class AppearanceRequestControllerTest {
         sfar3.setContactLastName("Johnson");
         sfar3.setPhoneNumber("(888) 888-888");
         sfar3.setEmail("fredjohnson@gmail.com");
-        sfar3.setEventType(EventType.PUBLIC);
+        sfar3.setEventType("PUBLIC");
         sfar3.setEventTitle("school visit");
         sfar3.setNameOfOrg("Alice E. Carlson Elementary School");
         sfar3.setAddress("3320 W Cantey St, Fort Worth TX 76109");
@@ -90,7 +90,7 @@ public class AppearanceRequestControllerTest {
     }
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
 
     }
 
@@ -102,7 +102,7 @@ public class AppearanceRequestControllerTest {
                 "Bednarz",
                 "(777) 777-7777",
                 "kateabednarz@gmail.com",
-                EventType.PRIVATE,
+                "PRIVATE",
                 "Senior Pictures",
                 "Kate Bednarz",
                 "2901 Stadium Drive, Fort Worth TX 76109",
@@ -120,7 +120,7 @@ public class AppearanceRequestControllerTest {
         savedAppearanceRequest.setContactLastName("Bednarz");
         savedAppearanceRequest.setPhoneNumber("(777) 777-7777");
         savedAppearanceRequest.setEmail("kateabednarz@gmail.com");
-        savedAppearanceRequest.setEventType(EventType.PRIVATE);
+        savedAppearanceRequest.setEventType("PRIVATE");
         savedAppearanceRequest.setEventTitle("Senior Pictures");
         savedAppearanceRequest.setNameOfOrg("Kate Bednarz");
         savedAppearanceRequest.setAddress("2901 Stadium Drive, Fort Worth TX 76109");
@@ -131,11 +131,12 @@ public class AppearanceRequestControllerTest {
         savedAppearanceRequest.setDescription("personal pictures");
         savedAppearanceRequest.setStatus(RequestStatus.PENDING);
 
-        given(this.superFrogAppearanceRequestService.save(Mockito.any(SuperFrogAppearanceRequest.class))).willReturn(savedAppearanceRequest);
+        given(this.superFrogAppearanceRequestService.save(Mockito.any(SuperFrogAppearanceRequest.class)))
+                .willReturn(savedAppearanceRequest);
 
         // When and then
         this.mockMvc
-                .perform(post("/api/superfrogappearancerequests").contentType(MediaType.APPLICATION_JSON).content(json)
+                .perform(post("/api/appearances").contentType(MediaType.APPLICATION_JSON).content(json)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(HttpStatusCode.SUCCESS))
@@ -145,17 +146,17 @@ public class AppearanceRequestControllerTest {
                 .andExpect(jsonPath("$.data.contactLastName").value(savedAppearanceRequest.getContactLastName()))
                 .andExpect(jsonPath("$.data.phoneNumber").value(savedAppearanceRequest.getPhoneNumber()))
                 .andExpect(jsonPath("$.data.email").value(savedAppearanceRequest.getEmail()))
-                .andExpect(jsonPath("$.data.eventType").value(savedAppearanceRequest.getEventType()))
+                .andExpect(jsonPath("$.data.eventType").value(savedAppearanceRequest.getEventType().toString()))
                 .andExpect(jsonPath("$.data.eventTitle").value(savedAppearanceRequest.getEventTitle()))
                 .andExpect(jsonPath("$.data.nameOfOrg").value(savedAppearanceRequest.getNameOfOrg()))
                 .andExpect(jsonPath("$.data.address").value(savedAppearanceRequest.getAddress()))
                 .andExpect(jsonPath("$.data.isOnTCUCampus").value(savedAppearanceRequest.getIsOnTCUCampus()))
-                .andExpect(jsonPath("$.data.specialInstructions").value(savedAppearanceRequest.getSpecialInstructions()))
+                .andExpect(
+                        jsonPath("$.data.specialInstructions").value(savedAppearanceRequest.getSpecialInstructions()))
                 .andExpect(jsonPath("$.data.expenses").value(savedAppearanceRequest.getExpenses()))
                 .andExpect(jsonPath("$.data.outsideOrgs").value(savedAppearanceRequest.getOutsideOrgs()))
                 .andExpect(jsonPath("$.data.description").value(savedAppearanceRequest.getDescription()))
-                .andExpect(jsonPath("$.data.status").value(savedAppearanceRequest.getStatus()));
-
+                .andExpect(jsonPath("$.data.status").value(savedAppearanceRequest.getStatus().toString()));
 
     }
 }

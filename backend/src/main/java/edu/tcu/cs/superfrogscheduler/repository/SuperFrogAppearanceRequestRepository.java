@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface SuperFrogAppearanceRequestRepository extends JpaRepository<SuperFrogAppearanceRequest, Integer> {
     List<SuperFrogAppearanceRequest> findByRequestIdIn(List<Integer> appearanceRequestIdList);
+
     List<SuperFrogAppearanceRequest> findByStatus(RequestStatus status);
-    // List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status, SuperFrogStudent student);
+    // List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status,
+    // SuperFrogStudent student);
 }

@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 import javax.validation.constraints.Pattern;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
@@ -30,7 +30,7 @@ public class SuperFrogAppearanceRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-    @NotBlank(message = "Event type is required")
+    @NotNull(message = "Event type is required")
     private EventType eventType;
     @NotBlank(message = "Event title is required")
     private String eventTitle;
@@ -47,119 +47,125 @@ public class SuperFrogAppearanceRequest {
     private String description;
     private RequestStatus status;
 
-    public Integer getRequestId(){
+    public Integer getRequestId() {
         return requestId;
     }
 
-    public void setRequestId(Integer requestId){
+    public void setRequestId(Integer requestId) {
         this.requestId = requestId;
     }
 
-    public String getContactFirstName(){
+    public String getContactFirstName() {
         return contactFirstName;
     }
 
-    public void setContactFirstName(String contactFirstName){
+    public void setContactFirstName(String contactFirstName) {
         this.contactFirstName = contactFirstName;
     }
 
-    public String getContactLastName(){
+    public String getContactLastName() {
         return contactLastName;
     }
 
-    public void setContactLastName(String contactLastName){
+    public void setContactLastName(String contactLastName) {
         this.contactLastName = contactLastName;
     }
 
-    public String getPhoneNumber(){
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber){
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email){
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public EventType getEventType(){
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(EventType eventType){
-        this.eventType = eventType;
+    public void setEventType(String eventType) {
+        if (eventType.equals("TCU")) {
+            this.eventType = EventType.TCU;
+        } else if (eventType.equals("PRIVATE")) {
+            this.eventType = EventType.PRIVATE;
+        } else if (eventType.equals("PUBLIC")) {
+            this.eventType = EventType.PUBLIC;
+        }
     }
 
-    public String getEventTitle(){
+    public String getEventTitle() {
         return eventTitle;
     }
 
-    public void setEventTitle(String eventTitle){
+    public void setEventTitle(String eventTitle) {
         this.eventTitle = eventTitle;
     }
 
-    public String getNameOfOrg(){
+    public String getNameOfOrg() {
         return nameOfOrg;
     }
 
-    public void setNameOfOrg(String nameOfOrg){
+    public void setNameOfOrg(String nameOfOrg) {
         this.nameOfOrg = nameOfOrg;
     }
 
-    public String getAddress(){
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address){
+    public void setAddress(String address) {
         this.address = address;
     }
 
-    public String getIsOnTCUCampus(){
+    public String getIsOnTCUCampus() {
         return isOnTCUCampus;
     }
 
-    public void setIsOnTCUCampus(String isOnTCUCampus){
+    public void setIsOnTCUCampus(String isOnTCUCampus) {
         this.isOnTCUCampus = isOnTCUCampus;
     }
 
-    public String getSpecialInstructions(){
+    public String getSpecialInstructions() {
         return specialInstructions;
     }
 
-    public void setSpecialInstructions(String specialInstructions){
+    public void setSpecialInstructions(String specialInstructions) {
         this.specialInstructions = specialInstructions;
     }
 
-    public String getExpenses(){
+    public String getExpenses() {
         return expenses;
     }
 
-    public void setExpenses(String expenses){
+    public void setExpenses(String expenses) {
         this.expenses = expenses;
     }
 
-    public String getOutsideOrgs(){
+    public String getOutsideOrgs() {
         return outsideOrgs;
     }
 
-    public void setOutsideOrgs(String outsideOrgs){
+    public void setOutsideOrgs(String outsideOrgs) {
         this.outsideOrgs = outsideOrgs;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description){
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public RequestStatus getStatus(){
+    public RequestStatus getStatus() {
         return status;
     }
 
@@ -167,11 +173,14 @@ public class SuperFrogAppearanceRequest {
         this.status = status;
     }
 
-    public SuperFrogAppearanceRequest(){
+    public SuperFrogAppearanceRequest() {
 
     }
 
-    public SuperFrogAppearanceRequest(Integer requestId, String contactFirstName, String contactLastName, String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address, String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description, RequestStatus status){
+    public SuperFrogAppearanceRequest(Integer requestId, String contactFirstName, String contactLastName,
+            String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address,
+            String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description,
+            RequestStatus status) {
         this.requestId = requestId;
         this.contactFirstName = contactFirstName;
         this.contactLastName = contactLastName;
@@ -186,7 +195,7 @@ public class SuperFrogAppearanceRequest {
         this.expenses = expenses;
         this.outsideOrgs = outsideOrgs;
         this.description = description;
-        this.status = status;
+
     }
 
 }

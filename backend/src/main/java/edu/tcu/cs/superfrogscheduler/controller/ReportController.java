@@ -6,13 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearance;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 
-
 // ReportController
 // generating reports like performance reports, 
 // TCU honorarium request forms, and managing the spirit team calendar
 
 // use cases 17-19
-
 
 @RestController
 @RequestMapping("/api/reports")

@@ -39,9 +39,10 @@ public class AppearanceRequestController {
 
 
     // use case 1 - Customer requests a SuperFrog appearance
-    @PostMapping("/api/superfrogappearancerequests")
+    @PostMapping
     public Result addSuperFrogAppearanceRequest(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto){
         SuperFrogAppearanceRequest newAppearance = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
+        newAppearance.setStatus(RequestStatus.PENDING);
         SuperFrogAppearanceRequest savedAppearance = this.superFrogAppearanceRequestService.save(newAppearance);
         SuperFrogAppearanceRequestDto savedAppearanceDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedAppearance);
         return new Result(true, HttpStatusCode.SUCCESS, "Add Success", savedAppearanceDto);

@@ -5,11 +5,16 @@ import org.springframework.stereotype.Component;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
+import edu.tcu.cs.superfrogscheduler.model.EventType;
 
 @Component
-public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter implements Converter<SuperFrogAppearanceRequestDto, SuperFrogAppearanceRequest> {
+public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter
+        implements Converter<SuperFrogAppearanceRequestDto, SuperFrogAppearanceRequest> {
+
+    private EventType TCU = EventType.TCU;
+
     @Override
-    public SuperFrogAppearanceRequest convert(SuperFrogAppearanceRequestDto source){
+    public SuperFrogAppearanceRequest convert(SuperFrogAppearanceRequestDto source) {
         SuperFrogAppearanceRequest superFrogAppearanceRequest = new SuperFrogAppearanceRequest();
         superFrogAppearanceRequest.setRequestId(source.requestId());
         superFrogAppearanceRequest.setContactFirstName(source.contactFirstName());

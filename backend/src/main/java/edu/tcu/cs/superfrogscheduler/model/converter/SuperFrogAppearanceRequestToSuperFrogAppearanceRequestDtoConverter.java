@@ -20,7 +20,7 @@ public class SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter 
                 source.getContactLastName(),
                 source.getPhoneNumber(),
                 source.getEmail(),
-                source.getEventType(),
+                source.getEventType().toString(),
                 source.getEventTitle(),
                 source.getNameOfOrg(),
                 source.getAddress(),
