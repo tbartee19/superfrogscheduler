@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.IdWorker;
-import edu.tcu.cs.superfrogscheduler.system.ObjectNotFoundException;
-import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
+import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

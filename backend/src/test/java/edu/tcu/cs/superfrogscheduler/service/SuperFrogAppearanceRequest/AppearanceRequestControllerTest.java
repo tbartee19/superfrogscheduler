@@ -3,16 +3,16 @@ package edu.tcu.cs.superfrogscheduler.service.SuperFrogAppearanceRequest;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.tcu.cs.superfrogscheduler.controller.AppearanceRequestController;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import edu.tcu.cs.superfrogscheduler.model.EventType;
+
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
-import edu.tcu.cs.superfrogscheduler.system.ObjectNotFoundException;
+import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
