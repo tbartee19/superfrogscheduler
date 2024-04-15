@@ -3,7 +3,6 @@ package edu.tcu.cs.superfrogscheduler.system;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,7 +20,7 @@ public class SuperFrogAppearanceRequestService {
 
     public SuperFrogAppearanceRequest findById(Integer requestId) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
     public List<SuperFrogAppearanceRequest> findAll() {
@@ -43,7 +42,7 @@ public class SuperFrogAppearanceRequestService {
         return this.superFrogAppearanceRequestRepository.save(newSuperFrogAppearanceRequest);
     }
 
-    public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update) {
+    public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update){
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
                     oldRequest.setContactFirstName(update.getContactFirstName());
@@ -59,15 +58,15 @@ public class SuperFrogAppearanceRequestService {
                     oldRequest.setExpenses(update.getExpenses());
                     oldRequest.setOutsideOrgs(update.getOutsideOrgs());
                     oldRequest.setDescription(update.getDescription());
-                    // TODO status isnt updated
+                    oldRequest.setStatus(update.getStatus()); // TODO status isnt updated
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
+                .orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
     public void delete(Integer requestId) {
         this.superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
         this.superFrogAppearanceRequestRepository.deleteById(requestId);
     }
 
@@ -77,6 +76,6 @@ public class SuperFrogAppearanceRequestService {
                     oldRequest.setStatus(status);
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId + ""));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 }

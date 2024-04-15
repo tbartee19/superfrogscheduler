@@ -50,7 +50,7 @@ public class AppearanceRequestController {
 
 
     // use case 2 - Customer edits request details
-    @PutMapping("/api/superfrogappearancerequests/{requestId}")
+    @PutMapping("/{requestId}")
     public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto){
         SuperFrogAppearanceRequest update = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(superFrogAppearanceRequestDto);
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.update(requestId, update);
@@ -58,7 +58,7 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Update Success", updatedRequestDto);
     }
 
-    @PutMapping("/api/superfrogappearancerequests/{requestId}/status/{status}")
+    @PutMapping("/{requestId}/status/{status}")
     public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @PathVariable RequestStatus status){
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.updateStatus(requestId, status);
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
@@ -67,7 +67,7 @@ public class AppearanceRequestController {
 
 
     // use case 3 - Customer cancels a submitted request
-    @DeleteMapping("/api/superfrogappearancerequests/{requestId}")
+    @DeleteMapping("/{requestId}")
     public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId){
         this.superFrogAppearanceRequestService.delete(requestId);
         return new Result(true, HttpStatusCode.SUCCESS, "Delete Success");

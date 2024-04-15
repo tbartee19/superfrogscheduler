@@ -2,9 +2,15 @@ package edu.tcu.cs.superfrogscheduler.service.SuperFrogAppearanceRequest;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
+import edu.tcu.cs.superfrogscheduler.system.IdWorker;
+import edu.tcu.cs.superfrogscheduler.system.ObjectNotFoundException;
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,14 +20,21 @@ import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 
+import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+
 @ExtendWith(MockitoExtension.class)
 public class AppearanceRequestServiceTest {
     
     @Mock
     SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
 
-    // @Mock
-    // IdWorker idWorker;
+     @Mock
+     IdWorker idWorker;
 
     @InjectMocks
     SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
@@ -80,4 +93,163 @@ public class AppearanceRequestServiceTest {
         
     }
 
+    @Test
+    void testSaveSuccess(){
+        // Given
+        SuperFrogAppearanceRequest newAppearanceRequest = new SuperFrogAppearanceRequest();
+        newAppearanceRequest.setContactFirstName("First");
+        newAppearanceRequest.setContactLastName("Last");
+        newAppearanceRequest.setPhoneNumber("(333) 333-3333");
+        newAppearanceRequest.setEmail("email@gmail.com");
+        newAppearanceRequest.setEventType("TCU");
+        newAppearanceRequest.setEventTitle("event title");
+        newAppearanceRequest.setNameOfOrg("name of org");
+        newAppearanceRequest.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
+        newAppearanceRequest.setIsOnTCUCampus("yes");
+        newAppearanceRequest.setSpecialInstructions("N/A");
+        newAppearanceRequest.setExpenses("N/A");
+        newAppearanceRequest.setOutsideOrgs("N/A");
+        newAppearanceRequest.setDescription("description");
+
+        given(this.superFrogAppearanceRequestRepository.save(newAppearanceRequest)).willReturn(newAppearanceRequest);
+
+        // When
+        SuperFrogAppearanceRequest savedAppearanceRequest = this.superFrogAppearanceRequestService.save(newAppearanceRequest);
+
+        // Then
+        assertThat(savedAppearanceRequest.getRequestId()).isEqualTo(newAppearanceRequest.getRequestId());
+        assertThat(savedAppearanceRequest.getContactFirstName()).isEqualTo(newAppearanceRequest.getContactFirstName());
+        assertThat(savedAppearanceRequest.getContactLastName()).isEqualTo(newAppearanceRequest.getContactLastName());
+        assertThat(savedAppearanceRequest.getPhoneNumber()).isEqualTo(newAppearanceRequest.getPhoneNumber());
+        assertThat(savedAppearanceRequest.getEmail()).isEqualTo(newAppearanceRequest.getEmail());
+        assertThat(savedAppearanceRequest.getEventType()).isEqualTo(newAppearanceRequest.getEventType());
+        assertThat(savedAppearanceRequest.getEventTitle()).isEqualTo(newAppearanceRequest.getEventTitle());
+        assertThat(savedAppearanceRequest.getNameOfOrg()).isEqualTo(newAppearanceRequest.getNameOfOrg());
+        assertThat(savedAppearanceRequest.getAddress()).isEqualTo(newAppearanceRequest.getAddress());
+        assertThat(savedAppearanceRequest.getIsOnTCUCampus()).isEqualTo(newAppearanceRequest.getIsOnTCUCampus());
+        assertThat(savedAppearanceRequest.getSpecialInstructions()).isEqualTo(newAppearanceRequest.getSpecialInstructions());
+        assertThat(savedAppearanceRequest.getExpenses()).isEqualTo(newAppearanceRequest.getExpenses());
+        assertThat(savedAppearanceRequest.getOutsideOrgs()).isEqualTo(newAppearanceRequest.getOutsideOrgs());
+        assertThat(savedAppearanceRequest.getDescription()).isEqualTo(newAppearanceRequest.getDescription());
+        verify(this.superFrogAppearanceRequestRepository, times(1)).save(newAppearanceRequest);
+    }
+
+    @Test
+    void testUpdateSuccess(){
+        // Given
+        SuperFrogAppearanceRequest oldAppearanceRequest = new SuperFrogAppearanceRequest();
+        oldAppearanceRequest.setRequestId(123456);
+        oldAppearanceRequest.setContactFirstName("First");
+        oldAppearanceRequest.setContactLastName("Last");
+        oldAppearanceRequest.setPhoneNumber("(333) 333-3333");
+        oldAppearanceRequest.setEmail("email@gmail.com");
+        oldAppearanceRequest.setEventType("TCU");
+        oldAppearanceRequest.setEventTitle("event title");
+        oldAppearanceRequest.setNameOfOrg("name of org");
+        oldAppearanceRequest.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
+        oldAppearanceRequest.setIsOnTCUCampus("yes");
+        oldAppearanceRequest.setSpecialInstructions("N/A");
+        oldAppearanceRequest.setExpenses("N/A");
+        oldAppearanceRequest.setOutsideOrgs("N/A");
+        oldAppearanceRequest.setDescription("description");
+
+        SuperFrogAppearanceRequest update = new SuperFrogAppearanceRequest();
+        update.setContactFirstName("First");
+        update.setContactLastName("Last");
+        update.setPhoneNumber("(333) 333-3333");
+        update.setEmail("email@gmail.com");
+        update.setEventType("TCU");
+        update.setEventTitle("event title");
+        update.setNameOfOrg("name of org");
+        update.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
+        update.setIsOnTCUCampus("yes");
+        update.setSpecialInstructions("N/A");
+        update.setExpenses("N/A");
+        update.setOutsideOrgs("N/A");
+        update.setDescription("A new description");
+
+        given(this.superFrogAppearanceRequestRepository.findById(123456)).willReturn(Optional.of(oldAppearanceRequest));
+        given(this.superFrogAppearanceRequestRepository.save(oldAppearanceRequest)).willReturn(oldAppearanceRequest);
+
+        // When
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.update(123456, update);
+
+        // Then
+        assertThat(updatedRequest.getRequestId()).isEqualTo(123456);
+        assertThat(updatedRequest.getDescription()).isEqualTo(update.getDescription());
+        verify(this.superFrogAppearanceRequestRepository, times(1)).findById(123456);
+        verify(this.superFrogAppearanceRequestRepository, times(1)).save(oldAppearanceRequest);
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        // Given
+        SuperFrogAppearanceRequest update = new SuperFrogAppearanceRequest();
+        update.setContactFirstName("First");
+        update.setContactLastName("Last");
+        update.setPhoneNumber("(333) 333-3333");
+        update.setEmail("email@gmail.com");
+        update.setEventType("TCU");
+        update.setEventTitle("event title");
+        update.setNameOfOrg("name of org");
+        update.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
+        update.setIsOnTCUCampus("yes");
+        update.setSpecialInstructions("N/A");
+        update.setExpenses("N/A");
+        update.setOutsideOrgs("N/A");
+        update.setDescription("A new description");
+
+        given(this.superFrogAppearanceRequestRepository.findById(123456)).willReturn(Optional.empty());
+
+        // When
+        assertThrows(ObjectNotFoundException.class, () -> {
+            this.superFrogAppearanceRequestService.update(123456, update);
+        });
+
+        // Then
+        verify(this.superFrogAppearanceRequestRepository, times(1)).findById(123456);
+    }
+
+    @Test
+    void testDeleteSuccess() {
+        // Given
+        SuperFrogAppearanceRequest superFrogAppearanceRequest = new SuperFrogAppearanceRequest();
+        superFrogAppearanceRequest.setRequestId(123456);
+        superFrogAppearanceRequest.setContactFirstName("First");
+        superFrogAppearanceRequest.setContactLastName("Last");
+        superFrogAppearanceRequest.setPhoneNumber("(333) 333-3333");
+        superFrogAppearanceRequest.setEmail("email@gmail.com");
+        superFrogAppearanceRequest.setEventType("TCU");
+        superFrogAppearanceRequest.setEventTitle("event title");
+        superFrogAppearanceRequest.setNameOfOrg("name of org");
+        superFrogAppearanceRequest.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
+        superFrogAppearanceRequest.setIsOnTCUCampus("yes");
+        superFrogAppearanceRequest.setSpecialInstructions("N/A");
+        superFrogAppearanceRequest.setExpenses("N/A");
+        superFrogAppearanceRequest.setOutsideOrgs("N/A");
+        superFrogAppearanceRequest.setDescription("description");
+
+        given(this.superFrogAppearanceRequestRepository.findById(123456)).willReturn(Optional.of(superFrogAppearanceRequest));
+        doNothing().when(this.superFrogAppearanceRequestRepository).deleteById(123456);
+
+        // When
+        this.superFrogAppearanceRequestService.delete(123456);
+
+        // Then
+        verify(this.superFrogAppearanceRequestRepository, times(1)).deleteById(123456);
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        // Given
+        given(this.superFrogAppearanceRequestRepository.findById(123456)).willReturn(Optional.empty());
+
+        // When
+        assertThrows(ObjectNotFoundException.class, () -> {
+            this.superFrogAppearanceRequestService.delete(123456);
+        });
+
+        // Then
+        verify(this.superFrogAppearanceRequestRepository, times(1)).findById(123456);
+    }
 }
