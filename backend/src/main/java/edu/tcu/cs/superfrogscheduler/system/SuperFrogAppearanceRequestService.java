@@ -13,14 +13,30 @@ import java.util.List;
 public class SuperFrogAppearanceRequestService {
     private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
 
+
+
     public SuperFrogAppearanceRequestService(
             SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository) {
         this.superFrogAppearanceRequestRepository = superFrogAppearanceRequestRepository;
     }
 
+
     public SuperFrogAppearanceRequest findById(Integer requestId) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
+    }
+
+    public SuperFrogAppearanceRequest approveRequest(Integer requestId) {
+        SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
+        request.setStatus(RequestStatus.APPROVED);
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+    public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String rejectionReason) {
+        SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
+        request.setStatus(RequestStatus.REJECTED);
+        request.setRejectionReason(rejectionReason);
+        return superFrogAppearanceRequestRepository.save(request);
     }
 
     public List<SuperFrogAppearanceRequest> findAll() {
@@ -78,4 +94,8 @@ public class SuperFrogAppearanceRequestService {
                 })
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
-}
+
+
+    }
+
+

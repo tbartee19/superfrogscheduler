@@ -2,12 +2,13 @@ package edu.tcu.cs.superfrogscheduler.model;
 
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
@@ -46,6 +47,8 @@ public class SuperFrogAppearanceRequest {
     @NotBlank(message = "Must provide a detailed event description")
     private String description;
     private RequestStatus status;
+
+    private String rejectionReason;
 
     public Integer getRequestId() {
         return requestId;
@@ -173,14 +176,22 @@ public class SuperFrogAppearanceRequest {
         this.status = status;
     }
 
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
     public SuperFrogAppearanceRequest() {
 
     }
 
     public SuperFrogAppearanceRequest(Integer requestId, String contactFirstName, String contactLastName,
-            String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address,
-            String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description,
-            RequestStatus status) {
+                                      String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address,
+                                      String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description,
+                                      RequestStatus status) {
         this.requestId = requestId;
         this.contactFirstName = contactFirstName;
         this.contactLastName = contactLastName;

@@ -20,4 +20,8 @@ public record SuperFrogAppearanceRequestDto(
                 String description,
                 RequestStatus status) {
 
+    public RequestStatus getStatus() {
+
+        return null;
+    }
 }
