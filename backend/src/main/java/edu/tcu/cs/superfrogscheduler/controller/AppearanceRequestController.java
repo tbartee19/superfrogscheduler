@@ -106,6 +106,21 @@ public class AppearanceRequestController {
         }
     }
 
+    // use case 5 - The Spirit Director requests a SuperFrog for TCU events
+    @PostMapping("/spirit-director/requests")
+    public ResponseEntity<Result> createRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
+        try {
+            SuperFrogAppearanceRequest newRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
+            newRequest.setStatus(RequestStatus.PENDING);
+            SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.save(newRequest);
+            SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Successfully Created", savedRequestDto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error Creating Request: " + e.getMessage()));
+        }
+    }
+
     // other methods
 
 }
