@@ -1,11 +1,20 @@
 package edu.tcu.cs.superfrogscheduler.controller;
 
+import javax.validation.Valid;
+
+import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
+import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
+import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearance;
-import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
-import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceService;
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
+import edu.tcu.cs.superfrogscheduler.system.Result;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
 
 // AppearanceRequestController
@@ -15,63 +24,103 @@ import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceService;
 
 // use Cases 1-12, 24, 25, 26 i believe
 
-@PutMapping("/{id}/approve")
-public ResponseEntity<?> approveRequest(@PathVariable String id) {
-    try {
-        SuperFrogAppearance appearance = appearanceService.approveRequest(id);
-        return ResponseEntity.ok(appearance);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-}
-
-@PutMapping("/{id}/reject")
-public ResponseEntity<?> rejectRequest(@PathVariable String id, @RequestBody String reason) {
-    try {
-        SuperFrogAppearance appearance = appearanceService.rejectRequest(id, reason);
-        return ResponseEntity.ok(appearance);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-}
-
-@PostMapping("/request/tcu-event")
-public ResponseEntity<?> requestTcuEventAppearance(@RequestBody SuperFrogAppearance appearance) {
-    try {
-        SuperFrogAppearance newAppearance = appearanceService.requestTcuEventAppearance(appearance);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAppearance);
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-    }
-}
-
 
 @RestController
 @RequestMapping("/api/appearances")
 public class AppearanceRequestController {
-    // use case 1
-    @PostMapping("/request")
-    public ResponseEntity<String> customerRequestSuperFrogAppearance(@RequestBody SuperFrogAppearance newAppearance){
+    // class variables
+    private final SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
+    private final SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
+    private final SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+
+    // constructor
+    public AppearanceRequestController(SuperFrogAppearanceRequestService superFrogAppearanceRequestService, SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter, SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter) {
+        this.superFrogAppearanceRequestService = superFrogAppearanceRequestService;
+        this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
+        this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+    }
+
+
+    // use case 1 - Customer requests a SuperFrog appearance
+    @PostMapping
+    public Result addSuperFrogAppearanceRequest(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
+        SuperFrogAppearanceRequest newAppearance = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
+        newAppearance.setStatus(RequestStatus.PENDING);
+        SuperFrogAppearanceRequest savedAppearance = this.superFrogAppearanceRequestService.save(newAppearance);
+        SuperFrogAppearanceRequestDto savedAppearanceDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedAppearance);
+        return new Result(true, HttpStatusCode.SUCCESS, "Add Success", savedAppearanceDto);
+    }
+
+
+    // use case 2 - Customer edits request details
+    @PutMapping("/{requestId}")
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto) {
+        SuperFrogAppearanceRequest update = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(superFrogAppearanceRequestDto);
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.update(requestId, update);
+        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Update Success", updatedRequestDto);
+    }
+
+    @PutMapping("/{requestId}/status/{status}")
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @PathVariable RequestStatus status) {
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.updateStatus(requestId, status);
+        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
+    }
+
+
+    // use case 3 - Customer cancels a submitted request
+    @DeleteMapping("/{requestId}")
+    public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId) {
+        this.superFrogAppearanceRequestService.delete(requestId);
+        return new Result(true, HttpStatusCode.SUCCESS, "Delete Success");
+    }
+
+    // use case 4 - approves an appearance request
+    @PostMapping("/requests/{id}/approve")
+    public ResponseEntity<Result> approveRequest(@PathVariable Integer id) {
         try {
-            // may not need createdAppearance since the response entity tells the frontend it was created, don't know yet
-            SuperFrogAppearance createdAppearance = SuperFrogAppearanceService.createAppearanceRequest(newAppearance);
-            return ResponseEntity.ok("SuperFrog Appearance request was sent.");
+            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.approveRequest(id);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Approved", request));
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Result(false, HttpStatusCode.NOT_FOUND, "Request not found: " + e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating request: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Approval Error: " + e.getMessage()));
         }
     }
 
-    @PutMapping"/{id}"
-    public ResponseEntity<?> reverseRequest(@PathVariable String id, @RequestBody String reason){
+    // use case 4 - rejects an appearance request
+    @PostMapping("/requests/{id}/reject")
+    public ResponseEntity<Result> rejectRequest(@PathVariable Integer id, @RequestBody String rejectionReason) {
         try {
-            SuperFrogAppearance = appearance = appearanceService.reverseRequest(id, reason);
-            return ResponseEntity.ok(appearance);
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.rejectRequest(id, rejectionReason);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Rejected", request));
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Result(false, HttpStatusCode.NOT_FOUND, "Request not found: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Rejection Error: " + e.getMessage()));
+        }
+    }
+
+    // use case 5 - The Spirit Director requests a SuperFrog for TCU events
+    @PostMapping("/spirit-director/requests")
+    public ResponseEntity<Result> createRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
+        try {
+            SuperFrogAppearanceRequest newRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
+            newRequest.setStatus(RequestStatus.PENDING);
+            SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.save(newRequest);
+            SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Successfully Created", savedRequestDto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error Creating Request: " + e.getMessage()));
         }
     }
 
     // other methods
-
 
 }

@@ -52,8 +52,5 @@ public class SuperFrogStudentService {
         random.nextBytes(randomBytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
-
-
-    public SuperFrogStudent checkAssigned
 }
 
