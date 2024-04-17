@@ -195,6 +195,7 @@ public class SuperFrogAppearanceRequest {
         this.expenses = expenses;
         this.outsideOrgs = outsideOrgs;
         this.description = description;
+        this.status = status;
 
     }
 
