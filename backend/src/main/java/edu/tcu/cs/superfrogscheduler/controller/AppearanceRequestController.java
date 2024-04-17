@@ -61,5 +61,17 @@ public class AppearanceRequestController {
         }
     }
 
+    @PutMapping"/{id}"
+    public ResponseEntity<?> reverseRequest(@PathVariable String id, @RequestBody String reason){
+        try {
+            SuperFrogAppearance = appearance = appearanceService.reverseRequest(id, reason);
+            return ResponseEntity.ok(appearance);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     // other methods
+
+
 }

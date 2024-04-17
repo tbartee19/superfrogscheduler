@@ -30,6 +30,12 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error creating account: " + e.getMessage());
         }
     }
-    
-    // other methods 
+
+    @PutMapping
+    public ResponseEntity<String> changeAssignedSuperFrogStudent(@PathVariable Integer studentID, @PathVariable Integer spiritDirId, @RequestBody SuperFrogStudent assignedStudent){
+        try{
+
+            SuperFrogStudent assignedStudent = studentService.
+        }
+    }
 }
