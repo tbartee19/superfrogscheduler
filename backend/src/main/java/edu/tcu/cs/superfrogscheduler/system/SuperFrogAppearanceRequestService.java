@@ -35,7 +35,7 @@ public class SuperFrogAppearanceRequestService {
     public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String rejectionReason) {
         SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
         request.setStatus(RequestStatus.REJECTED);
-        request.setRejectionReason(rejectionReason);
+        request.setReason(rejectionReason);
         return superFrogAppearanceRequestRepository.save(request);
     }
 

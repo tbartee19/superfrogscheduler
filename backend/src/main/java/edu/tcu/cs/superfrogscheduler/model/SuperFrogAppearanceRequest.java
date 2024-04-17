@@ -176,11 +176,11 @@ public class SuperFrogAppearanceRequest {
         this.status = status;
     }
 
-    public String getRejectionReason() {
+    public String getReason() {
         return rejectionReason;
     }
 
-    public void setRejectionReason(String rejectionReason) {
+    public void setReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
     }
 
