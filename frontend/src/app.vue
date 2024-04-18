@@ -1,5 +1,3 @@
-<!-- Main frontend file, first to be accessed on frontend-->
-
 <template>
     <router-view v-if="$route.path != '/'"></router-view>
 
