@@ -1,101 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>SuperFrog Scheduler</title>
-        <!-- href link -->
-        <!-- href link -->
-
-        <style>
-            .landing-page {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 55vh;
-            }
-
-            .page-title {
-                color: #4d2279;
-                position: absolute;
-                top: 10px;
-                left: 20px;
-                font-size: 50px;
-                font-weight: 2000px;
-            }
-
-            .description {
-                color: #4d2279;
-                position: absolute;
-                top: 80px;
-                left: 20px;
-                margin-top: 30px;
-                font-size: 24px;
-                line-height: 1.2;
-            }
-
-            .button-container {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: left;
-                margin-top: 20px;
-                /* width: 80%; */
-            }
-
-            .button {
-                margin: 10px;
-                padding: 20px 40px;
-                font-size: 20px;
-                border: none;
-                border-radius: 5px;
-                background-color: #4d2279;
-                color: white;
-                cursor: pointer;
-            }
-
-        </style>
-
-    </head>
-
-    <body>
-        <div id="app">
-            <div class="landing-page">
-                <h1 class="page-title">SuperFrog Scheduler</h1>
-    
-                <p class="description">
-                    Request SuperFrog to come to your events!
-                </p>
-                <div class="button-container">
-                    <button class="button" @click="goToCalendar">View Calendar</button>
-                    <button class="button" @click="goToRequest">Make a Request</button>
-                    <button class="button" @click="goToModifyRequest">Modify a Request</button>
-                </div>
-            </div>
-
-            <script src="https://unpkg.com/vue@latest"></script>
-
-            <script>
-                const app = Vue.createApp({
-                    methods: {
-                        goToCalendar(){
-                            // go to calendar page
-                        },
-                        goToRequest(){
-                            // go to request page
-                        },
-                        goToModifyRequest(){
-                            // go to modify request page
-                        }
-                    }
-                })
-
-                app.mount('#app')
-            </script>
-        </div>
-    </body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperFrog Scheduler</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/router.js"></script>
+  </body>
 </html>
