@@ -15,9 +15,9 @@
 </template>
 
 <script>
-    import Calendar from "./calendar.vue";
-    import MakeRequest from "./make-request.vue";
-    import ModifyRequest from "./modify-request.vue";
+    import Calendar from "./calendar/calendar.vue";
+    import MakeRequest from "./make-request/make-request.vue";
+    import ModifyRequest from "./modify-request/modify-request.vue";
   
     export default {
         name: "CustomerPage",
