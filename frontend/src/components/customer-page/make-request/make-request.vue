@@ -1,8 +1,20 @@
 <template>
   <div>
-    <h2>Enter Details For Event</h2>
+    <h2 class="text">Enter Details For Event</h2>
   </div>
-
+  <div>
+    <h3 class="text">Event Information:</h3>
+  </div>
+  <div>
+    <label for="enter-event-title">Enter Event Title:</label>
+    <input type="text" id="enter-event-title" v-model="eventTitle">
+  </div>
+  <br/>
+  <div>
+    <label for="enter-name-of-org">Enter Name of Organization:</label>
+    <input type="text" id="enter-name-of-org" v-model="nameOfOrg">
+  </div>
+  <br/>
   <div>
     <label for="select-date">Select Date:</label>
     <input type="date" id="select-date" v-model="date">
@@ -18,6 +30,41 @@
     <input type="time" id="select-end-time" v-model="endTime">
   </div>
   <br/>
+  <div>
+    <label for="event-type">Select Event Type:</label>
+    <select id="dropdown" v-model="eventType">
+        <option value="TCU">TCU</option>
+        <option value="PUBLIC">Public/Non-profit</option>
+        <option value="PRIVATE">Private/Residential</option>
+    </select>
+  </div>
+  <br/>
+  <div>
+    <label for="enter-address">Enter Address of Event:</label>
+    <input type="text" id="enter-address" v-model="address">
+  </div> 
+  <br/>
+  <div>
+    <label>Is the event on TCU campus?</label>
+    <div>
+      <label>
+        <input type="radio" name="campus" v-model="onCampus" value="yes"> Yes
+      </label>
+      <label>
+        <input type="radio" name="campus" v-model="onCampus" value="no"> No
+      </label>
+    </div>
+  </div>
+  <br/>
+  <div>
+    <label>Event Description:</label>
+    <div>
+      <textarea id="enter-description" v-model="description"></textarea>
+    </div>
+  </div> 
+  <div>
+    <h3 class="text">Contact Information:</h3>
+  </div>
   <div>
     <label for="enter-first-name">Enter First Name:</label>
     <input type="text" id="enter-first-name" v-model="firstName">
@@ -37,51 +84,21 @@
     <label for="enter-email">Enter Email:</label>
     <input type="text" id="enter-email" v-model="email" placeholder="example@email.com">
   </div>
-  <br/>
   <div>
-    <label for="event-type">Select Event Type:</label>
-    <select id="dropdown" v-model="eventType">
-        <option value="TCU">TCU</option>
-        <option value="PUBLIC">Public/Non-profit</option>
-        <option value="PRIVATE">Private/Residential</option>
-    </select>
+    <h3 class="text">Additional Event Information:</h3>
   </div>
-  <br/>
   <div>
-    <label for="enter-event-title">Enter Event Title:</label>
-    <input type="text" id="enter-event-title" v-model="eventTitle">
-  </div>
-  <br/>
-  <div>
-    <label for="enter-name-of-org">Enter Name of Organization:</label>
-    <input type="text" id="enter-name-of-org" v-model="nameOfOrg">
-  </div>
-  <br/>
-  <div>
-    <label for="enter-address">Enter Address:</label>
-    <input type="text" id="enter-address" v-model="address">
-  </div> 
-  <br/>
-  <div>
-    <label>Is the event on TCU campus?</label>
+    <label>Any special instructions?</label>
     <div>
-      <label>
-        <input type="radio" name="campus" v-model="onCampus" value="yes"> Yes
-      </label>
-      <label>
-        <input type="radio" name="campus" v-model="onCampus" value="no"> No
-      </label>
+      <textarea id="enter-special-instructions" v-model="specialInstructions"></textarea>
     </div>
   </div>
-    <br/>
+  <br/>
   <div>
-    <label for="enter-special-instructions">Any special instructions?</label>
-    <textarea id="enter-special-instructions" v-model="specialInstructions"></textarea>
-  </div>
-    <br/>
-  <div>
-    <label for="enter-expenses">Any expenses or benefits to the spirit team members?</label>
-    <textarea id="enter-expenses" v-model="expenses"></textarea>
+    <label>Any expenses or benefits to the spirit team members?</label>
+    <div>
+      <textarea id="enter-expenses" v-model="expenses"></textarea>
+    </div>
   </div> 
   <br/>
   <div>
@@ -90,29 +107,40 @@
   </div> 
   <br/>
   <div>
-    <label for="enter-description">Event Description:</label>
-    <textarea id="enter-description" v-model="description"></textarea>
+    <button class="button-request" @click="goBack">Back</button>
+    <button class="button-request">Next</button>
   </div> 
-  <br/>
-  <div>
-    <button>Back</button>
-    <button>Next</button>
-  </div> 
-
 </template>
 
 <script>
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
+  export default {
 
-export default {
-  components: { VueDatePicker },
-  data() {
-    return {
-      selectedDate: null,
-      startTime: '',
-      endTime: ''
-    };
+    methods: {
+      goBack(){
+        window.history.back();
+      }
+    }
+
   }
-}
 </script>
+
+<style>
+  .text {
+    color: #4d2279;
+  }
+
+  .button-request {
+    margin: 10px;
+    padding: 7px 12px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4d2279;
+    color: white;
+    cursor: pointer;
+  }
+
+  label {
+    margin-right: 5px;
+  }
+</style>
