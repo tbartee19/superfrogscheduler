@@ -3,8 +3,14 @@ package edu.tcu.cs.superfrogscheduler.model.dto;
 import edu.tcu.cs.superfrogscheduler.model.EventType;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public record SuperFrogAppearanceRequestDto(
                 Integer requestId,
+                LocalDate eventDate,
+                LocalTime startTime,
+                LocalTime endTime,
                 String contactFirstName,
                 String contactLastName,
                 String phoneNumber,
@@ -13,7 +19,6 @@ public record SuperFrogAppearanceRequestDto(
                 String eventTitle,
                 String nameOfOrg,
                 String address,
-                String isOnTCUCampus,
                 String specialInstructions,
                 String expenses,
                 String outsideOrgs,

@@ -17,6 +17,9 @@ public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter
     public SuperFrogAppearanceRequest convert(SuperFrogAppearanceRequestDto source) {
         SuperFrogAppearanceRequest superFrogAppearanceRequest = new SuperFrogAppearanceRequest();
         superFrogAppearanceRequest.setRequestId(source.requestId());
+        superFrogAppearanceRequest.setEventDate(source.eventDate());
+        superFrogAppearanceRequest.setStartTime(source.startTime());
+        superFrogAppearanceRequest.setEndTime(source.endTime());
         superFrogAppearanceRequest.setContactFirstName(source.contactFirstName());
         superFrogAppearanceRequest.setContactLastName(source.contactLastName());
         superFrogAppearanceRequest.setPhoneNumber(source.phoneNumber());
@@ -25,7 +28,6 @@ public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter
         superFrogAppearanceRequest.setEventTitle(source.eventTitle());
         superFrogAppearanceRequest.setNameOfOrg(source.nameOfOrg());
         superFrogAppearanceRequest.setAddress(source.address());
-        superFrogAppearanceRequest.setIsOnTCUCampus(source.isOnTCUCampus());
         superFrogAppearanceRequest.setSpecialInstructions(source.specialInstructions());
         superFrogAppearanceRequest.setExpenses(source.expenses());
         superFrogAppearanceRequest.setOutsideOrgs(source.outsideOrgs());

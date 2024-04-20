@@ -6,6 +6,9 @@ import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestReposi
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Component
 public class DBDataInitializer implements CommandLineRunner {
 
@@ -18,6 +21,9 @@ public class DBDataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         SuperFrogAppearanceRequest sfar1 = new SuperFrogAppearanceRequest(5,
+                LocalDate.of(2024, 10, 10),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
                 "First",
                 "Last",
                 "(111) 111-1111",
@@ -26,37 +32,40 @@ public class DBDataInitializer implements CommandLineRunner {
                 "event title",
                 "name of org",
                 "2800 S University Dr, Fort Worth TX 76109",
-                "yes",
                 "special instructions",
                 "expenses",
                 "outside orgs",
                 "description",
                 RequestStatus.PENDING);
         SuperFrogAppearanceRequest sfar2 = new SuperFrogAppearanceRequest(6,
+                LocalDate.of(2024, 11, 11),
+                LocalTime.of(13, 0),
+                LocalTime.of(14, 0),
                 "First2",
                 "Last2",
                 "(222) 222-2222",
                 "email2@gmail.com",
-                EventType.PRIVATE,
+                EventType.PUBLIC,
                 "event title 2",
                 "name of org 2",
                 "2901 Stadium Dr, Fort Worth TX 76109",
-                "yes",
                 "special instructions 2",
                 "expenses 2",
                 "outside orgs 2",
                 "description 2",
                 RequestStatus.PENDING);
-        SuperFrogAppearanceRequest sfar3 = new SuperFrogAppearanceRequest(7,
+        SuperFrogAppearanceRequest sfar3 = new SuperFrogAppearanceRequest(6,
+                LocalDate.of(2024, 12, 12),
+                LocalTime.of(18, 0),
+                LocalTime.of(19, 0),
                 "First3",
                 "Last3",
                 "(333) 333-3333",
                 "email3@gmail.com",
-                EventType.PUBLIC,
+                EventType.PRIVATE,
                 "event title 3",
                 "name of org 3",
                 "2850 Stadium Dr, Fort Worth TX 76109",
-                "yes",
                 "special instructions 3",
                 "expenses 3",
                 "outside orgs 3",

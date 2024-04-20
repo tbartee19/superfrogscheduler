@@ -2,6 +2,7 @@ package edu.tcu.cs.superfrogscheduler.model;
 
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -13,12 +14,16 @@ import javax.validation.constraints.Pattern;
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
 // SuperFrogAppearanceRequest includes event-related information
 @Entity
-public class SuperFrogAppearanceRequest {
-    // likely will need to add date and time of the event to this class
+public class SuperFrogAppearanceRequest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer requestId;
+
+    // added date, start time, and end time
+    private LocalDate eventDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     @NotBlank(message = "First name is required")
     private String contactFirstName;
@@ -38,8 +43,6 @@ public class SuperFrogAppearanceRequest {
     private String nameOfOrg;
     @NotBlank(message = "Address is required")
     private String address;
-    @NotBlank(message = "Must specify whether event is on TCU campus")
-    private String isOnTCUCampus;
     private String specialInstructions;
     private String expenses;
     private String outsideOrgs;
@@ -53,6 +56,30 @@ public class SuperFrogAppearanceRequest {
 
     public void setRequestId(Integer requestId) {
         this.requestId = requestId;
+    }
+
+    public LocalDate getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDate eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getContactFirstName() {
@@ -125,14 +152,6 @@ public class SuperFrogAppearanceRequest {
         this.address = address;
     }
 
-    public String getIsOnTCUCampus() {
-        return isOnTCUCampus;
-    }
-
-    public void setIsOnTCUCampus(String isOnTCUCampus) {
-        this.isOnTCUCampus = isOnTCUCampus;
-    }
-
     public String getSpecialInstructions() {
         return specialInstructions;
     }
@@ -177,11 +196,11 @@ public class SuperFrogAppearanceRequest {
 
     }
 
-    public SuperFrogAppearanceRequest(Integer requestId, String contactFirstName, String contactLastName,
-            String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address,
-            String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description,
-            RequestStatus status) {
+    public SuperFrogAppearanceRequest(Integer requestId, LocalDate eventDate, LocalTime startTime, LocalTime endTime, String contactFirstName, String contactLastName, String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address, String specialInstructions, String expenses, String outsideOrgs, String description, RequestStatus status) {
         this.requestId = requestId;
+        this.eventDate = eventDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.contactFirstName = contactFirstName;
         this.contactLastName = contactLastName;
         this.phoneNumber = phoneNumber;
@@ -190,13 +209,10 @@ public class SuperFrogAppearanceRequest {
         this.eventTitle = eventTitle;
         this.nameOfOrg = nameOfOrg;
         this.address = address;
-        this.isOnTCUCampus = isOnTCUCampus;
         this.specialInstructions = specialInstructions;
         this.expenses = expenses;
         this.outsideOrgs = outsideOrgs;
         this.description = description;
         this.status = status;
-
     }
-
 }
