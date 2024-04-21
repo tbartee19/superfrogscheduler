@@ -7,8 +7,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import javax.persistence.*;
+
 import javax.validation.constraints.Email;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
@@ -37,6 +39,8 @@ public class SuperFrogAppearanceRequest implements Serializable {
     private String outsideOrgs;
     private String description;
     private RequestStatus status;
+
+    private String rejectionReason;
 
     public Integer getRequestId() {
         return requestId;
@@ -178,6 +182,14 @@ public class SuperFrogAppearanceRequest implements Serializable {
 
     public void setStatus(RequestStatus status) {
         this.status = status;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 
     public SuperFrogAppearanceRequest() {

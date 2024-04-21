@@ -32,7 +32,7 @@ public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter
         superFrogAppearanceRequest.setExpenses(source.expenses());
         superFrogAppearanceRequest.setOutsideOrgs(source.outsideOrgs());
         superFrogAppearanceRequest.setDescription(source.description());
-        // superFrogAppearanceRequest.setStatus(source.getStatus());
+        superFrogAppearanceRequest.setStatus(source.getStatus());
         return superFrogAppearanceRequest;
     }
 }

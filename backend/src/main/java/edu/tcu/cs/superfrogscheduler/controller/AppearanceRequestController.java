@@ -5,6 +5,9 @@ import javax.validation.Valid;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
+import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
@@ -33,7 +36,7 @@ public class AppearanceRequestController {
     private final SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
     // constructor
-    public AppearanceRequestController(SuperFrogAppearanceRequestService superFrogAppearanceRequestService, SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter, SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter){
+    public AppearanceRequestController(SuperFrogAppearanceRequestService superFrogAppearanceRequestService, SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter, SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter) {
         this.superFrogAppearanceRequestService = superFrogAppearanceRequestService;
         this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
         this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
@@ -73,6 +76,36 @@ public class AppearanceRequestController {
     public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId){
         this.superFrogAppearanceRequestService.delete(requestId);
         return new Result(true, HttpStatusCode.SUCCESS, "Delete Success");
+    }
+
+    // use case 4 - approves an appearance request
+    @PostMapping("/requests/{id}/approve")
+    public ResponseEntity<Result> approveRequest(@PathVariable Integer id) {
+        try {
+            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.approveRequest(id);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Approved", request));
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Result(false, HttpStatusCode.NOT_FOUND, "Request not found: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Approval Error: " + e.getMessage()));
+        }
+    }
+
+    // use case 4 - rejects an appearance request
+    @PostMapping("/requests/{id}/reject")
+    public ResponseEntity<Result> rejectRequest(@PathVariable Integer id, @RequestBody String rejectionReason) {
+        try {
+            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.rejectRequest(id, rejectionReason);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Rejected", request));
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Result(false, HttpStatusCode.NOT_FOUND, "Request not found: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Rejection Error: " + e.getMessage()));
+        }
     }
 
     // other methods
