@@ -8,7 +8,6 @@
     </div>
     <div class="request-page" v-if="requests">
       <div class="content-container">
-        <!-- <h3>Select Date and Time:</h3> -->
         <component :requestId="requestId" :is="currentComponent !== '' ? currentComponent : defaultComponent"></component>
         
         <router-link to="/">
@@ -34,7 +33,6 @@
           data() {
             return {
               components: [
-              //  { name: 'Date Time', component: DateTimePage },
                 { name: 'Detail Form', component: DetailFormPage },
               ],
               selectedComponentIndex: 0,
@@ -121,14 +119,10 @@
             })
           }
         },
-          
+   }  
+</script>
   
-   }
-    
-  
-  </script>
-  
-  <style scoped>
+<style scoped>
   .input-id {
     display: flex;
     flex-direction: column;
@@ -138,11 +132,12 @@
 
     color: #4d2279;
   }
+
   .input-id > * {
     padding: 2vh;
     font-size: 1.2em;
   }
- 
+
   .request-page {
     background-color: white;
     color: #4d2279;
@@ -166,18 +161,15 @@
     width: 120px;
   }
   
-
-  
-
   .submit-button {
     font-size: 20px;
     padding: 10px 0px;
   }
-  
+
   .button-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 30px;
   }
-  </style>
+</style>

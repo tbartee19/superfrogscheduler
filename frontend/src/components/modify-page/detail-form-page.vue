@@ -9,8 +9,6 @@
             v-model="requests.eventDate"
             :model-value="requests.eventDate"
             model-type="yyyy-MM-dd"
-
-
           /></td>
         </tr>
         <tr>
@@ -21,9 +19,7 @@
               time-picker
               :is-24="false"
               :start-time="requests.startTime"
-
-    
-    /></td>
+          /></td>
         </tr>
         <tr>
           <td>End Time</td>
@@ -33,9 +29,7 @@
                 time-picker
                 :is-24="false"
                 :start-time="requests.endTime"
-
-    
-    /></td>
+          /></td>
         </tr>
       </table>
       <div class="dropdown-box">
@@ -132,12 +126,9 @@ export default {
       responseStatus: undefined
         
     }
-    
-
   },
   components: {
     VueDatePicker
-
   },
   methods: {
     findDifferentVars(obj1, obj2) {
@@ -155,10 +146,9 @@ export default {
         }
       });
 
-return differentVars;
+      return differentVars;
     },
     cancel() {
-
       const headers = {
                 'Content-Type': 'application/json'
              }
@@ -254,164 +244,151 @@ beforeMount(){
             })
 }
 }
-
 </script>
 
 <style scoped>
-.container {
+  .container {
+    width: 90vw;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: sans-serif;
+  }
 
-width: 90vw;
-margin: 0 auto;
-padding: 20px;
-font-family: sans-serif;
-}
+  .date-1 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-evenly;
+  }
+  .date-1 > div {
+    flex-basis: 40%;
+    position: relative;
+    align-self: center;
+    text-align: center;
+  }
 
-.date-1 {
-font-size: 1.2em;
-font-weight: bold;
-margin-bottom: 10px;
-display: flex;
-justify-content: space-evenly;
-}
-.date-1 > div {
-flex-basis: 40%;
-position: relative;
-align-self: center;
-text-align: center;
-}
+  .date-1 > table{
+    flex-basis: content;
+  }
 
-.date-1 > table{
-flex-basis: content;
-}
-.date-table{
-background-color: white;
-color:#4d2279;
-padding-left: 5%;
-padding-right: 5%;
-}
+  .date-table{
+    background-color: white;
+    color:#4d2279;
+    padding-left: 5%;
+    padding-right: 5%;
+  }
 
-.event-1 {
-font-size: 1.2em;
-font-weight: bold;
-margin-bottom: 10px;
-display: flex;
-flex-direction: row;
-flex-wrap: wrap;
-text-align: center;
-margin-bottom: 1vh;
-}
+  .event-1 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: center;
+    margin-bottom: 1vh;
+  }
 
-.event-1 > div > span{
-text-align: left;
-}
-.event-1 > div{
+  .event-1 > div > span{
+    text-align: left;
+  }
 
-flex-basis: 50%;
-display: grid;
-justify-content: space-around;
-align-content: stretch;
-align-items: center;
-margin-bottom: 2vh;
+  .event-1 > div{
+    flex-basis: 50%;
+    display: grid;
+    justify-content: space-around;
+    align-content: stretch;
+    align-items: center;
+    margin-bottom: 2vh;
+  }
 
+  .event-1 > div:nth-child(3) {
+    flex-basis: 100%;
+    justify-content: center;
+  }
 
-}
-.event-1 > div:nth-child(3)
-{
-flex-basis: 100%;
-justify-content: center;
-}
+  .contact-info {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 2vh;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 
+  .title-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1vh;
+  }
 
-.contact-info {
-font-size: 1.2em;
-font-weight: bold;
-margin-bottom: 2vh;
-display: flex;
-flex-direction: row;
-flex-wrap: wrap;
-justify-content: space-between;
+  .contact-info > div{
+    flex-basis: 50%;
+    width: 22rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
 
+  .contact-info > div > span{
+    width: 22rem;
+    position: relative;
+  }
 
-}
+  .title-1 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+    align-items: center;
+  }
 
-.title-container {
-display: flex;
-justify-content: center;
-margin-bottom: 1vh;
-}
+  .normal-text{
+    width: 21rem;
+    height: 1rem;
+    padding: 5px;
+    border: 1px solid #ccc;
+    position: relative;
+  }
 
+  select{
+    height: 20px;
+  }
 
-.contact-info > div{
-flex-basis: 50%;
-width: 22rem;
-display: flex;
-align-items: center;
-flex-wrap: wrap;
-flex-direction: column;
-}
+  .large-text{
+    height: 8rem;
+    width: 22rem;
+  }
 
-.contact-info > div > span{
-width: 22rem;
-position: relative;
-}
+  .event-2{
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 
+  .event-2 > div{
+    flex-basis: 50%;
+    width: 22rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin-bottom: 2vh;
+  }
 
-.title-1 {
-font-size: 1.5em;
-font-weight: bold;
-margin-bottom: 10px;
-display: block;
-align-items: center;
-}
+  .event-2 > div > span{
+    width: 22rem;
+    position: relative;
+  }
 
-
-
-.normal-text{
-width: 21rem;
-height: 1rem;
-padding: 5px;
-border: 1px solid #ccc;
-position: relative;
-
-}
-
-select{
-height: 20px;
-}
-.large-text{
-height: 8rem;
-width: 22rem;
-}
-
-.event-2{
-font-size: 1.2em;
-font-weight: bold;
-margin-bottom: 10px;
-display: flex;
-flex-direction: row;
-flex-wrap: wrap;
-justify-content: space-between;
-}
-
-.event-2 > div{
-  
-flex-basis: 50%;
-width: 22rem;
-display: flex;
-align-items: center;
-flex-wrap: wrap;
-flex-direction: column;
-margin-bottom: 2vh;
-}
-
-.event-2 > div > span{
-width: 22rem;
-position: relative;
-}
-
-
-
-.button-container {
+  .button-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -421,5 +398,4 @@ position: relative;
   .dropdown-box span {
     display: block;
   }
-
 </style>

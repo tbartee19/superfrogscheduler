@@ -14,7 +14,6 @@
                 Request SuperFrog to come to your events!
             </p>
             <div class="button-container">
-                <!-- <RouterLink v-if="$route.path != '/'" to="/">Home</RouterLink> -->
                 <button class="button" v-on:click="goToRequest">Make a Request</button>
                 <button class="button" v-on:click="goToModifyRequest">Modify a Request</button>
             </div>
