@@ -15,7 +15,7 @@
             </p>
             <div class="button-container">
                 <button class="button" v-on:click="goToRequest">Make a Request</button>
-                <button class="button" v-on:click="goToModifyRequest">Modify a Request</button>
+                <button class="button" v-on:click="goToModifyRequest">Modify/Cancel a Request</button>
             </div>
         </div>
     </div>

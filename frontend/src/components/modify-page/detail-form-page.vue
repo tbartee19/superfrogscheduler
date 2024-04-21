@@ -105,7 +105,8 @@
 <div v-if="responseStatus == 200">{{ returnMsg }}</div>
     <!--For the other css components when you add the input boxes just follow the two as above-->
 <div class="button-container">
-  <button class="button is-primary submit-button" @click="submit">Submit</button>
+  <button class="button is-primary submit-button" @click="submit">Submit Changes</button>
+  <button class="button is-primary submit-button" @click="cancel">Cancel Request</button>
 </div>
 </template>
 
@@ -152,30 +153,12 @@ export default {
       const headers = {
                 'Content-Type': 'application/json'
              }
-              axios.put(`http://localhost:8080/api/appearances/${this.requestId}`, {
-                    contactFirstName: this.requests.contactFirstName,
-                    contactLastName: this.requests.contactLastName,
-                    email: this.requests.email,
-                    phoneNumber: this.requests.phoneNumber,
-                    address: this.requests.address,
-                    nameOfOrg: this.requests.nameOfOrg,
-                    eventTitle: this.requests.eventTitle,
-                    description: this.requests.description,
-                    specialInstructions: this.requests.specialInstructions,
-                    outsideOrgs: this.requests.outsideOrgs,
-                    expenses: this.requests.expenses,
-                    eventDate: this.requests.eventDate,
-                    startTime: this.requests.startTime,
-                    endTime: this.requests.endTime,
-                    eventType: this.requests.eventType,
-                    totalCost: this.requests.totalCost,
-                    status: "CANCELED"
-               }, {headers})
+              axios.delete(`http://localhost:8080/api/appearances/${this.requestId}`)
                .then(response =>{
                     const data = (response.data);
-                    console.log(data.data.requestId);
-                    this.requests.requestId = data.data.requestId;
-                    this.returnMsg ="Request has been canceled"
+                    // console.log(data.data.requestId);
+                    // this.requests.requestId = data.data.requestId;
+                    this.returnMsg ="This request has been canceled."
                     this.responseStatus = response.status;
                   }).catch(error=>{
                     console.log(error);
@@ -222,7 +205,6 @@ export default {
                     this.requests.requestId = data.data.requestId;
                     this.responseStatus = response.status;
                     this.returnMsg = "Your request has been updated."
-
                   }).catch(error=>{
                     console.log(error);
             })
