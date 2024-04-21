@@ -24,29 +24,17 @@ public class SuperFrogAppearanceRequest implements Serializable {
     private LocalDate eventDate;
     private LocalTime startTime;
     private LocalTime endTime;
-
-    @NotBlank(message = "First name is required")
     private String contactFirstName;
-    @NotBlank(message = "Last name is required")
     private String contactLastName;
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "\\(\\d{3}\\) \\d{3}-\\d{4}", message = "Phone number must be in the format (999) 999-9999")
     private String phoneNumber;
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
     private String email;
-    @NotNull(message = "Event type is required")
     private EventType eventType;
-    @NotBlank(message = "Event title is required")
     private String eventTitle;
-    @NotBlank(message = "Name of organization is required")
     private String nameOfOrg;
-    @NotBlank(message = "Address is required")
     private String address;
     private String specialInstructions;
     private String expenses;
     private String outsideOrgs;
-    @NotBlank(message = "Must provide a detailed event description")
     private String description;
     private RequestStatus status;
 

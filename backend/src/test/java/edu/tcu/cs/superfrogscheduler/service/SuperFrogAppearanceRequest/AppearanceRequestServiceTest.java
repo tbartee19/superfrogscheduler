@@ -1,6 +1,8 @@
 package edu.tcu.cs.superfrogscheduler.service.SuperFrogAppearanceRequest;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -45,6 +47,9 @@ public class AppearanceRequestServiceTest {
 
         SuperFrogAppearanceRequest sfar1 = new SuperFrogAppearanceRequest();
         sfar1.setRequestId(1);
+        sfar1.setEventDate(LocalDate.of(2024, 5, 10));
+        sfar1.setStartTime(LocalTime.of(11, 0, 0));
+        sfar1.setEndTime(LocalTime.of(12, 0, 0));
         sfar1.setContactFirstName("John");
         sfar1.setContactLastName("Doe");
         sfar1.setPhoneNumber("(123) 456-7890");
@@ -53,12 +58,17 @@ public class AppearanceRequestServiceTest {
         sfar1.setEventTitle("wedding");
         sfar1.setNameOfOrg("wedding company");
         sfar1.setAddress("200 Texas Street, Fort Worth TX 76102");
-        sfar1.setIsOnTCUCampus("no");
+        sfar1.setSpecialInstructions("N/A");
+        sfar1.setExpenses("N/A");
+        sfar1.setOutsideOrgs("N/A");
         sfar1.setDescription("afternoon wedding");
         this.superFrogAppearanceRequests.add(sfar1);
 
         SuperFrogAppearanceRequest sfar2 = new SuperFrogAppearanceRequest();
         sfar2.setRequestId(2);
+        sfar2.setEventDate(LocalDate.of(2024, 6, 10));
+        sfar2.setStartTime(LocalTime.of(12, 0, 0));
+        sfar2.setEndTime(LocalTime.of(13, 0, 0));
         sfar2.setContactFirstName("Tom");
         sfar2.setContactLastName("Smith");
         sfar2.setPhoneNumber("(999) 999-9999");
@@ -67,12 +77,17 @@ public class AppearanceRequestServiceTest {
         sfar2.setEventTitle("game day");
         sfar2.setNameOfOrg("TCU");
         sfar2.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
-        sfar2.setIsOnTCUCampus("yes");
+        sfar2.setSpecialInstructions("N/A");
+        sfar2.setExpenses("N/A");
+        sfar2.setOutsideOrgs("N/A");
         sfar2.setDescription("football game");
         this.superFrogAppearanceRequests.add(sfar2);
 
         SuperFrogAppearanceRequest sfar3 = new SuperFrogAppearanceRequest();
         sfar3.setRequestId(3);
+        sfar3.setEventDate(LocalDate.of(2024, 7, 10));
+        sfar3.setStartTime(LocalTime.of(14, 0, 0));
+        sfar3.setEndTime(LocalTime.of(15, 0, 0));
         sfar3.setContactFirstName("Fred");
         sfar3.setContactLastName("Johnson");
         sfar3.setPhoneNumber("(888) 888-888");
@@ -81,7 +96,9 @@ public class AppearanceRequestServiceTest {
         sfar3.setEventTitle("school visit");
         sfar3.setNameOfOrg("Alice E. Carlson Elementary School");
         sfar3.setAddress("3320 W Cantey St, Fort Worth TX 76109");
-        sfar3.setIsOnTCUCampus("no");
+        sfar1.setSpecialInstructions("N/A");
+        sfar1.setExpenses("N/A");
+        sfar1.setOutsideOrgs("N/A");
         sfar3.setDescription("school assembly");
         this.superFrogAppearanceRequests.add(sfar3);
     }
@@ -103,7 +120,6 @@ public class AppearanceRequestServiceTest {
         newAppearanceRequest.setEventTitle("event title");
         newAppearanceRequest.setNameOfOrg("name of org");
         newAppearanceRequest.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
-        newAppearanceRequest.setIsOnTCUCampus("yes");
         newAppearanceRequest.setSpecialInstructions("N/A");
         newAppearanceRequest.setExpenses("N/A");
         newAppearanceRequest.setOutsideOrgs("N/A");
@@ -124,7 +140,6 @@ public class AppearanceRequestServiceTest {
         assertThat(savedAppearanceRequest.getEventTitle()).isEqualTo(newAppearanceRequest.getEventTitle());
         assertThat(savedAppearanceRequest.getNameOfOrg()).isEqualTo(newAppearanceRequest.getNameOfOrg());
         assertThat(savedAppearanceRequest.getAddress()).isEqualTo(newAppearanceRequest.getAddress());
-        assertThat(savedAppearanceRequest.getIsOnTCUCampus()).isEqualTo(newAppearanceRequest.getIsOnTCUCampus());
         assertThat(savedAppearanceRequest.getSpecialInstructions()).isEqualTo(newAppearanceRequest.getSpecialInstructions());
         assertThat(savedAppearanceRequest.getExpenses()).isEqualTo(newAppearanceRequest.getExpenses());
         assertThat(savedAppearanceRequest.getOutsideOrgs()).isEqualTo(newAppearanceRequest.getOutsideOrgs());
@@ -145,7 +160,6 @@ public class AppearanceRequestServiceTest {
         oldAppearanceRequest.setEventTitle("event title");
         oldAppearanceRequest.setNameOfOrg("name of org");
         oldAppearanceRequest.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
-        oldAppearanceRequest.setIsOnTCUCampus("yes");
         oldAppearanceRequest.setSpecialInstructions("N/A");
         oldAppearanceRequest.setExpenses("N/A");
         oldAppearanceRequest.setOutsideOrgs("N/A");
@@ -160,7 +174,6 @@ public class AppearanceRequestServiceTest {
         update.setEventTitle("event title");
         update.setNameOfOrg("name of org");
         update.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
-        update.setIsOnTCUCampus("yes");
         update.setSpecialInstructions("N/A");
         update.setExpenses("N/A");
         update.setOutsideOrgs("N/A");
@@ -191,7 +204,6 @@ public class AppearanceRequestServiceTest {
         update.setEventTitle("event title");
         update.setNameOfOrg("name of org");
         update.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
-        update.setIsOnTCUCampus("yes");
         update.setSpecialInstructions("N/A");
         update.setExpenses("N/A");
         update.setOutsideOrgs("N/A");
@@ -221,7 +233,6 @@ public class AppearanceRequestServiceTest {
         superFrogAppearanceRequest.setEventTitle("event title");
         superFrogAppearanceRequest.setNameOfOrg("name of org");
         superFrogAppearanceRequest.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
-        superFrogAppearanceRequest.setIsOnTCUCampus("yes");
         superFrogAppearanceRequest.setSpecialInstructions("N/A");
         superFrogAppearanceRequest.setExpenses("N/A");
         superFrogAppearanceRequest.setOutsideOrgs("N/A");

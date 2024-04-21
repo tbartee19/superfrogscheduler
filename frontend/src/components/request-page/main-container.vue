@@ -117,23 +117,22 @@
             const headers = {
               'Content-Type': 'application/json'
            }
-            axios.post("http://api.superfrogscheduler.xyz:8080/api/superfrogappearancerequests", {
-                  contactFirstName: this.eventInfo.contactFirstName,
-                  contactLastName: this.eventInfo.contactLastName,
-                  email: this.eventInfo.email,
-                  phoneNumber: this.eventInfo.phoneNumber,
-                  address: this.eventInfo.addressOfAppearance,
-                  nameOfOrg: this.eventInfo.nameOfOrganization,
-                  title: this.eventInfo.eventTitle,
-                  description: this.eventInfo.eventDescription,
-                  specialInstructions: this.eventInfo.specialInstructions,
-                  outsideOrgs: this.eventInfo.outsideOrganizations,
-                  expenses: this.eventInfo.expensesBenefits,
-                  eventDate: this.eventInfo.scheduleDate,
+            axios.post("http://localhost:8080/api/appearances", {
+                  eventDate: this.eventInfo.eventDate,
                   startTime: this.eventInfo.startTime,
                   endTime: this.eventInfo.endTime,
+                  contactFirstName: this.eventInfo.contactFirstName,
+                  contactLastName: this.eventInfo.contactLastName,
+                  phoneNumber: this.eventInfo.phoneNumber,
+                  email: this.eventInfo.email,
                   eventType: this.eventInfo.eventType,
-                  totalCost: this.eventInfo.totalCost,
+                  eventTitle: this.eventInfo.eventTitle,
+                  nameOfOrg: this.eventInfo.nameOfOrganization,
+                  address: this.eventInfo.addressOfAppearance,
+                  specialInstructions: this.eventInfo.specialInstructions,
+                  expenses: this.eventInfo.expensesBenefits,
+                  outsideOrgs: this.eventInfo.outsideOrganizations,
+                  description: this.eventInfo.eventDescription
              }, {headers})
              .then(response =>{
                   const data = (response.data);
@@ -151,7 +150,6 @@
 
 <style scoped>
   .request-page {
-    /* background-color: #4d2279; */
     color: #4d2279;
     display: flex;
     justify-content: center;
