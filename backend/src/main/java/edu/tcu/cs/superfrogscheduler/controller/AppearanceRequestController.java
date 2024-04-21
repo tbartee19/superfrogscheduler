@@ -16,6 +16,9 @@ import edu.tcu.cs.superfrogscheduler.system.Result;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 // AppearanceRequestController
 // manages appearance requests
@@ -26,7 +29,6 @@ import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestT
 
 
 @RestController
-@RequestMapping("/api/appearances")
 public class AppearanceRequestController {
     // class variables
     private final SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
@@ -42,8 +44,8 @@ public class AppearanceRequestController {
 
 
     // use case 1 - Customer requests a SuperFrog appearance
-    @PostMapping
-    public Result addSuperFrogAppearanceRequest(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
+    @PostMapping("/api/appearances")
+    public Result addSuperFrogAppearanceRequest(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto){
         SuperFrogAppearanceRequest newAppearance = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
         newAppearance.setStatus(RequestStatus.PENDING);
         SuperFrogAppearanceRequest savedAppearance = this.superFrogAppearanceRequestService.save(newAppearance);
@@ -53,16 +55,16 @@ public class AppearanceRequestController {
 
 
     // use case 2 - Customer edits request details
-    @PutMapping("/{requestId}")
-    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto) {
+    @PutMapping("/api/appearances/{requestId}")
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto){
         SuperFrogAppearanceRequest update = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(superFrogAppearanceRequestDto);
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.update(requestId, update);
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Update Success", updatedRequestDto);
     }
 
-    @PutMapping("/{requestId}/status/{status}")
-    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @PathVariable RequestStatus status) {
+    @PutMapping("/api/appearances/{requestId}/status/{status}")
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @PathVariable RequestStatus status){
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.updateStatus(requestId, status);
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
@@ -70,8 +72,8 @@ public class AppearanceRequestController {
 
 
     // use case 3 - Customer cancels a submitted request
-    @DeleteMapping("/{requestId}")
-    public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId) {
+    @DeleteMapping("/api/appearances/{requestId}")
+    public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId){
         this.superFrogAppearanceRequestService.delete(requestId);
         return new Result(true, HttpStatusCode.SUCCESS, "Delete Success");
     }
@@ -107,5 +109,20 @@ public class AppearanceRequestController {
     }
 
     // other methods
+    @GetMapping("/api/appearances/{requestId}")
+    public Result findSuperFrogAppearanceById(@PathVariable int requestId) {
+        SuperFrogAppearanceRequest foundAppearance = this.superFrogAppearanceRequestService.findById(requestId);
+        SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(foundAppearance);
+        return new Result(true, HttpStatusCode.SUCCESS, "Find One Success", superFrogAppearanceRequestDto);
+    }
 
+    @GetMapping("/api/appearances")
+    public Result findAllSuperFrogAppearances(){
+        List<SuperFrogAppearanceRequest> foundAppearance = this.superFrogAppearanceRequestService.findAll();
+
+        List<SuperFrogAppearanceRequestDto> appearanceRequestDtos = foundAppearance.stream()
+                .map(this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter::convert)
+                .collect(Collectors.toList());
+        return new Result(true, HttpStatusCode.SUCCESS, "Find All Success", appearanceRequestDtos);
+    }
 }
