@@ -5,7 +5,7 @@
       <table>
         <tr>
           <td>Date</td>
-          <td>{{eventInfo.scheduleDate}}</td>
+          <td>{{eventInfo.eventDate}}</td>
           
         </tr>
         <tr>
@@ -108,7 +108,8 @@
           specialInstructions: this.eventInfo.specialInstructions,
           outsideOrganizations: this.eventInfo.outsideOrganizations,
           expensesBenefits: this.eventInfo.expensesBenefits,
-          scheduleDate: this.eventInfo.scheduleDate,
+          // scheduleDate: this.eventInfo.scheduleDate,
+          eventDate: this.eventInfo.eventDate,
           startTime: this.eventInfo.startTime,
           endTime: this.eventInfo.endTime,
           eventType: this.eventInfo.eventType,

@@ -3,7 +3,7 @@
     Select Date
   <VueDatePicker
     :enable-time-picker="false"
-    v-model="scheduleDate"
+    v-model="eventDate"
     :format="formatDate"
     @closed="updateDate"
   />
@@ -41,7 +41,7 @@
       return {
         startTime: ref(new Date()),
         endTime: ref(new Date()),
-        scheduleDate: ref(new Date()),   
+        eventDate: ref(new Date()),   
       }
     },
 
@@ -73,7 +73,8 @@
           this.updateParent();
         },
         updateDate(){
-          this.eventInfo.scheduleDate = this.scheduleDate;
+          // this.eventInfo.scheduleDate = this.scheduleDate;
+          this.eventInfo.eventDate = this.eventDate;
           this.updateParent();
         },
         formatS(date) {
@@ -85,7 +86,8 @@
           return format(date, 'hh:mm:ss ');
           },
         formatDate(date) {
-          this.eventInfo.scheduleDate = format(date, 'yyyy-MM-dd');
+          // this.eventInfo.scheduleDate = format(date, 'yyyy-MM-dd');
+          this.eventInfo.eventDate = format(date, 'yyyy-MM-dd');
           return format(date, 'yyyy-MM-dd');
         },
       }

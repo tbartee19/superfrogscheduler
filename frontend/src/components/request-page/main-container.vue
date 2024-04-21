@@ -58,7 +58,7 @@
               specialInstructions: "",
               outsideOrganizations:"",
               expensesBenefits: "",
-              scheduleDate: "",
+              eventDate: "",
               startTime: "",
               endTime: "",
               eventType: "",

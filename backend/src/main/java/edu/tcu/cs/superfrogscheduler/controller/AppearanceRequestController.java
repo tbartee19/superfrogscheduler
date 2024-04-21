@@ -76,6 +76,7 @@ public class AppearanceRequestController {
     }
 
     // other methods
+    @GetMapping("/api/appearances/{requestId}")
     public Result findSuperFrogAppearanceById(@PathVariable int requestId) {
         SuperFrogAppearanceRequest foundAppearance = this.superFrogAppearanceRequestService.findById(requestId);
         SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(foundAppearance);

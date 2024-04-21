@@ -36,6 +36,7 @@ public class SuperFrogAppearanceRequestService {
     }
 
     public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update){
+        update.setStatus(RequestStatus.PENDING);
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
                     oldRequest.setEventDate(update.getEventDate());
