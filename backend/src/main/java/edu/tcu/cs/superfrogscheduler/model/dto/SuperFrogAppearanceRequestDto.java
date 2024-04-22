@@ -4,6 +4,8 @@ import edu.tcu.cs.superfrogscheduler.model.EventType;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
 public record SuperFrogAppearanceRequestDto(
+
+
                 Integer requestId,
                 String contactFirstName,
                 String contactLastName,
@@ -18,10 +20,16 @@ public record SuperFrogAppearanceRequestDto(
                 String expenses,
                 String outsideOrgs,
                 String description,
-                RequestStatus status) {
+                RequestStatus status,
+                String tcuEventDetails) {
+
 
     public RequestStatus getStatus() {
 
         return null;
     }
+    public String getTcuEventDetails() {
+        return tcuEventDetails;
+    }
+
 }

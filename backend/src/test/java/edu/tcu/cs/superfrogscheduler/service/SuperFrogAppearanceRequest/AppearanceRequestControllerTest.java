@@ -1,14 +1,17 @@
 package edu.tcu.cs.superfrogscheduler.service.SuperFrogAppearanceRequest;
 
+import static com.mongodb.internal.connection.tlschannel.util.Util.assertTrue;
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import edu.tcu.cs.superfrogscheduler.controller.AppearanceRequestController;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
@@ -18,6 +21,7 @@ import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,10 +29,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -36,15 +45,21 @@ import java.util.List;
 public class AppearanceRequestControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockBean
-    SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
+    private SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     List<SuperFrogAppearanceRequest> superFrogAppearanceRequests;
+
+    @MockBean
+    private SuperFrogAppearanceRequestService service;
+
+    @InjectMocks
+    private AppearanceRequestController controller;
 
     @BeforeEach
     void setUp() {
@@ -99,6 +114,7 @@ public class AppearanceRequestControllerTest {
 
     }
 
+
     @Test
     void testAddAppearanceRequestSuccess() throws Exception {
         // Given
@@ -116,7 +132,8 @@ public class AppearanceRequestControllerTest {
                 "N/A",
                 "N/A",
                 "personal pictures",
-                RequestStatus.PENDING);
+                RequestStatus.PENDING,
+                "bring flags");
         String json = this.objectMapper.writeValueAsString(superFrogAppearanceRequestDto);
 
         SuperFrogAppearanceRequest savedAppearanceRequest = new SuperFrogAppearanceRequest();
@@ -136,7 +153,7 @@ public class AppearanceRequestControllerTest {
         savedAppearanceRequest.setDescription("personal pictures");
         savedAppearanceRequest.setStatus(RequestStatus.PENDING);
 
-        given(this.superFrogAppearanceRequestService.save(Mockito.any(SuperFrogAppearanceRequest.class)))
+        given(this.superFrogAppearanceRequestService.save(any(SuperFrogAppearanceRequest.class)))
                 .willReturn(savedAppearanceRequest);
 
         // When and then
@@ -156,13 +173,10 @@ public class AppearanceRequestControllerTest {
                 .andExpect(jsonPath("$.data.nameOfOrg").value(savedAppearanceRequest.getNameOfOrg()))
                 .andExpect(jsonPath("$.data.address").value(savedAppearanceRequest.getAddress()))
                 .andExpect(jsonPath("$.data.isOnTCUCampus").value(savedAppearanceRequest.getIsOnTCUCampus()))
-                .andExpect(
-                        jsonPath("$.data.specialInstructions").value(savedAppearanceRequest.getSpecialInstructions()))
+                .andExpect(jsonPath("$.data.specialInstructions").value(savedAppearanceRequest.getSpecialInstructions()))
                 .andExpect(jsonPath("$.data.expenses").value(savedAppearanceRequest.getExpenses()))
                 .andExpect(jsonPath("$.data.outsideOrgs").value(savedAppearanceRequest.getOutsideOrgs()))
                 .andExpect(jsonPath("$.data.description").value(savedAppearanceRequest.getDescription()));
-                // didn't check status
-
     }
 
     @Test
@@ -182,7 +196,8 @@ public class AppearanceRequestControllerTest {
                 "N/A",
                 "N/A",
                 "football game",
-                RequestStatus.PENDING);
+                RequestStatus.PENDING,
+                "bring flags");
         String json = this.objectMapper.writeValueAsString(superFrogAppearanceRequestDto);
 
         SuperFrogAppearanceRequest updatedAppearanceRequest = new SuperFrogAppearanceRequest();
@@ -202,7 +217,7 @@ public class AppearanceRequestControllerTest {
         updatedAppearanceRequest.setDescription("football game");
         updatedAppearanceRequest.setStatus(RequestStatus.PENDING);
 
-        given(this.superFrogAppearanceRequestService.update(eq(2), Mockito.any(SuperFrogAppearanceRequest.class)))
+        given(this.superFrogAppearanceRequestService.update(eq(2), any(SuperFrogAppearanceRequest.class)))
                 .willReturn(updatedAppearanceRequest);
 
         // When and then
@@ -247,10 +262,11 @@ public class AppearanceRequestControllerTest {
                 "N/A",
                 "N/A",
                 "description",
-                RequestStatus.PENDING);
+                RequestStatus.PENDING,
+                "bring flags");
         String json = this.objectMapper.writeValueAsString(appearanceRequestDto);
 
-        given(this.superFrogAppearanceRequestService.update(eq(123456), Mockito.any(SuperFrogAppearanceRequest.class)))
+        given(this.superFrogAppearanceRequestService.update(eq(123456), any(SuperFrogAppearanceRequest.class)))
                 .willThrow(new ObjectNotFoundException("superfrogappearancerequest", 123456));
 
         // When and then
@@ -289,4 +305,102 @@ public class AppearanceRequestControllerTest {
                 .andExpect(jsonPath("$.message").value("Could not find superfrogappearancerequest with Id 777 :("))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
+
+    // Use Case 4: Approve an Appearance Request
+    @Test
+    void testApproveAppearanceRequestSuccess() throws Exception {
+        // Given
+        int requestId = 2;
+        SuperFrogAppearanceRequest approvedRequest = this.superFrogAppearanceRequests.get(1);
+        approvedRequest.setStatus(RequestStatus.APPROVED);
+        given(this.superFrogAppearanceRequestService.approveRequest(requestId)).willReturn(approvedRequest);
+
+        // When & Then
+        this.mockMvc.perform(post("/api/appearances/requests/" + requestId + "/approve")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.code").value(HttpStatusCode.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Request Approved"))
+                .andExpect(jsonPath("$.data.status").value("APPROVED"));
+    }
+
+    // Use Case 4: Reject an Appearance Request
+    @Test
+    void testRejectAppearanceRequestSuccess() throws Exception {
+        // Given
+        int requestId = 3;
+        String rejectionReason = "Unavailable on requested date";
+        SuperFrogAppearanceRequest rejectedRequest = this.superFrogAppearanceRequests.get(2);
+        rejectedRequest.setStatus(RequestStatus.REJECTED);
+        rejectedRequest.setReason(rejectionReason);
+        given(this.superFrogAppearanceRequestService.rejectRequest(requestId, rejectionReason)).willReturn(rejectedRequest);
+
+        // When & Then
+        this.mockMvc.perform(post("/api/appearances/requests/" + requestId + "/reject")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(rejectionReason))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.code").value(HttpStatusCode.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Request Rejected"))
+                .andExpect(jsonPath("$.data.status").value("REJECTED"))
+                .andExpect(jsonPath("$.data.reason").value(rejectionReason));
+    }
+
+    // Use Case 6: Search for Appearance Requests with Results
+    @Test
+    public void testSearchAppearanceRequestsReturnsResults() throws Exception {
+        // Given
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setEventTitle("Test Event");
+        given(service.search(any())).willReturn(Collections.singletonList(request));
+
+        // When & Then
+        mockMvc.perform(post("/api/appearances/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"eventTitle\":\"Test Event\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].eventTitle").value("Test Event"));
+    }
+
+    // Use Case 6: Search for Appearance Requests with No Results
+    @Test
+    public void testSearchAppearanceRequestsReturnsNoResults() throws Exception {
+        // Given
+        given(service.search(any())).willReturn(Collections.emptyList());
+
+        // When & Then
+        mockMvc.perform(post("/api/appearances/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"eventTitle\":\"Unknown Event\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(0));
+    }
+
+    // Use Case 7: Test for successful retrieval of an appearance request
+    @Test
+    public void getAppearanceRequestById_Success() throws Exception {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setRequestId(1);
+        // populate other necessary fields...
+
+        Mockito.when(service.findById(1)).thenReturn(request);
+
+        mockMvc.perform(get("/api/appearances/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.requestId").value(request.getRequestId()));
+    }
+
+    // Use Case 7: Test for request not found scenario
+    @Test
+    public void getAppearanceRequestById_NotFound() throws Exception {
+        Mockito.when(service.findById(1)).thenThrow(new ObjectNotFoundException("SuperFrogAppearanceRequest", 1));
+
+        mockMvc.perform(get("/api/appearances/1"))
+                .andExpect(status().isNotFound());
+    }
+
+
 }

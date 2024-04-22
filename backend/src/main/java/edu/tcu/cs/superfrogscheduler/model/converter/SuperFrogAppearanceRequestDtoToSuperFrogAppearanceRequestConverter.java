@@ -13,6 +13,7 @@ public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter
 
     private EventType TCU = EventType.TCU;
 
+
     @Override
     public SuperFrogAppearanceRequest convert(SuperFrogAppearanceRequestDto source) {
         SuperFrogAppearanceRequest superFrogAppearanceRequest = new SuperFrogAppearanceRequest();
@@ -31,6 +32,7 @@ public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter
         superFrogAppearanceRequest.setOutsideOrgs(source.outsideOrgs());
         superFrogAppearanceRequest.setDescription(source.description());
         superFrogAppearanceRequest.setStatus(source.getStatus());
+        superFrogAppearanceRequest.setTcuEventDetails(source.getTcuEventDetails());
         return superFrogAppearanceRequest;
     }
 }

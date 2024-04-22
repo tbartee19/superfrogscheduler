@@ -1,10 +1,13 @@
 package edu.tcu.cs.superfrogscheduler.service.SuperFrogAppearanceRequest;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
 import edu.tcu.cs.superfrogscheduler.system.IdWorker;
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,27 +15,32 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 public class AppearanceRequestServiceTest {
-    
+
     @Mock
     SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
 
-     @Mock
-     IdWorker idWorker;
+
+    @Mock
+    IdWorker idWorker;
 
     @InjectMocks
     SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
@@ -40,7 +48,7 @@ public class AppearanceRequestServiceTest {
     List<SuperFrogAppearanceRequest> superFrogAppearanceRequests;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         this.superFrogAppearanceRequests = new ArrayList<>();
 
         SuperFrogAppearanceRequest sfar1 = new SuperFrogAppearanceRequest();
@@ -87,12 +95,12 @@ public class AppearanceRequestServiceTest {
     }
 
     @AfterEach
-    void tearDown(){
-        
+    void tearDown() {
+
     }
 
     @Test
-    void testSaveSuccess(){
+    void testSaveSuccess() {
         // Given
         SuperFrogAppearanceRequest newAppearanceRequest = new SuperFrogAppearanceRequest();
         newAppearanceRequest.setContactFirstName("First");
@@ -133,7 +141,7 @@ public class AppearanceRequestServiceTest {
     }
 
     @Test
-    void testUpdateSuccess(){
+    void testUpdateSuccess() {
         // Given
         SuperFrogAppearanceRequest oldAppearanceRequest = new SuperFrogAppearanceRequest();
         oldAppearanceRequest.setRequestId(123456);
@@ -250,4 +258,141 @@ public class AppearanceRequestServiceTest {
         // Then
         verify(this.superFrogAppearanceRequestRepository, times(1)).findById(123456);
     }
+
+    // Use Case 4: Approve an Appearance Request
+    @Test
+    void approveRequestSuccess() {
+        // Given
+        Integer requestId = 1;
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequests.get(0); // Assuming this is a pending request
+        request.setStatus(RequestStatus.PENDING);
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.of(request));
+        given(superFrogAppearanceRequestRepository.save(request)).willAnswer(invocation -> {
+            SuperFrogAppearanceRequest req = invocation.getArgument(0);
+            req.setStatus(RequestStatus.APPROVED);
+            return req;
+        });
+
+        // When
+        SuperFrogAppearanceRequest approvedRequest = superFrogAppearanceRequestService.approveRequest(requestId);
+
+        // Then
+        assertThat(approvedRequest.getStatus()).isEqualTo(RequestStatus.APPROVED);
+        verify(superFrogAppearanceRequestRepository).save(request);
+    }
+
+    // Use Case 4: Fail to Approve an Appearance Request
+    @Test
+    void approveRequestNotFound() {
+        // Given
+        Integer requestId = 99;
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.approveRequest(requestId));
+    }
+
+    // Use Case 5: Reject an Appearance Request
+    @Test
+    void rejectRequestSuccess() {
+        // Given
+        Integer requestId = 1;
+        String rejectionReason = "Insufficient resources";
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequests.get(0);
+        request.setStatus(RequestStatus.PENDING);
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.of(request));
+        given(superFrogAppearanceRequestRepository.save(request)).willAnswer(invocation -> {
+            SuperFrogAppearanceRequest req = invocation.getArgument(0);
+            req.setStatus(RequestStatus.REJECTED);
+            req.setReason(rejectionReason);
+            return req;
+        });
+
+        // When
+        SuperFrogAppearanceRequest rejectedRequest = superFrogAppearanceRequestService.rejectRequest(requestId, rejectionReason);
+
+        // Then
+        assertThat(rejectedRequest.getStatus()).isEqualTo(RequestStatus.REJECTED);
+        assertThat(rejectedRequest.getReason()).isEqualTo(rejectionReason);
+        verify(superFrogAppearanceRequestRepository).save(request);
+    }
+
+    // Use Case 5: Fail to Reject an Appearance Request
+    @Test
+    void rejectRequestNotFound() {
+        // Given
+        Integer requestId = 99;
+        String rejectionReason = "Unavailable resources";
+
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.rejectRequest(requestId, rejectionReason));
+    }
+
+
+
+    // Use Case 6: Search for Appearance Requests with Results (in progress)
+    @Test
+    void searchRequestsReturnsResults() {
+        // Given
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setEventTitle("Test Event");
+
+        SearchCriteria criteria = new SearchCriteria();
+        criteria.setEventTitle("Test Event");
+
+        given(superFrogAppearanceRequestRepository.findAll((Sort) any())).willReturn(Collections.singletonList(request));
+
+        // When
+        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
+
+        // Then
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).getEventTitle()).isEqualTo("Test Event");
+        verify(superFrogAppearanceRequestRepository).findAll((Sort) any());
+    }
+
+    // Use Case 6: Search for Appearance Requests with No Results (in progress)
+    @Test
+    void searchRequestsReturnsNoResults() {
+        // Given
+        SearchCriteria criteria = new SearchCriteria();
+        criteria.setEventTitle("Unknown Event");
+
+        given(superFrogAppearanceRequestRepository.findAll((Sort) any())).willReturn(Collections.emptyList());
+
+        // When
+        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
+
+        // Then
+        assertThat(results).isEmpty();
+        verify(superFrogAppearanceRequestRepository).findAll((Sort) any());
+    }
+
+    // Use Case 7: Test for successful retrieval
+    @Test
+    public void findById_Success() {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setRequestId(1);
+        // populate other fields...
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+
+        SuperFrogAppearanceRequest found = superFrogAppearanceRequestService.findById(1);
+        assertEquals(request.getRequestId(), found.getRequestId());
+    }
+
+    // Use Case 7: Test for not found exception
+    @Test
+    public void findById_NotFound() {
+        // set up our mock repository
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.empty());
+
+        // Execute the service call
+        assertThrows(ObjectNotFoundException.class, () -> {
+            superFrogAppearanceRequestService.findById(1);
+        }, "Expected findById(1) to throw, but it didn't");
+    }
+
 }

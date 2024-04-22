@@ -2,14 +2,12 @@ package edu.tcu.cs.superfrogscheduler.model;
 
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
 // SuperFrogAppearanceRequest includes event-related information
@@ -48,7 +46,11 @@ public class SuperFrogAppearanceRequest {
     private String description;
     private RequestStatus status;
 
-    private String rejectionReason;
+    private String reason;
+
+    private String tcuEventDetails;
+
+    private LocalDateTime eventDateTime;
 
     public Integer getRequestId() {
         return requestId;
@@ -90,7 +92,7 @@ public class SuperFrogAppearanceRequest {
         this.email = email;
     }
 
-    public EventType getEventType() {
+    public @NotNull(message = "Event type is required") EventType getEventType() {
         return eventType;
     }
 
@@ -177,11 +179,27 @@ public class SuperFrogAppearanceRequest {
     }
 
     public String getReason() {
-        return rejectionReason;
+        return reason;
     }
 
-    public void setReason(String rejectionReason) {
-        this.rejectionReason = rejectionReason;
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getTcuEventDetails() {
+        return tcuEventDetails;
+    }
+
+    public void setTcuEventDetails(String tcuEventDetails) {
+        this.tcuEventDetails = tcuEventDetails;
+    }
+    @NotNull(message = "Event date and time is required")
+    public LocalDateTime getEventDateTime() {
+        return eventDateTime;
+    }
+
+    public void setEventDateTime(LocalDateTime eventDateTime) {
+        this.eventDateTime = eventDateTime;
     }
 
     public SuperFrogAppearanceRequest() {
@@ -208,5 +226,7 @@ public class SuperFrogAppearanceRequest {
         this.description = description;
 
     }
+
+
 
 }

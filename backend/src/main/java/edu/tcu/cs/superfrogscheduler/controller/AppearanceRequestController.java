@@ -2,6 +2,7 @@ package edu.tcu.cs.superfrogscheduler.controller;
 
 import javax.validation.Valid;
 
+import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
@@ -15,6 +16,8 @@ import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.Result;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+
+import java.util.List;
 
 
 // AppearanceRequestController
@@ -120,6 +123,41 @@ public class AppearanceRequestController {
                     .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error Creating Request: " + e.getMessage()));
         }
     }
+
+    // Use Case 6: The Spirit Director/SuperFrog Student finds appearance requests
+    @PostMapping("/search")
+    public ResponseEntity<Result> search(@RequestBody SearchCriteria criteria) {
+        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
+        return ResponseEntity.ok(new Result(true, 200, "Search results", results));
+    }
+
+    // Use Case 7: The Spirit Director/SuperFrog Student views an appearance request
+    @GetMapping("/{id}")
+    public ResponseEntity<SuperFrogAppearanceRequest> getAppearanceRequestById(@PathVariable Integer id) {
+        try {
+            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.findById(id);
+            return new ResponseEntity<>(request, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Use Case 8: Edit an appearance request
+    // Handles HTTP PUT requests to update a specific appearance request by its ID
+    @PutMapping("/{requestId}")
+    public ResponseEntity<Result> update(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto requestDto) {
+        try {
+            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(requestDto);
+            SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.update(requestId, updatedRequest);
+            SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Successfully Updated", savedRequestDto));
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result(false, HttpStatusCode.NOT_FOUND, "Request not found"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error updating request: " + e.getMessage()));
+        }
+    }
+
 
     // other methods
 

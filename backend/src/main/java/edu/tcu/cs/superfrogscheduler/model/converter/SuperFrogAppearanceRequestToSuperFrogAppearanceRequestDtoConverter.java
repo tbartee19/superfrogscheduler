@@ -29,7 +29,9 @@ public class SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter 
                 source.getExpenses(),
                 source.getOutsideOrgs(),
                 source.getDescription(),
-                source.getStatus());
+                source.getStatus(),
+                source.getTcuEventDetails());
+
                 // source.getStudent() != null ? this.superfrogToSuperfrogDtoConverter.convert(source.getStudent()) : null);
     }
 }
