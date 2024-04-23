@@ -16,6 +16,9 @@ public class SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter 
     public SuperFrogAppearanceRequestDto convert(SuperFrogAppearanceRequest source) {
         return new SuperFrogAppearanceRequestDto(
                 source.getRequestId(),
+                source.getEventDate(),
+                source.getStartTime(),
+                source.getEndTime(),
                 source.getContactFirstName(),
                 source.getContactLastName(),
                 source.getPhoneNumber(),
@@ -24,7 +27,6 @@ public class SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter 
                 source.getEventTitle(),
                 source.getNameOfOrg(),
                 source.getAddress(),
-                source.getIsOnTCUCampus(),
                 source.getSpecialInstructions(),
                 source.getExpenses(),
                 source.getOutsideOrgs(),
