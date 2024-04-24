@@ -7,7 +7,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
 // SuperFrogAppearanceRequest includes event-related information
@@ -198,10 +200,6 @@ public class SuperFrogAppearanceRequest {
         return eventDateTime;
     }
 
-    public void setEventDateTime(LocalDateTime eventDateTime) {
-        this.eventDateTime = eventDateTime;
-    }
-
     public SuperFrogAppearanceRequest() {
 
     }
@@ -228,5 +226,31 @@ public class SuperFrogAppearanceRequest {
     }
 
 
+    public void setEventDate(LocalDate of) {
+    }
 
+    public LocalDate getEventDate() {
+
+        return null;
+    }
+
+    public void setStartTime(LocalTime of) {
+    }
+
+    public void setEndTime(LocalTime of) {
+    }
+
+    public LocalTime getEndTime() {
+
+        return null;
+    }
+
+    public LocalTime getStartTime() {
+
+        return null;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+
+    }
 }

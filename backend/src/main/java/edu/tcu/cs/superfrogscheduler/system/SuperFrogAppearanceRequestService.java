@@ -1,5 +1,6 @@
 package edu.tcu.cs.superfrogscheduler.system;
 
+import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
@@ -92,6 +93,28 @@ public class SuperFrogAppearanceRequestService {
     }
 
 
-    }
+//    public List<SuperFrogAppearanceRequest> search(SearchCriteria criteria) {
+//        return superFrogAppearanceRequestRepository.findAll((Specification<SuperFrogAppearanceRequest>) (root, query, cb) -> {
+//            List<Predicate> predicates = new ArrayList<>();
+//
+//            if (criteria.getEventTitle() != null) {
+//                predicates.add(cb.like(cb.lower(root.get("eventTitle")), "%" + criteria.getEventTitle().toLowerCase() + "%"));
+//            }
+//            if (criteria.getEventDate() != null) {
+//                predicates.add(cb.equal(root.get("eventDateTime"), criteria.getEventDate()));
+//            }
+//            if (criteria.getContactName() != null) {
+//                Predicate firstNamePredicate = cb.like(cb.lower(root.get("contactFirstName")), "%" + criteria.getContactName().toLowerCase() + "%");
+//                Predicate lastNamePredicate = cb.like(cb.lower(root.get("contactLastName")), "%" + criteria.getContactName().toLowerCase() + "%");
+//                predicates.add(cb.or(firstNamePredicate, lastNamePredicate));
+//            }
+//            if (criteria.getStatus() != null) {
+//                predicates.add(cb.equal(root.get("status"), criteria.getStatus()));
+//            }
+//
+//            return cb.and(predicates.toArray(new Predicate[0]));
+//        });
+//    }
+}
 
 
