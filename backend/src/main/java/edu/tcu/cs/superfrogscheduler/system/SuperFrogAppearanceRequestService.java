@@ -39,6 +39,8 @@ public class SuperFrogAppearanceRequestService {
         return superFrogAppearanceRequestRepository.save(request);
     }
 
+
+
     public List<SuperFrogAppearanceRequest> findAll() {
         return this.superFrogAppearanceRequestRepository.findAll();
     }

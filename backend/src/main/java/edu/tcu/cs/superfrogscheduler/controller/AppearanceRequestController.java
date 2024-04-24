@@ -121,6 +121,11 @@ public class AppearanceRequestController {
         }
     }
 
+    //use case 25 - The Spirit Director Reverses an approval/rejection descision of a request
+    @PutMapping("/spirit-director/{requestId}")
+    public Result reverseRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto, SuperFrogAppearanceRequest ){
+
+    }
     // other methods
 
 }
