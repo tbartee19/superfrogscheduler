@@ -49,20 +49,17 @@ public class SuperFrogAppearanceRequestService {
         return this.superFrogAppearanceRequestRepository.findByStatus(status);
     }
 
-    // public List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus
-    // status, SuperFrogStudent student){
-    // return
-    // this.superFrogAppearanceRequestRepository.findByStatusAndStudent(status,
-    // student);
-    // }
-
     public SuperFrogAppearanceRequest save(SuperFrogAppearanceRequest newSuperFrogAppearanceRequest) {
         return this.superFrogAppearanceRequestRepository.save(newSuperFrogAppearanceRequest);
     }
 
     public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update){
+        update.setStatus(RequestStatus.PENDING);
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
+                    oldRequest.setEventDate(update.getEventDate());
+                    oldRequest.setStartTime(update.getStartTime());
+                    oldRequest.setEndTime(update.getEndTime());
                     oldRequest.setContactFirstName(update.getContactFirstName());
                     oldRequest.setContactLastName(update.getContactLastName());
                     oldRequest.setPhoneNumber(update.getPhoneNumber());
@@ -71,7 +68,6 @@ public class SuperFrogAppearanceRequestService {
                     oldRequest.setEventTitle(update.getEventTitle());
                     oldRequest.setNameOfOrg(update.getNameOfOrg());
                     oldRequest.setAddress(update.getAddress());
-                    oldRequest.setIsOnTCUCampus(update.getIsOnTCUCampus());
                     oldRequest.setSpecialInstructions(update.getSpecialInstructions());
                     oldRequest.setExpenses(update.getExpenses());
                     oldRequest.setOutsideOrgs(update.getOutsideOrgs());
