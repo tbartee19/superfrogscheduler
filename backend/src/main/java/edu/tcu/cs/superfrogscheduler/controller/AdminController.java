@@ -10,12 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogStudentService;
+import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
 // AdminController
 // handles user-related functionalities like account creation, deactivation, editing 
 // and managing schedules for spirit directors with admin role
 
-// use cases 13-16
+// use cases 10-16 25-26
 
 @RestController
 @RequestMapping("/api/admin") 
@@ -23,6 +25,8 @@ public class AdminController {
 
    @Autowired
     private SuperFrogStudentService studentService;
+
+    private SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
 
     //use case 13
     @PostMapping("/createStudent")
@@ -80,8 +84,11 @@ public class AdminController {
         }
     }
 
+    //use case 25: Spirit Director Reverses a reject or approval request
+    @PutMapping("/api/appearance/{requestId}/status/{status}")
+    public Result reverseAppearanceDecision(@PathVariable Integer requestId, @PathVariable RequestStatus){
+        SuperFrogAppearanceRequest updateRequest = this.superFrogAppearanceRequestService.
+    }
 
     // other methods 
 }
-
-

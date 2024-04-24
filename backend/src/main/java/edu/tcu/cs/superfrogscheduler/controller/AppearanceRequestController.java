@@ -19,7 +19,6 @@ import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestT
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 // AppearanceRequestController
 // manages appearance requests
 // this could include creating, editing, viewing, and deleting requests
@@ -123,11 +122,6 @@ public class AppearanceRequestController {
         }
     }
 
-    //use case 25 - The Spirit Director Reverses an approval/rejection descision of a request
-    @PutMapping("/spirit-director/{requestId}")
-    public Result reverseRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto, SuperFrogAppearanceRequest ){
-
-    }
     // other methods
     @GetMapping("/api/appearances/{requestId}")
     public Result findSuperFrogAppearanceById(@PathVariable int requestId) {
