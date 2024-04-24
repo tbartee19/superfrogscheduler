@@ -125,11 +125,11 @@ public class AppearanceRequestController {
     }
 
     // Use Case 6: The Spirit Director/SuperFrog Student finds appearance requests
-    @PostMapping("/search")
-    public ResponseEntity<Result> search(@RequestBody SearchCriteria criteria) {
-        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
-        return ResponseEntity.ok(new Result(true, 200, "Search results", results));
-    }
+//    @PostMapping("/search")
+//    public ResponseEntity<Result> search(@RequestBody SearchCriteria criteria) {
+//        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
+//        return ResponseEntity.ok(new Result(true, 200, "Search results", results));
+//    }
 
     // Use Case 7: The Spirit Director/SuperFrog Student views an appearance request
     @GetMapping("/{id}")

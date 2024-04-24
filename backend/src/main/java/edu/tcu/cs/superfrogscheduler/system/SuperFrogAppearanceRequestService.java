@@ -28,16 +28,44 @@ public class SuperFrogAppearanceRequestService {
     }
 
     public SuperFrogAppearanceRequest approveRequest(Integer requestId) {
-        SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
-        request.setStatus(RequestStatus.APPROVED);
-        return superFrogAppearanceRequestRepository.save(request);
+        SuperFrogAppearanceRequest request = findById(requestId);
+        if(request.getStatus() == RequestStatus.PENDING) {
+            request.setStatus(RequestStatus.APPROVED);
+            superFrogAppearanceRequestRepository.save(request);
+            sendApprovalNotification(request);
+            System.out.println("Request Approved: " + request.getRequestId());
+        } else {
+            System.out.println("Request cannot be approved because it is not in PENDING status: " + requestId);
+            throw new IllegalStateException("Request is not in a PENDING state");
+        }
+        return request;
     }
 
     public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String rejectionReason) {
-        SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
-        request.setStatus(RequestStatus.REJECTED);
-        request.setRejectionReason(rejectionReason);
-        return superFrogAppearanceRequestRepository.save(request);
+        SuperFrogAppearanceRequest request = findById(requestId);
+        if(request.getStatus() == RequestStatus.PENDING) {
+            request.setStatus(RequestStatus.REJECTED);
+            request.setRejectionReason(rejectionReason);
+            superFrogAppearanceRequestRepository.save(request);
+            sendRejectionNotification(request);
+            System.out.println("Request Rejected: " + request.getRequestId() + " with reason: " + rejectionReason);
+        } else {
+            System.out.println("Request cannot be rejected because it is not in PENDING status: " + requestId);
+            throw new IllegalStateException("Request is not in a PENDING state");
+        }
+        return request;
+    }
+
+    private void sendApprovalNotification(SuperFrogAppearanceRequest request) {
+        // Placeholder for sending approval notification
+        System.out.println("Sending approval notification for Request ID: " + request.getRequestId());
+        // Actual email/notification sending logic goes here
+    }
+
+    private void sendRejectionNotification(SuperFrogAppearanceRequest request) {
+        // Placeholder for sending rejection notification
+        System.out.println("Sending rejection notification for Request ID: " + request.getRequestId() + ", Reason: " + request.getRejectionReason());
+        // Actual email/notification sending logic goes here
     }
 
     public List<SuperFrogAppearanceRequest> findAll() {

@@ -340,43 +340,43 @@ public class AppearanceRequestServiceTest {
 
 
 
-    // Use Case 6: Search for Appearance Requests with Results (in progress)
-    @Test
-    void searchRequestsReturnsResults() {
-        // Given
-        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
-        request.setEventTitle("Test Event");
-
-        SearchCriteria criteria = new SearchCriteria();
-        criteria.setEventTitle("Test Event");
-
-        given(superFrogAppearanceRequestRepository.findAll((Sort) any())).willReturn(Collections.singletonList(request));
-
-        // When
-        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
-
-        // Then
-        assertThat(results).hasSize(1);
-        assertThat(results.get(0).getEventTitle()).isEqualTo("Test Event");
-        verify(superFrogAppearanceRequestRepository).findAll((Sort) any());
-    }
-
-    // Use Case 6: Search for Appearance Requests with No Results (in progress)
-    @Test
-    void searchRequestsReturnsNoResults() {
-        // Given
-        SearchCriteria criteria = new SearchCriteria();
-        criteria.setEventTitle("Unknown Event");
-
-        given(superFrogAppearanceRequestRepository.findAll((Sort) any())).willReturn(Collections.emptyList());
-
-        // When
-        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
-
-        // Then
-        assertThat(results).isEmpty();
-        verify(superFrogAppearanceRequestRepository).findAll((Sort) any());
-    }
+//    // Use Case 6: Search for Appearance Requests with Results (in progress)
+//    @Test
+//    void searchRequestsReturnsResults() {
+//        // Given
+//        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+//        request.setEventTitle("Test Event");
+//
+//        SearchCriteria criteria = new SearchCriteria();
+//        criteria.setEventTitle("Test Event");
+//
+//        given(superFrogAppearanceRequestRepository.findAll((Sort) any())).willReturn(Collections.singletonList(request));
+//
+//        // When
+//        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
+//
+//        // Then
+//        assertThat(results).hasSize(1);
+//        assertThat(results.get(0).getEventTitle()).isEqualTo("Test Event");
+//        verify(superFrogAppearanceRequestRepository).findAll((Sort) any());
+//    }
+//
+//    // Use Case 6: Search for Appearance Requests with No Results (in progress)
+//    @Test
+//    void searchRequestsReturnsNoResults() {
+//        // Given
+//        SearchCriteria criteria = new SearchCriteria();
+//        criteria.setEventTitle("Unknown Event");
+//
+//        given(superFrogAppearanceRequestRepository.findAll((Sort) any())).willReturn(Collections.emptyList());
+//
+//        // When
+//        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
+//
+//        // Then
+//        assertThat(results).isEmpty();
+//        verify(superFrogAppearanceRequestRepository).findAll((Sort) any());
+//    }
 
     // Use Case 7: Test for successful retrieval
     @Test

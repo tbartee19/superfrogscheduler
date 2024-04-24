@@ -52,7 +52,10 @@ public class SuperFrogAppearanceRequest {
 
     private String tcuEventDetails;
 
-    private LocalDateTime eventDateTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    private LocalDate eventDate;
 
     public Integer getRequestId() {
         return requestId;
@@ -132,13 +135,6 @@ public class SuperFrogAppearanceRequest {
         this.address = address;
     }
 
-    public String getIsOnTCUCampus() {
-        return isOnTCUCampus;
-    }
-
-    public void setIsOnTCUCampus(String isOnTCUCampus) {
-        this.isOnTCUCampus = isOnTCUCampus;
-    }
 
     public String getSpecialInstructions() {
         return specialInstructions;
@@ -188,17 +184,6 @@ public class SuperFrogAppearanceRequest {
         this.reason = reason;
     }
 
-    public String getTcuEventDetails() {
-        return tcuEventDetails;
-    }
-
-    public void setTcuEventDetails(String tcuEventDetails) {
-        this.tcuEventDetails = tcuEventDetails;
-    }
-    @NotNull(message = "Event date and time is required")
-    public LocalDateTime getEventDateTime() {
-        return eventDateTime;
-    }
 
     public SuperFrogAppearanceRequest() {
 
@@ -226,31 +211,35 @@ public class SuperFrogAppearanceRequest {
     }
 
 
-    public void setEventDate(LocalDate of) {
-    }
-
     public LocalDate getEventDate() {
-
-        return null;
+        return eventDate;
     }
 
-    public void setStartTime(LocalTime of) {
-    }
-
-    public void setEndTime(LocalTime of) {
-    }
-
-    public LocalTime getEndTime() {
-
-        return null;
+    public void setEventDate(LocalDate eventDate) {
+        this.eventDate = eventDate;
     }
 
     public LocalTime getStartTime() {
+        return startTime;
+    }
 
-        return null;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getRejectionReason() {
+        return reason;
     }
 
     public void setRejectionReason(String rejectionReason) {
-
+        this.reason = rejectionReason;
     }
 }
