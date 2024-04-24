@@ -1,5 +1,7 @@
 package edu.tcu.cs.superfrogscheduler.system;
 
+import java.time.LocalDate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
@@ -27,20 +29,34 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public SuperFrogAppearanceRequest approveRequest(Integer requestId) {
         SuperFrogAppearanceRequest request = findById(requestId);
-        if(request.getStatus() == RequestStatus.PENDING) {
+        if(request.getStatus() == RequestStatus.PENDING && request.getEventDate().isAfter(LocalDate.now().plusDays(5))) {
             request.setStatus(RequestStatus.APPROVED);
             superFrogAppearanceRequestRepository.save(request);
             sendApprovalNotification(request);
+            manageConflictingRequests(request);
             System.out.println("Request Approved: " + request.getRequestId());
         } else {
-            System.out.println("Request cannot be approved because it is not in PENDING status: " + requestId);
-            throw new IllegalStateException("Request is not in a PENDING state");
+            throw new IllegalStateException("Request cannot be approved: Either not pending or too close to event date.");
         }
         return request;
     }
 
+    private void manageConflictingRequests(SuperFrogAppearanceRequest approvedRequest) {
+        List<SuperFrogAppearanceRequest> conflictingRequests = superFrogAppearanceRequestRepository.findByEventDate(approvedRequest.getEventDate());
+        for (SuperFrogAppearanceRequest req : conflictingRequests) {
+            if (!req.getRequestId().equals(approvedRequest.getRequestId())) {
+                req.setStatus(RequestStatus.REJECTED);
+                req.setRejectionReason("Date and time not available anymore due to another approved event");
+                superFrogAppearanceRequestRepository.save(req);
+            }
+        }
+    }
+
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String rejectionReason) {
         SuperFrogAppearanceRequest request = findById(requestId);
         if(request.getStatus() == RequestStatus.PENDING) {
@@ -50,11 +66,11 @@ public class SuperFrogAppearanceRequestService {
             sendRejectionNotification(request);
             System.out.println("Request Rejected: " + request.getRequestId() + " with reason: " + rejectionReason);
         } else {
-            System.out.println("Request cannot be rejected because it is not in PENDING status: " + requestId);
-            throw new IllegalStateException("Request is not in a PENDING state");
+            throw new IllegalStateException("Request cannot be rejected because it is not in PENDING status: " + requestId);
         }
         return request;
     }
+
 
     private void sendApprovalNotification(SuperFrogAppearanceRequest request) {
         // Placeholder for sending approval notification

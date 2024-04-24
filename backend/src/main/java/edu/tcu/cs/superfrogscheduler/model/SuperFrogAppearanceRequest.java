@@ -189,11 +189,15 @@ public class SuperFrogAppearanceRequest {
 
     }
 
-    public SuperFrogAppearanceRequest(Integer requestId, String contactFirstName, String contactLastName,
-                                      String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address,
-                                      String isOnTCUCampus, String specialInstructions, String expenses, String outsideOrgs, String description,
+    public SuperFrogAppearanceRequest(Integer requestId, LocalDate eventDate, LocalTime startTime, LocalTime endTime,
+                                      String contactFirstName, String contactLastName, String phoneNumber, String email,
+                                      EventType eventType, String eventTitle, String nameOfOrg, String address,
+                                      String specialInstructions, String expenses, String outsideOrgs, String description,
                                       RequestStatus status) {
         this.requestId = requestId;
+        this.eventDate = eventDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.contactFirstName = contactFirstName;
         this.contactLastName = contactLastName;
         this.phoneNumber = phoneNumber;
@@ -202,13 +206,13 @@ public class SuperFrogAppearanceRequest {
         this.eventTitle = eventTitle;
         this.nameOfOrg = nameOfOrg;
         this.address = address;
-        this.isOnTCUCampus = isOnTCUCampus;
         this.specialInstructions = specialInstructions;
         this.expenses = expenses;
         this.outsideOrgs = outsideOrgs;
         this.description = description;
-
+        this.status = status;
     }
+
 
 
     public LocalDate getEventDate() {

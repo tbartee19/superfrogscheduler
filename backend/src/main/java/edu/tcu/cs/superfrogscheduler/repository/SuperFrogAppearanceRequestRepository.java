@@ -6,12 +6,18 @@ import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface SuperFrogAppearanceRequestRepository extends JpaRepository<SuperFrogAppearanceRequest, Integer> {
     List<SuperFrogAppearanceRequest> findByRequestIdIn(List<Integer> appearanceRequestIdList);
 
     List<SuperFrogAppearanceRequest> findByStatus(RequestStatus status);
+
+    List<SuperFrogAppearanceRequest> findByEventDate(LocalDate eventDate);
+
+    long countByStatus(RequestStatus requestStatus);
+
     // List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status,
     // SuperFrogStudent student);
 }
