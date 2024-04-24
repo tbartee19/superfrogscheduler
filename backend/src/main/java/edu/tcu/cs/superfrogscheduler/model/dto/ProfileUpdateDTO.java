@@ -1,59 +1,15 @@
-package edu.tcu.cs.superfrogscheduler.model;
+package edu.tcu.cs.superfrogscheduler.model.dto;
 
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-
-// model for student info like name address and such
-@Document
-public class SuperFrogStudent {
-
-    @Id
-    private String id;
-
-    @NotBlank(message = "First name is required")
+public class ProfileUpdateDTO {
     private String firstName;
-
-    @NotBlank(message = "Last name is required")
     private String lastName;
-
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "\\(\\d{3}\\) \\d{3}-\\d{4}", message = "Phone number must be in the format (999) 999-9999")
     private String phoneNumber;
-
-    @NotBlank(message = "Physical address is required")
     private String physicalAddress;
-
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
     private String email;
-    
     private Boolean internationalStudent;
+    private String paymentPreference;
 
-    private String paymentPreference;  // Mail Check or Pick Up Check
-
-    @DBRef
-    private Account account;
-    
-
-    public SuperFrogStudent() {
-        // default constructor
-    }
-
-    // getters and setters
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
+    // Getters and Setters
     public String getFirstName() {
         return firstName;
     }
@@ -108,14 +64,6 @@ public class SuperFrogStudent {
 
     public void setPaymentPreference(String paymentPreference) {
         this.paymentPreference = paymentPreference;
-    }
-    
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
     }
 }
 
