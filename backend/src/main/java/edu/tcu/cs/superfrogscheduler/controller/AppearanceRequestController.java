@@ -3,9 +3,7 @@ package edu.tcu.cs.superfrogscheduler.controller;
 import javax.validation.Valid;
 
 import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
-import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
-import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
-import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
+import edu.tcu.cs.superfrogscheduler.system.*;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
-import edu.tcu.cs.superfrogscheduler.system.Result;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,16 +111,35 @@ public class AppearanceRequestController {
     @PostMapping("/spirit-director/requests")
     public ResponseEntity<Result> createRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
         try {
+            // Convert DTO to domain model
             SuperFrogAppearanceRequest newRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
+
+            // Validate event date (example validation)
+            assert newRequest != null;
+            if(newRequest.getEventDate().isBefore(LocalDate.now().plusDays(5))) {
+                return ResponseEntity.badRequest().body(new Result(false, HttpStatusCode.INVALID_ARGUMENT, "Event date must be at least 5 days in the future"));
+            }
+
+            // Set initial status to PENDING or ASSIGNED based on business rules
             newRequest.setStatus(RequestStatus.PENDING);
+
+            // Save the new request
             SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.save(newRequest);
+
+            // Convert back to DTO
             SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
+
+            // Send confirmation notification
+            NotificationService notificationService = new NotificationService();
+            notificationService.sendNotification("New SuperFrog appearance request created with ID: " + savedRequest.getRequestId());
+
             return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Successfully Created", savedRequestDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error Creating Request: " + e.getMessage()));
         }
     }
+
 
     // Use Case 6: The Spirit Director/SuperFrog Student finds appearance requests
 //    @PostMapping("/search")
