@@ -1,15 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import RequestPage from '@/components/request-page/main-container.vue'
 import App from '@/App.vue'
+
+import RequestPage from '@/components/request-page/main-container.vue'
 import ModifyPage from '@/components/modify-page/main-container.vue'
+import LoginPage from '@/components/login-page/main-container.vue'
+
+import SpiritDirectorPage from '@/components/spirit-director-page/main-container.vue'
+import CalendarPage from '@/components/spirit-director-page/calendar-page/main-container.vue'
+import PaymentFormsPage from '@/components/spirit-director-page/payment-forms-page/main-container.vue'
+import PerformanceReportsPage from '@/components/spirit-director-page/performance-report-page/main-container.vue'
+
+import SuperFrogPage from '@/components/superfrog-page/main-container.vue'
 
 const routes = [
     { path: '/', component: App },
-
     { path: '/request', component: RequestPage },
     { path: '/modify-request', component: ModifyPage },
-    { path: '/:catchAll(.*)',
-    component: App}
+    { path: '/login', component: LoginPage },
+
+    { path: '/spirit-director', component: SpiritDirectorPage },
+    { path: '/spirit-director/calendar', component: CalendarPage },
+    { path: '/spirit-director/payment-forms', component: PaymentFormsPage },
+    { path: '/spirit-director/performance-reports', component: PerformanceReportsPage },
+
+    { path: '/superfrog', component: SuperFrogPage },
+    { path: '/:catchAll(.*)', component: App }
     
 ]
 
