@@ -1,4 +1,4 @@
 spring:
   data:
     mongodb:
-      uri: "mongodb+srv://superfrog:Scheduler1!@superfrogscheduler.iruhgog.mongodb.net/?retryWrites=true&w=majority&appName=SuperFrogScheduler"
+      uri: "mongodb+srv://superfrog:Scheduler1!@superfrogscheduler.iruhgog.mongodb.net/SuperFrogScheduler?retryWrites=true&w=majority&appName=SuperFrogScheduler"

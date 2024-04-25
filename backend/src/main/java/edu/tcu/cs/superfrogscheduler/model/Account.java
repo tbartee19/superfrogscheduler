@@ -18,7 +18,8 @@ public class Account {
     
     private String role;
 
-    
+    private boolean isActive = true;
+
     public Account() {
         // default constructor
     }
@@ -60,5 +61,12 @@ public class Account {
 
     public void setRole(String role) {
         this.role = role;
+    }
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
