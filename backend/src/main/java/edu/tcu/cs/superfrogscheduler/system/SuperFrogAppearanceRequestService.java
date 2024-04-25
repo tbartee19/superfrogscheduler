@@ -93,6 +93,18 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
+    //use case 25
+    public SuperFrogAppearanceRequest reverseDecision(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(oldRequest -> {
+                    RequestStatus currentStatus = oldRequest.getStatus();
+                    if(currentStatus == RequestStatus.APPROVED) oldRequest.setStatus(RequestStatus.REJECTED);
+                    else if(currentStatus == RequestStatus.REJECTED) oldRequest.setStatus(RequestStatus.APPROVED);
+                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
+                })
+                .orElseThrow(()-> new ObjectNotFoundException("superfrogappearncerequest", requestId));
+    }
+
 
     }
 

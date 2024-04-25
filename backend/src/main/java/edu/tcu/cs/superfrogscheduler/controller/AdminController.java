@@ -4,14 +4,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
+import edu.tcu.cs.superfrogscheduler.system.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
-import edu.tcu.cs.superfrogscheduler.system.SuperFrogStudentService;
-import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
-import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
+
 
 // AdminController
 // handles user-related functionalities like account creation, deactivation, editing 
@@ -27,6 +30,10 @@ public class AdminController {
     private SuperFrogStudentService studentService;
 
     private SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
+
+    private SuperFrogAppearanceRequest superFrogAppearanceRequest;
+
+    private SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
     //use case 13
     @PostMapping("/createStudent")
@@ -85,9 +92,11 @@ public class AdminController {
     }
 
     //use case 25: Spirit Director Reverses a reject or approval request
-    @PutMapping("/api/appearance/{requestId}/status/{status}")
-    public Result reverseAppearanceDecision(@PathVariable Integer requestId, @PathVariable RequestStatus){
-        SuperFrogAppearanceRequest updateRequest = this.superFrogAppearanceRequestService.
+    @PutMapping("/api/appearance/{requestId}")
+    public Result reverseAppearanceDecision(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.reverseDecision(requestId);
+        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Status reverse success", updatedRequestDto);
     }
 
     // other methods 
