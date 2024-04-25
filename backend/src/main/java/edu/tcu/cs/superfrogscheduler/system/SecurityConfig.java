@@ -13,24 +13,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-            .withUser("spiritdirector").password(passwordEncoder.encode("password")).roles("ADMIN");
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
             .antMatchers("/api/admin/**").hasRole("ADMIN")
-            .antMatchers("/api/students/**").hasRole("STUDENT") 
+            .antMatchers("/api/students/**", "/api/events/**").hasRole("STUDENT") 
             .anyRequest().authenticated()
             .and()
             .httpBasic()

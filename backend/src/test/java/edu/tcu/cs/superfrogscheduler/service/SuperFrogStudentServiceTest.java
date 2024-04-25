@@ -47,7 +47,7 @@ public class SuperFrogStudentServiceTest {
         updateDTO.setFirstName("NewFirstName");
         updateDTO.setLastName("NewLastName");
         updateDTO.setPhoneNumber("(321) 654-9870");
-        updateDTO.setEmail("oldemail@example.com");
+        updateDTO.setEmail("newemail@example.com");
         updateDTO.setPhysicalAddress("321 New St");
         updateDTO.setInternationalStudent(true);
         updateDTO.setPaymentPreference("Mail Check");
@@ -58,12 +58,11 @@ public class SuperFrogStudentServiceTest {
         try {
             // Arrange
             when(repository.findByEmail("oldemail@example.com")).thenReturn(Optional.of(student));
-            doNothing().when(studentService).validateStudentProfile(student);
             when(repository.save(any(SuperFrogStudent.class))).thenReturn(student);
-    
+
             // Act
             SuperFrogStudent updatedStudent = studentService.updateStudentProfile("oldemail@example.com", updateDTO);
-    
+
             // Assert
             assertNotNull(updatedStudent);
             assertEquals("NewFirstName", updatedStudent.getFirstName());
@@ -71,11 +70,12 @@ public class SuperFrogStudentServiceTest {
             assertEquals("(321) 654-9870", updatedStudent.getPhoneNumber());
             assertEquals("newemail@example.com", updatedStudent.getEmail());
             verify(repository, times(1)).save(any(SuperFrogStudent.class));
-            verify(studentService, times(1)).notifyProfileUpdate(updatedStudent);
+            // Note: You can't verify notifyProfileUpdate here unless studentService is a mock
         } catch (Exception e) {
-            fail("No exception should be thrown in successful update",e);
+            fail("No exception should be thrown in successful update", e);
         }
     }
+
 
     @Test
     void testUpdateStudentProfile_NotFound() {
