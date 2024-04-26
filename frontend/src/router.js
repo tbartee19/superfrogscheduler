@@ -7,6 +7,8 @@ import LoginPage from '@/components/login-page/main-container.vue'
 
 import SpiritDirectorPage from '@/components/spirit-director-page/main-container.vue'
 import CalendarPage from '@/components/spirit-director-page/calendar-page/main-container.vue'
+import AddEventPage from '@/components/spirit-director-page/calendar-page/add-event/main-container.vue'
+import EditOrDeletePage from '@/components/spirit-director-page/calendar-page/edit-or-delete-event/main-container.vue'
 import PaymentFormsPage from '@/components/spirit-director-page/payment-forms-page/main-container.vue'
 import PerformanceReportsPage from '@/components/spirit-director-page/performance-report-page/main-container.vue'
 
@@ -20,6 +22,8 @@ const routes = [
 
     { path: '/spirit-director', component: SpiritDirectorPage },
     { path: '/spirit-director/calendar', component: CalendarPage },
+    { path: '/spirit-director/calendar/add-event', component: AddEventPage },
+    { path: '/spirit-director/calendar/edit-or-delete-event', component: EditOrDeletePage },
     { path: '/spirit-director/payment-forms', component: PaymentFormsPage },
     { path: '/spirit-director/performance-reports', component: PerformanceReportsPage },
 
