@@ -18,7 +18,7 @@
           <tr>
             <td>Start Time</td>
             <td><VueDatePicker
-                :model-value="requests.startTime"
+                v-model="requests.startTime"
                 model-type="HH:mm:ss"
                 time-picker
                 :is-24="false"
@@ -37,6 +37,7 @@
           </tr>
         </table>
       </div>
+      <div v-if="responseStatus == 200" class="response">{{ returnMsg }}</div>
     </div>
 
     <div class="button-container">
@@ -52,9 +53,7 @@
   
   export default {
     name: 'DetailFormPage',
-    props: {
-      requestId: String,
-    },
+    props: ['id'],
     data(){
       return{
         requests: Object,
@@ -86,7 +85,7 @@
         const headers = {
                   'Content-Type': 'application/json'
                }
-                axios.delete(`http://localhost:8080/api/appearances/${this.requestId}`)
+                axios.delete(`http://localhost:8080/api/appearances/${this.id}`)
                  .then(response =>{
                       const data = (response.data);
                       // console.log(data.data.requestId);
@@ -99,22 +98,11 @@
   
       },
       
-      submit() {
-        // let containsCommonElement = false
-        // let differentVars = this.findDifferentVars(this.$data.requests, this.$data.ogReq)
-        // const pendingVars = ['startTime', 'endTime', 'eventDate', 'eventType', 'eventTitle', 'address', 'description', 'outsideOrgs', 'expenses', 'nameOfOrg', ]
-        // pendingVars.forEach((key) => {
-        //   if (differentVars.includes(key)) {
-        //     containsCommonElement = true
-        //   }
-        // });
-  
-        // console.log(differentVars);
-  
+      submit() {  
         const headers = {
                   'Content-Type': 'application/json'
                }
-                axios.put(`http://localhost:8080/api/appearances/${this.requestId}`, {
+                axios.put(`http://localhost:8080/api/appearances/${this.id}`, {
                       contactFirstName: this.requests.contactFirstName,
                       contactLastName: this.requests.contactLastName,
                       email: this.requests.email,
@@ -137,7 +125,7 @@
                       console.log(data.data.requestId);
                       this.requests.requestId = data.data.requestId;
                       this.responseStatus = response.status;
-                      this.returnMsg = "Your request has been updated."
+                      this.returnMsg = "This request has been updated."
                     }).catch(error=>{
                       console.log(error);
               })
@@ -146,7 +134,7 @@
   },
   
   beforeMount(){
-     axios.get(`http://localhost:8080/api/appearances/${this.requestId}`)
+     axios.get(`http://localhost:8080/api/appearances/${this.id}`)
   
              .then((response)  => {
               
@@ -210,6 +198,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
-  
+    }
+
+    .response {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
     }
   </style>

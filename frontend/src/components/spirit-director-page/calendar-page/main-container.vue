@@ -3,36 +3,37 @@
     <router-link to="/spirit-director/calendar/add-event">Add An Event</router-link>
     <p>Click an Appearance Request to Edit/Delete it:</p>
 
-    <router-link to="/spirit-director/calendar/edit-or-delete-event">
       <template v-for="i in requests" :key="i.requestId">
-        <table>
-          <tr>
-            <td>Request Id</td>
-            <td>{{i.requestId}}</td>
-          </tr>
-          <tr>
-            <td>Event Title</td>
-            <td>{{i.eventTitle}}</td>
-          </tr>
-          <tr>
-            <td>Name of Organization</td>
-            <td>{{i.nameOfOrg}}</td>
-          </tr>
-          <tr>
-            <td>Event Date</td>
-            <td>{{i.eventDate}}</td>  
-          </tr>
-          <tr>
-            <td>Start Time</td>
-            <td>{{i.startTime}}</td>
-          </tr>
-          <tr>
-            <td>End Time</td>
-            <td>{{i.endTime}}</td>
-          </tr>
-        </table>
+          <table>
+            <router-link :to="`/spirit-director/calendar/edit-or-delete-event/${i.requestId}`">
+              <tr>
+                <td>Request Id</td>
+                <td>{{i.requestId}}</td>
+              </tr>
+              <tr>
+                <td>Event Title</td>
+                <td>{{i.eventTitle}}</td>
+              </tr>
+              <tr>
+                <td>Name of Organization</td>
+                <td>{{i.nameOfOrg}}</td>
+              </tr>
+              <tr>
+                <td>Event Date</td>
+                <td>{{i.eventDate}}</td>  
+              </tr>
+              <tr>
+                <td>Start Time</td>
+                <td>{{i.startTime}}</td>
+              </tr>
+              <tr>
+                <td>End Time</td>
+                <td>{{i.endTime}}</td>
+              </tr>
+            </router-link>
+          </table>
       </template>
-    </router-link>
+      <router-link to="/spirit-director">Back</router-link>
   </div>
 </template>
 
@@ -67,7 +68,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 55vh;
+    margin-top: 20px;
   }
 
   table {
