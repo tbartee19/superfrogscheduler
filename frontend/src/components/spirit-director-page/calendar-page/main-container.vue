@@ -7,6 +7,10 @@
       <template v-for="i in requests" :key="i.requestId">
         <table>
           <tr>
+            <td>Request Id</td>
+            <td>{{i.requestId}}</td>
+          </tr>
+          <tr>
             <td>Event Title</td>
             <td>{{i.eventTitle}}</td>
           </tr>
