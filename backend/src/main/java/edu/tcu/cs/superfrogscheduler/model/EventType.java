@@ -13,8 +13,19 @@ public enum EventType {
         this.hourlyRate = hourlyRate;
     }
 
+
     public int getHourlyRate(){
         return hourlyRate;
     }
-    
+
+    private EventType eventType;  // Change the declaration from String to EventType
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public EventType getEventType() {
+        return eventType;
+    }
+
 }

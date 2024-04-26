@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
@@ -50,7 +49,7 @@ public class SuperFrogAppearanceRequest {
 
     private String reason;
 
-    private String tcuEventDetails;
+    private String EventDetails;
 
     private LocalTime startTime;
     private LocalTime endTime;
@@ -236,14 +235,18 @@ public class SuperFrogAppearanceRequest {
     }
 
     public void setEndTime(LocalTime endTime) {
+
         this.endTime = endTime;
     }
 
     public String getRejectionReason() {
+
         return reason;
     }
 
     public void setRejectionReason(String rejectionReason) {
+
         this.reason = rejectionReason;
     }
+
 }

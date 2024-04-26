@@ -3,6 +3,7 @@ package edu.tcu.cs.superfrogscheduler.controller;
 import javax.validation.Valid;
 
 import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.system.*;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -111,25 +112,18 @@ public class AppearanceRequestController {
     @PostMapping("/spirit-director/requests")
     public ResponseEntity<Result> createRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
         try {
-            // Convert DTO to domain model
             SuperFrogAppearanceRequest newRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
 
-            // Validate event date (example validation)
-            assert newRequest != null;
-            if(newRequest.getEventDate().isBefore(LocalDate.now().plusDays(5))) {
+            if (newRequest.getEventDate().isBefore(LocalDate.now().plusDays(5))) {
                 return ResponseEntity.badRequest().body(new Result(false, HttpStatusCode.INVALID_ARGUMENT, "Event date must be at least 5 days in the future"));
             }
 
-            // Set initial status to PENDING or ASSIGNED based on business rules
-            newRequest.setStatus(RequestStatus.PENDING);
+            newRequest.setStatus(RequestStatus.ASSIGNED);
 
-            // Save the new request
             SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.save(newRequest);
 
-            // Convert back to DTO
             SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
 
-            // Send confirmation notification
             NotificationService notificationService = new NotificationService();
             notificationService.sendNotification("New SuperFrog appearance request created with ID: " + savedRequest.getRequestId());
 
@@ -141,12 +135,16 @@ public class AppearanceRequestController {
     }
 
 
+
+
+
+
     // Use Case 6: The Spirit Director/SuperFrog Student finds appearance requests
-//    @PostMapping("/search")
-//    public ResponseEntity<Result> search(@RequestBody SearchCriteria criteria) {
-//        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
-//        return ResponseEntity.ok(new Result(true, 200, "Search results", results));
-//    }
+    @PostMapping("/search")
+    public ResponseEntity<Result> search(@RequestBody SearchCriteria criteria) {
+        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
+        return ResponseEntity.ok(new Result(true, 200, "Search results", results));
+    }
 
     // Use Case 7: The Spirit Director/SuperFrog Student views an appearance request
     @GetMapping("/{id}")
@@ -175,7 +173,6 @@ public class AppearanceRequestController {
         }
     }
 
-    // other methods
     @GetMapping("/api/appearances/{requestId}")
     public Result findSuperFrogAppearanceById(@PathVariable int requestId) {
         SuperFrogAppearanceRequest foundAppearance = this.superFrogAppearanceRequestService.findById(requestId);
@@ -192,4 +189,7 @@ public class AppearanceRequestController {
                 .collect(Collectors.toList());
         return new Result(true, HttpStatusCode.SUCCESS, "Find All Success", appearanceRequestDtos);
     }
+
+    // other methods
+
 }

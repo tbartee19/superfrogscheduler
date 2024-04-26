@@ -284,4 +284,6 @@ public class AppearanceRequestControllerTest {
 //                 .andExpect(jsonPath("$.message").value("Could not find superfrogappearancerequest with Id 777 :("))
 //                 .andExpect(jsonPath("$.data").isEmpty());
 //     }
+
+
 }

@@ -136,6 +136,11 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
+    public List<SuperFrogAppearanceRequest> search(SearchCriteria criteria) {
+
+        return null;
+    }
+
 
 //    public List<SuperFrogAppearanceRequest> search(SearchCriteria criteria) {
 //        return superFrogAppearanceRequestRepository.findAll((Specification<SuperFrogAppearanceRequest>) (root, query, cb) -> {

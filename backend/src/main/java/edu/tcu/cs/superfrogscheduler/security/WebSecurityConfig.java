@@ -21,8 +21,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
-        // Configure further based on your requirements
+
     }
 
-    // Optionally, define a bean for password encoding
+
 }
