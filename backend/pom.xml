@@ -48,6 +48,10 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
 
                 <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -90,12 +94,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test --> 
+<<<<<<< HEAD
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+=======
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+>>>>>>> dev
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+<<<<<<< HEAD
 
 
 
@@ -103,6 +112,8 @@
 
 
 
+=======
+>>>>>>> dev
 
         <!-- testing -->
         <dependency>
@@ -114,6 +125,7 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <scope>test</scope>
+<<<<<<< HEAD
         </dependency>        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
@@ -125,8 +137,16 @@
             <version>5.7.0</version>
         </dependency>
 
+=======
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+>>>>>>> dev
 
-        <!-- end of dependencies -->
+    <!-- end of dependencies -->
     </dependencies>
 
     <properties>

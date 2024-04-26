@@ -3,6 +3,7 @@ package edu.tcu.cs.superfrogscheduler.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+<<<<<<< HEAD
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -30,6 +31,14 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+=======
+import org.springframework.context.annotation.Configuration;
+
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+>>>>>>> dev
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -41,11 +50,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
+<<<<<<< HEAD
 
             .antMatchers("/api/appearances/**").permitAll()
 
             .antMatchers("/api/admin/**").hasRole("ADMIN")
             .antMatchers("/api/students/**", "/api/events/**").hasRole("STUDENT") 
+=======
+            .antMatchers("/api/admin/**").hasRole("ADMIN")
+            .antMatchers("/api/students/**", "/api/events/**").hasRole("STUDENT")
+            
+            .antMatchers("/api/appearances/**").permitAll()
+
+>>>>>>> dev
             .anyRequest().authenticated()
             .and()
             .httpBasic()
