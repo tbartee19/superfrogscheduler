@@ -127,6 +127,7 @@ public class SuperFrogStudentService {
         throw new IllegalArgumentException("Student not found.");
     }
     SuperFrogStudent student = studentOpt.get();
+    Account studentAccount = student.getAccount();
     student.setFirstName(profileUpdate.getFirstName());
     student.setLastName(profileUpdate.getLastName());
     student.setPhoneNumber(profileUpdate.getPhoneNumber());
@@ -134,7 +135,8 @@ public class SuperFrogStudentService {
     student.setEmail(profileUpdate.getEmail());
     student.setInternationalStudent(profileUpdate.getInternationalStudent());
     student.setPaymentPreference(profileUpdate.getPaymentPreference());
-
+    studentAccount.setActive(profileUpdate.getIsActive());
+    accountRepository.save(studentAccount);
     validateStudentProfile(student);
     studentRepository.save(student);
     notifyProfileUpdate(student); // Notify the Spirit Director

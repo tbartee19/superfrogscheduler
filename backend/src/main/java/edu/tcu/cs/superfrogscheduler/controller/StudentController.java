@@ -20,9 +20,9 @@ public class StudentController {
     private SuperFrogStudentService studentService;
 
     @PutMapping("/updateProfile")
-    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal User user, @RequestBody ProfileUpdateDTO profileUpdate) {
+    public ResponseEntity<?> updateProfile(@RequestBody ProfileUpdateDTO profileUpdate) {
         try {
-            SuperFrogStudent updatedStudent = studentService.updateStudentProfile(user.getUsername(), profileUpdate);
+            SuperFrogStudent updatedStudent = studentService.updateStudentProfile(profileUpdate.getEmail(), profileUpdate);
             return ResponseEntity.ok(updatedStudent);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
