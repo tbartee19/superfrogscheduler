@@ -1,5 +1,6 @@
 <template>
     <div class="button-container">
+        <button class="button" v-on:click="goToCreateStudent">Create Student</button>
         <button class="button" v-on:click="goToCalendar">Manage Calendar</button>
         <button class="button" v-on:click="goToPaymentForms">Generate Payment Forms</button>
         <button class="button" v-on:click="goToPerformanceReports">Generate Student Performance Report</button>
@@ -9,6 +10,9 @@
 <script>
     export default {
         methods: {
+            goToCreateStudent() {
+                this.$router.push('/spirit-director/create-student')
+            },
             goToCalendar() {
                 this.$router.push('/spirit-director/calendar')
             },

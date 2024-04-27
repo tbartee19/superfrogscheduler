@@ -43,26 +43,31 @@ export default {
     methods: {
         async loginAsSpiritDirector() {
             try {
-                // console.log(this.username);
-                // console.log(this.password);
-                // const basicAuth = 'Basic ' + btoa(this.username + ':' + this.password);
-                // console.log(basicAuth);
-                // const response = await axios.post('http://api.superfrogscheduler.xyz:8080/api/users/login', {}, {
-                //     headers: {
-                //         Authorization: basicAuth
-                //     }
-                // });
-                // console.log(response.data);
-                // const token = response.data.data.token;
-                // localStorage.setItem('token',token);
-                // console.log(token);
-                // redirect to a new page after successful login
-                this.$router.push('/spirit-director');
+                const loginData = {
+                    username: this.username,
+                    password: this.password
+                };
+
+                const response = await axios.post('http://localhost:8080/api/login', loginData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true
+                });
+        
+                if (response.status === 200) {
+                    alert('Login successful');
+                    this.$router.push('/spirit-director'); 
+                } else {
+                    this.errorMessage = 'Login failed';
+                }
+        
             } catch (error) {
                 console.error(error);
                 this.errorMessage = error.response.data.message;
             }
         },
+
 
         async loginAsSuperFrog() {
             try {
