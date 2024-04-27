@@ -16,4 +16,5 @@ public enum EventType {
     public int getHourlyRate(){
         return hourlyRate;
     }
+    
 }
