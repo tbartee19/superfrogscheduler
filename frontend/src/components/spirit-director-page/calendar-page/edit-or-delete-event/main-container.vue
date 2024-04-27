@@ -7,11 +7,11 @@
             <td><input type="text" class="normal-text" v-model="requests.eventTitle" ></td>
           </tr>
           <tr>
-            <td>Date</td>
+            <td>Start Date</td>
             <td><VueDatePicker
               :enable-time-picker="false"
-              v-model="requests.eventDate"
-              :model-value="requests.eventDate"
+              v-model="requests.startDate"
+              :model-value="requests.startDate"
               model-type="yyyy-MM-dd"
             /></td>
           </tr>
@@ -22,17 +22,44 @@
                 model-type="HH:mm:ss"
                 time-picker
                 :is-24="false"
-                :start-time="requests.startTime"
+                :model-value="requests.startTime"
+            /></td>
+          </tr>
+          <tr>
+            <td>End Date</td>
+            <td><VueDatePicker
+              :enable-time-picker="false"
+              v-model="requests.endDate"
+              :model-value="requests.endDate"
+              model-type="yyyy-MM-dd"
             /></td>
           </tr>
           <tr>
             <td>End Time</td>
             <td><VueDatePicker
-                  v-model="requests.endTime"
-                  model-type="HH:mm:ss"
-                  time-picker
-                  :is-24="false"
-                  :start-time="requests.endTime"
+                v-model="requests.endTime"
+                model-type="HH:mm:ss"
+                time-picker
+                :is-24="false"
+                :model-value="requests.endTime"
+            /></td>
+          </tr>
+          <tr>
+            <td>Recurrence Start Date</td>
+            <td><VueDatePicker
+              :enable-time-picker="false"
+              v-model="requests.recurrenceStart"
+              :model-value="requests.recurrenceStart"
+              model-type="yyyy-MM-dd"
+            /></td>
+          </tr>
+          <tr>
+            <td>Recurrence End Date</td>
+            <td><VueDatePicker
+              :enable-time-picker="false"
+              v-model="requests.recurrenceEnd"
+              :model-value="requests.recurrenceEnd"
+              model-type="yyyy-MM-dd"
             /></td>
           </tr>
         </table>
@@ -42,7 +69,7 @@
 
     <div class="button-container">
       <button class="button is-primary submit-button" @click="submit">Submit Changes</button>
-      <button class="button is-primary submit-button" @click="cancel">Cancel Request</button>
+      <button class="button is-primary submit-button" @click="cancel">Delete Event</button>
     </div>
 </template>
   
@@ -85,12 +112,10 @@
         const headers = {
                   'Content-Type': 'application/json'
                }
-                axios.delete(`http://localhost:8080/api/appearances/${this.id}`)
+                axios.delete(`http://localhost:8080/api/spirit-director-events/${this.id}`)
                  .then(response =>{
                       const data = (response.data);
-                      // console.log(data.data.requestId);
-                      // this.requests.requestId = data.data.requestId;
-                      this.returnMsg ="This request has been canceled."
+                      this.returnMsg ="This event has been deleted."
                       this.responseStatus = response.status;
                     }).catch(error=>{
                       console.log(error);
@@ -102,30 +127,21 @@
         const headers = {
                   'Content-Type': 'application/json'
                }
-                axios.put(`http://localhost:8080/api/appearances/${this.id}`, {
-                      contactFirstName: this.requests.contactFirstName,
-                      contactLastName: this.requests.contactLastName,
-                      email: this.requests.email,
-                      phoneNumber: this.requests.phoneNumber,
-                      address: this.requests.address,
-                      nameOfOrg: this.requests.nameOfOrg,
+                axios.put(`http://localhost:8080/api/spirit-director-events/${this.id}`, {
                       eventTitle: this.requests.eventTitle,
-                      description: this.requests.description,
-                      specialInstructions: this.requests.specialInstructions,
-                      outsideOrgs: this.requests.outsideOrgs,
-                      expenses: this.requests.expenses,
-                      eventDate: this.requests.eventDate,
+                      startDate: this.requests.startDate,
                       startTime: this.requests.startTime,
+                      endDate: this.requests.endDate,
                       endTime: this.requests.endTime,
-                      eventType: this.requests.eventType,
-                      totalCost: this.requests.totalCost,
+                      recurrenceStart: this.requests.recurrenceStart,
+                      recurrenceEnd: this.requests.recurrenceEnd,
                  }, {headers})
                  .then(response =>{
                       const data = (response.data);
-                      console.log(data.data.requestId);
-                      this.requests.requestId = data.data.requestId;
+                      console.log(data.data.id);
+                      this.requests.id = data.data.id;
                       this.responseStatus = response.status;
-                      this.returnMsg = "This request has been updated."
+                      this.returnMsg = "This event has been updated."
                     }).catch(error=>{
                       console.log(error);
               })
@@ -134,7 +150,7 @@
   },
   
   beforeMount(){
-     axios.get(`http://localhost:8080/api/appearances/${this.id}`)
+     axios.get(`http://localhost:8080/api/spirit-director-events/${this.id}`)
   
              .then((response)  => {
               
