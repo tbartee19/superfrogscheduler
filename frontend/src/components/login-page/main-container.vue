@@ -54,9 +54,10 @@ export default {
                     },
                     withCredentials: true
                 });
-        
+                
                 if (response.status === 200) {
                     alert('Login successful');
+                    console.log(response.data);
                     this.$router.push('/spirit-director'); 
                 } else {
                     this.errorMessage = 'Login failed';

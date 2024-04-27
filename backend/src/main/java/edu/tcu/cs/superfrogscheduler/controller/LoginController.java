@@ -1,5 +1,8 @@
 package edu.tcu.cs.superfrogscheduler.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,13 +13,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.tcu.cs.superfrogscheduler.model.Account;
 import edu.tcu.cs.superfrogscheduler.model.LoginRequest;
+import edu.tcu.cs.superfrogscheduler.repository.AccountRepository;
 
 @RestController
 public class LoginController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @PostMapping("/api/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
@@ -29,7 +37,14 @@ public class LoginController {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return ResponseEntity.ok("User authenticated successfully");
+
+            Account account = accountRepository.findByEmail(loginRequest.getUsername()).orElseThrow(
+                () -> new Exception("User not found")
+            );
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User authenticated successfully");
+            response.put("role", account.getRole()); 
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body("Invalid username or password");
         }
