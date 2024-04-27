@@ -1,6 +1,7 @@
 package edu.tcu.cs.superfrogscheduler.service;
 
 import edu.tcu.cs.superfrogscheduler.controller.AdminController;
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.*;
 import edu.tcu.cs.superfrogscheduler.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.processing.SupportedOptions;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -36,6 +39,9 @@ public class AdminControllerTest {
 
     @MockBean
     private SuperFrogStudentService studentService;
+
+    @MockBean
+    private SuperFrogAppearanceRequestService appearanceRequestService;
 
     @Test
     @WithMockUser(username="spiritdirector", roles={"ADMIN"})
@@ -154,6 +160,29 @@ public class AdminControllerTest {
         mockMvc.perform(get("/api/admin/student/{studentId}", studentId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username="spiritdirector", roles={"ADMIN"})
+    public void testReverseApprovedDecision_Success() throws Exception{
+        SuperFrogAppearanceRequest existingRequest = new SuperFrogAppearanceRequest();
+        existingRequest.setStatus(RequestStatus.APPROVED);
+        existingRequest.setRequestId(1);
+
+        when(appearanceRequestService.reverseDecision(existingRequest.getRequestId())).thenReturn(existingRequest);
+
+        SuperFrogAppearanceRequestDto updatedRequestDto = new SuperFrogAppearanceRequestDto();
+        updatedRequestDto.setRequestId(existingRequest.getRequestId());
+        updatedRequestDto.setStatus("REJECTED");  // Assuming DTO uses String for status
+        when(superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(existingRequest))
+                .thenReturn(updatedRequestDto);
+
+        // Perform the PUT request and check responses
+        mockMvc.perform(put("/api/appearance/{requestId}", existingRequest.getRequestId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status", is("REJECTED")));  // Correct JSON path if necessary
+
     }
 
 

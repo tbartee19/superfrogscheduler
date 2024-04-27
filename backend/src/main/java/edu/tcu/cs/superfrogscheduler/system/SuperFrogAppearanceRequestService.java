@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,6 +25,10 @@ public class SuperFrogAppearanceRequestService {
     public SuperFrogAppearanceRequest findById(Integer requestId) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
+    }
+
+    public Optional<SuperFrogAppearanceRequest> opFindById(Integer requestId){
+        return superFrogAppearanceRequestRepository.findById(requestId);
     }
 
     public SuperFrogAppearanceRequest approveRequest(Integer requestId) {
