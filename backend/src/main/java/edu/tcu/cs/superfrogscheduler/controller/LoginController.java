@@ -41,13 +41,19 @@ public class LoginController {
             Account account = accountRepository.findByEmail(loginRequest.getUsername()).orElseThrow(
                 () -> new Exception("User not found")
             );
+
+            // Determine the role and customize response based on the role
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User authenticated successfully");
-            response.put("role", account.getRole()); 
+            response.put("role", account.getRole()); // Send role back to the client
+
+            
+
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Invalid username or password");
+            return ResponseEntity.badRequest().body("Invalid username or password: " + ex.getMessage());
         }
     }
+
 }
 
