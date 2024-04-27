@@ -1,7 +1,7 @@
 <template>
-    <h1>Edit Student Page</h1>
+    <h1>Find Student Page</h1>
     <div class="find-student">
-        <h2 color="#4d2279">Change Superfrog Student Details</h2>
+        <h2 color="#4d2279">Enter Superfrog Student Search Details</h2>
         <form @submit.prevent="submitForm">
             <div class="form-group">
                 <label for="firstname">First Name:</label>
@@ -70,7 +70,11 @@ export default {
             .then(response => {
                 alert('Student found successfully!');
                 console.log("Found students:", response.data);
-                
+                this.$router.push({
+                    name: '/spirit-director/edit-student',
+                    query: {
+                        studentData: JSON.stringify(response.data[0])
+                    }});
                 
             })
             .catch(error => {
