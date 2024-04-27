@@ -26,14 +26,14 @@
         </form>
         <div>
             <div class="form-group" >
-                <label for="studentId">Found ID:</label>
-                <input type="text" id="studentId" name="studentId" v-model="student.id"/>
-            </div>
-            <div class="form-group" >
                 <button @click.prevent="resetForm" type="clear" class="clear-button">Reset Form</button>
             </div>
         </div>
-        
+        <div>
+            <div class="form-group" >
+                <button type="home" @click="goHome" class="home-button">Go Home</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -41,7 +41,7 @@
 import axios from 'axios';
 
 export default {
-    name: 'CreateStudent',
+    name: 'FindStudent',
     data() {
     return {
         student: {
@@ -49,7 +49,6 @@ export default {
             lastName: '',
             phoneNumber: '',
             email: '',
-            id: '',
         }
     };
 },
@@ -71,7 +70,7 @@ export default {
                 alert('Student found successfully!');
                 console.log("Found students:", response.data);
                 this.$router.push({
-                    name: '/spirit-director/edit-student',
+                    name: 'edit-student',
                     query: {
                         studentData: JSON.stringify(response.data[0])
                     }});
@@ -91,7 +90,10 @@ export default {
                 email: '',
                 id: '',
             };
-        }
+        },
+        goHome() {
+            this.$router.push("/spirit-director");
+        },
     },
     mounted() {
         console.log("FindStudent component has been mounted!");

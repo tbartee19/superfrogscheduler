@@ -8,6 +8,7 @@ public class ProfileUpdateDTO {
     private String email;
     private Boolean internationalStudent;
     private String paymentPreference;
+    private Boolean isActive;
 
     // Getters and Setters
     public String getFirstName() {
@@ -64,6 +65,12 @@ public class ProfileUpdateDTO {
 
     public void setPaymentPreference(String paymentPreference) {
         this.paymentPreference = paymentPreference;
+    }
+    public Boolean getIsActive() {
+        return isActive;
+    }
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }
 
