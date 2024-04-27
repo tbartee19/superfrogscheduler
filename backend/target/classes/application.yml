@@ -4,3 +4,6 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+  data:
+    mongodb:
+      uri: "mongodb+srv://superfrog:Scheduler1!@superfrogscheduler.iruhgog.mongodb.net/SuperFrogScheduler?retryWrites=true&w=majority&appName=SuperFrogScheduler"

@@ -92,7 +92,6 @@
           specialInstructions: this.eventInfo.specialInstructions,
           outsideOrganizations: this.eventInfo.outsideOrganizations,
           expensesBenefits: this.eventInfo.expensesBenefits,
-          // scheduleDate: this.eventInfo.scheduleDate,
           eventDate: this.eventInfo.eventDate,
           startTime: this.eventInfo.startTime,
           endTime: this.eventInfo.endTime,

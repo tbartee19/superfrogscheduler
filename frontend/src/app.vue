@@ -16,6 +16,7 @@
             <div class="button-container">
                 <button class="button" v-on:click="goToRequest">Make a Request</button>
                 <button class="button" v-on:click="goToModifyRequest">Modify/Cancel a Request</button>
+                <button class="button" v-on:click="goToLogin">Log In</button>
             </div>
         </div>
     </div>
@@ -30,6 +31,9 @@
             },
             goToModifyRequest() {
                 this.$router.push('/modify-request')
+            },
+            goToLogin() {
+                this.$router.push('/login')
             }
         }
     }
