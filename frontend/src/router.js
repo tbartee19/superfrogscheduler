@@ -5,6 +5,7 @@ import RequestPage from '@/components/request-page/main-container.vue'
 import ModifyPage from '@/components/modify-page/main-container.vue'
 import LoginPage from '@/components/login-page/main-container.vue'
 import createStudentPage from '@/components/spirit-director-page/create-student/main-container.vue'
+import editStudentPage from '@/components/spirit-director-page/edit-student/main-container.vue'
 import SpiritDirectorPage from '@/components/spirit-director-page/main-container.vue'
 import CalendarPage from '@/components/spirit-director-page/calendar-page/main-container.vue'
 import AddEventPage from '@/components/spirit-director-page/calendar-page/add-event/main-container.vue'
@@ -22,11 +23,13 @@ const routes = [
 
     { path: '/spirit-director', component: SpiritDirectorPage },
     { path: '/spirit-director/create-student', component: createStudentPage },
+    { path: '/spirit-director/edit-student', component: editStudentPage },
     { path: '/spirit-director/calendar', component: CalendarPage },
     { path: '/spirit-director/calendar/add-event', component: AddEventPage },
     { path: '/spirit-director/calendar/edit-or-delete-event', component: EditOrDeletePage },
     { path: '/spirit-director/payment-forms', component: PaymentFormsPage },
     { path: '/spirit-director/performance-reports', component: PerformanceReportsPage },
+    
 
 
     { path: '/superfrog', component: SuperFrogPage },

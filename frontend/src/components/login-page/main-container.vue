@@ -55,7 +55,7 @@ export default {
                     withCredentials: true
                 });
                 
-                if (response.status === 200) {
+                if (response.status === 200 && response.data.role=="ADMIN") {
                     alert('Login successful');
                     console.log(response.data);
                     this.$router.push('/spirit-director'); 
@@ -72,24 +72,26 @@ export default {
 
         async loginAsSuperFrog() {
             try {
-                // console.log(this.username);
-                // console.log(this.password);
-                // const basicAuth = 'Basic ' + btoa(this.username + ':' + this.password);
-                // console.log(basicAuth);
-                // const response = await axios.post('http://api.superfrogscheduler.xyz:8080/api/users/login', {}, {
-                //     headers: {
-                //         Authorization: basicAuth
-                //     }
-                // });
-                // console.log(response.data);
-                // const token = response.data.data.token;
-                // const superfrogEmail = response.data.data.userInfo.username;
-                // localStorage.setItem('token',token);
-                // console.log(token);
-                // localStorage.setItem('superfrogEmail', superfrogEmail);
-                // console.log(superfrogEmail);
-                // redirect to a new page after successful login
-                this.$router.push('/superfrog');
+                const loginData = {
+                    username: this.username,
+                    password: this.password
+                };
+
+                const response = await axios.post('http://localhost:8080/api/login', loginData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true
+                });
+                
+                if (response.status === 200 && response.data.role=="STUDENT") {
+                    alert('Login successful');
+                    console.log(response.data);
+                    this.$router.push('/superfrog'); 
+                } else {
+                    this.errorMessage = 'Login failed';
+                }
+        
             } catch (error) {
                 console.error(error);
                 this.errorMessage = error.response.data.message;
