@@ -1,12 +1,12 @@
 package edu.tcu.cs.superfrogscheduler.service.SuperFrogAppearanceRequest;
 
-import java.util.List;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import edu.tcu.cs.superfrogscheduler.system.IdWorker;
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +20,7 @@ import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
@@ -62,6 +63,7 @@ public class AppearanceRequestServiceTest {
         sfar1.setExpenses("N/A");
         sfar1.setOutsideOrgs("N/A");
         sfar1.setDescription("afternoon wedding");
+        sfar1.setStatus(RequestStatus.PENDING);
         this.superFrogAppearanceRequests.add(sfar1);
 
         SuperFrogAppearanceRequest sfar2 = new SuperFrogAppearanceRequest();
@@ -81,6 +83,7 @@ public class AppearanceRequestServiceTest {
         sfar2.setExpenses("N/A");
         sfar2.setOutsideOrgs("N/A");
         sfar2.setDescription("football game");
+        sfar2.setStatus(RequestStatus.APPROVED);
         this.superFrogAppearanceRequests.add(sfar2);
 
         SuperFrogAppearanceRequest sfar3 = new SuperFrogAppearanceRequest();
@@ -100,6 +103,7 @@ public class AppearanceRequestServiceTest {
         sfar1.setExpenses("N/A");
         sfar1.setOutsideOrgs("N/A");
         sfar3.setDescription("school assembly");
+        sfar3.setStatus(RequestStatus.REJECTED);
         this.superFrogAppearanceRequests.add(sfar3);
     }
 
@@ -261,4 +265,122 @@ public class AppearanceRequestServiceTest {
         // Then
         verify(this.superFrogAppearanceRequestRepository, times(1)).findById(123456);
     }
+
+    // UC-4: Approve an appearance request
+    @Test
+    void approveRequest_Success() {
+        System.out.println("Running approveRequest_Success");
+        Integer requestId = 1;
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequests.get(0);
+        request.setStatus(RequestStatus.PENDING); // Ensure it's pending before approval
+
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.of(request));
+        given(superFrogAppearanceRequestRepository.save(request)).willReturn(request);
+
+        SuperFrogAppearanceRequest approvedRequest = superFrogAppearanceRequestService.approveRequest(requestId);
+
+        assertEquals(RequestStatus.APPROVED, approvedRequest.getStatus());
+        verify(superFrogAppearanceRequestRepository).save(request);
+    }
+
+    // UC-4: Handle not found when approving a request
+    @Test
+    void approveRequest_NotFound() {
+        System.out.println("Running approveRequest_NotFound");
+        Integer requestId = 999;
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.empty());
+
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
+            superFrogAppearanceRequestService.approveRequest(requestId);
+        });
+
+        assertEquals("Could not find SuperFrogAppearanceRequest with Id 999 :(", exception.getMessage());
+    }
+
+    // UC-4: Reject an appearance request successfully
+    @Test
+    void rejectRequest_Success() {
+        System.out.println("Running rejectRequest_Success");
+        Integer requestId = 1;
+        String reason = "Insufficient resources";
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequests.get(0);
+        request.setStatus(RequestStatus.PENDING);
+
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.of(request));
+        given(superFrogAppearanceRequestRepository.save(request)).willReturn(request);
+
+        SuperFrogAppearanceRequest rejectedRequest = superFrogAppearanceRequestService.rejectRequest(requestId, reason);
+
+        assertEquals(RequestStatus.REJECTED, rejectedRequest.getStatus());
+        assertEquals(reason, rejectedRequest.getRejectionReason());
+        verify(superFrogAppearanceRequestRepository).save(request);
+    }
+
+    // UC-6: Search by event title and find requests
+    @Test
+    void SearchByEventTitle_thenRequestsFound() {
+        System.out.println("Running SearchByEventTitle_thenRequestsFound");
+        Map<String, Object> criteria = new HashMap<>();
+        criteria.put("eventTitle", "wedding");
+
+        given(superFrogAppearanceRequestRepository.findByCriteria(criteria))
+                .willReturn(superFrogAppearanceRequests.stream()
+                        .filter(r -> "wedding".equals(r.getEventTitle()))
+                        .collect(Collectors.toList()));
+
+        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.searchRequests(criteria);
+
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).getEventTitle()).isEqualTo("wedding");
+        verify(superFrogAppearanceRequestRepository, times(1)).findByCriteria(criteria);
+    }
+
+    // UC-6: Search by request status and find requests
+    @Test
+    void searchByRequestStatus_thenRequestsFound() {
+        System.out.println("Running searchByRequestStatus_thenRequestsFound");
+        Map<String, Object> criteria = new HashMap<>();
+        criteria.put("status", RequestStatus.PENDING);
+
+        given(superFrogAppearanceRequestRepository.findByCriteria(criteria))
+                .willReturn(superFrogAppearanceRequests.stream()
+                        .filter(r -> r.getStatus() == RequestStatus.PENDING)
+                        .collect(Collectors.toList()));
+
+        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.searchRequests(criteria);
+
+        assertThat(results).isNotEmpty();
+        assertThat(results.get(0).getStatus()).isEqualTo(RequestStatus.PENDING);
+        verify(superFrogAppearanceRequestRepository, times(1)).findByCriteria(criteria);
+    }
+
+    @Test
+    void viewRequestDetails_Success() {
+        // Given
+        Integer requestId = 1;
+        SuperFrogAppearanceRequest expectedRequest = superFrogAppearanceRequests.get(0);
+
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.of(expectedRequest));
+
+        // When
+        SuperFrogAppearanceRequest actualRequest = superFrogAppearanceRequestService.findRequestById(requestId);
+
+        // Then
+        assertEquals(expectedRequest, actualRequest);
+        System.out.println("Request Details: " + actualRequest);
+    }
+
+    @Test
+    void viewRequestDetails_NotFound() {
+        // Given
+        Integer requestId = 999;
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.findRequestById(requestId));
+    }
+
+
+
 }
+

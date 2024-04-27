@@ -1,14 +1,19 @@
 package edu.tcu.cs.superfrogscheduler.service.SuperFrogAppearanceRequest;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+import edu.tcu.cs.superfrogscheduler.controller.AppearanceRequestController;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
@@ -18,15 +23,17 @@ import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +102,71 @@ public class AppearanceRequestControllerTest {
     void tearDown() {
 
     }
+
+//
+//    @InjectMocks
+//    private AppearanceRequestController controller;
+//
+//    @Test
+//    public void approveRequest_Success() throws Exception {
+//        Integer requestId = 1;
+//        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+//        request.setRequestId(requestId);
+//        request.setStatus(RequestStatus.PENDING);
+//
+//        given(superFrogAppearanceRequestService.findById(requestId)).willReturn(request);
+//        given(superFrogAppearanceRequestService.areThereConflicts(request)).willReturn(false);
+//        given(superFrogAppearanceRequestService.approveRequest(requestId)).willReturn(request);
+//
+//        mockMvc.perform(post("/api/appearances/{id}/approve", requestId))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.data.status").value("APPROVED"));
+//    }
+//
+//    @Test
+//    @WithMockUser(username = "admin", roles = {"ADMIN"})
+//    public void approveRequest_NotFound() throws Exception {
+//        Integer requestId = 999;
+//        given(superFrogAppearanceRequestService.findById(requestId)).willThrow(new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
+//
+//        mockMvc.perform(post("/api/appearances/{id}/approve", requestId))
+//                .andExpect(status().isNotFound())
+//                .andExpect(jsonPath("$.message").value("Request not found: Could not find SuperFrogAppearanceRequest with Id 999"));
+//    }
+//
+//    @Test
+//    @WithMockUser(username = "admin", roles = {"ADMIN"})
+//    public void rejectRequest_Success() throws Exception {
+//        Integer requestId = 1;
+//        String reason = "Insufficient resources";
+//        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+//        request.setRequestId(requestId);
+//        request.setStatus(RequestStatus.PENDING);
+//
+//        given(superFrogAppearanceRequestService.findById(requestId)).willReturn(request);
+//        given(superFrogAppearanceRequestService.rejectRequest(requestId, reason)).willReturn(request);
+//
+//        mockMvc.perform(post("/api/appearances/{id}/reject", requestId)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{\"rejectionReason\":\"" + reason + "\"}"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.data.status").value("REJECTED"));
+//    }
+//
+//    @Test
+//    @WithMockUser(username = "admin", roles = {"ADMIN"})
+//    public void rejectRequest_NotFound() throws Exception {
+//        Integer requestId = 999;
+//        String reason = "Not applicable";
+//        given(superFrogAppearanceRequestService.findById(requestId)).willThrow(new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
+//
+//        mockMvc.perform(post("/api/appearances/{id}/reject", requestId)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{\"rejectionReason\":\"" + reason + "\"}"))
+//                .andExpect(status().isNotFound())
+//                .andExpect(jsonPath("$.message").value("Request not found: Could not find SuperFrogAppearanceRequest with Id 999"));
+//    }
+
 
 //     @Test
 //     void testAddAppearanceRequestSuccess() throws Exception {

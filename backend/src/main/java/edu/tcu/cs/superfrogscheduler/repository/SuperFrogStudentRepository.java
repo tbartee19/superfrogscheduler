@@ -22,7 +22,10 @@ public interface SuperFrogStudentRepository extends MongoRepository<SuperFrogStu
     List<SuperFrogStudent> findByPhoneNumber(String phoneNumber);
     Optional<SuperFrogStudent> findByEmail(String email);
     Optional<SuperFrogStudent> findById(String id);
+
+
     class SuperFrogAppearanceRequestRepository {
 
     }
+
 }
