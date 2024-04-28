@@ -91,13 +91,5 @@ public class AdminController {
         }
     }
 
-    //use case 25: Spirit Director Reverses a reject or approval request
-    @PutMapping("/api/appearance/{requestId}")
-    public Result reverseAppearanceDecision(@PathVariable Integer requestId){
-        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.reverseDecision(requestId);
-        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
-        return new Result(true, HttpStatusCode.SUCCESS, "Status reverse success", updatedRequestDto);
-    }
-
     // other methods 
 }

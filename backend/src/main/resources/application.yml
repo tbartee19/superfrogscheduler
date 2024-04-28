@@ -2,3 +2,8 @@ spring:
   data:
     mongodb:
       uri: "mongodb+srv://superfrog:Scheduler1!@superfrogscheduler.iruhgog.mongodb.net/SuperFrogScheduler?retryWrites=true&w=majority&appName=SuperFrogScheduler"
+  datasource:
+    url: jdbc:h2:mem:superfrog
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver

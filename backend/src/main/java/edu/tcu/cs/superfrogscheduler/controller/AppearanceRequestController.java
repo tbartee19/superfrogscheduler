@@ -69,6 +69,14 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
     }
 
+    //Use case 25 - Spirit director
+    @PutMapping("/api/appearance/{requestId}/status/{status}")
+    public Result reverseAppearanceDecision(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.reverseDecision(requestId);
+        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Status reverse success", updatedRequestDto);
+    }
+
 
     // use case 3 - Customer cancels a submitted request
     @DeleteMapping("/api/appearances/{requestId}")

@@ -65,14 +65,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-
-
-
-
-
-
-
         <!-- testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -85,7 +77,14 @@
             <scope>test</scope>
         </dependency>
 
-    <!-- end of dependencies -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+
+        <!-- end of dependencies -->
     </dependencies>
 
     <properties>
