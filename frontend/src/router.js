@@ -24,7 +24,7 @@ const routes = [
     { path: '/spirit-director/create-student', component: createStudentPage },
     { path: '/spirit-director/calendar', component: CalendarPage },
     { path: '/spirit-director/calendar/add-event', component: AddEventPage },
-    { path: '/spirit-director/calendar/edit-or-delete-event', component: EditOrDeletePage },
+    { path: '/spirit-director/calendar/edit-or-delete-event/:id', component: EditOrDeletePage, props: true },
     { path: '/spirit-director/payment-forms', component: PaymentFormsPage },
     { path: '/spirit-director/performance-reports', component: PerformanceReportsPage },
 

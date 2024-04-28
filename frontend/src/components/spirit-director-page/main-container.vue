@@ -1,7 +1,7 @@
 <template>
     <div class="button-container">
         <button class="button" v-on:click="goToCreateStudent">Create Student</button>
-        <button class="button" v-on:click="goToCalendar">Manage Calendar</button>
+        <button class="button" v-on:click="goToCalendar">Manage Spirit Director Events</button>
         <button class="button" v-on:click="goToPaymentForms">Generate Payment Forms</button>
         <button class="button" v-on:click="goToPerformanceReports">Generate Student Performance Report</button>
     </div>

@@ -4,15 +4,21 @@ package edu.tcu.cs.superfrogscheduler.system;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Bean;import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfiguration;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -45,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // .antMatchers("/api/students/**", "/api/events/**").hasRole("STUDENT")
             .antMatchers("/api/students/**").permitAll()
             .antMatchers("/api/appearances/**").permitAll()
+            .antMatchers("/api/spirit-director-events/**").permitAll()
 
             .anyRequest().authenticated()
             .and()
@@ -73,4 +80,3 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
         }
 }
-
