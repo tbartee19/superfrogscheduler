@@ -38,7 +38,13 @@
             <div class="form-group">
                 <button type="submit" class="submit-button">Create Student</button>
             </div>
+            
         </form>
+        <div>
+            <div class="form-group" >
+                <button type="home" @click="goHome" class="home-button">Go Home</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -57,9 +63,9 @@ export default {
             email: '',
             internationalStudent: false,
             paymentPreference: '',
-            account: {  // Add account details necessary for the backend
+            account: { 
                 email: '',
-                role: 'STUDENT'  // Assuming the default role is set; adjust as needed
+                role: 'STUDENT'  
             }
         }
     };
@@ -99,7 +105,10 @@ export default {
                 internationalStudent: false,
                 paymentPreference: ''
             };
-        }
+        },
+        goHome() {
+            this.$router.push("/spirit-director");
+        },
     },
     mounted() {
         console.log("CreateStudent component has been mounted!");

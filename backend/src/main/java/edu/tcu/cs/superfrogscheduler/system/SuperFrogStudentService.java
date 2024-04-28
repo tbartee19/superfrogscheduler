@@ -7,6 +7,8 @@ import edu.tcu.cs.superfrogscheduler.repository.SuperFrogStudentRepository;
 import edu.tcu.cs.superfrogscheduler.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -81,31 +83,34 @@ public class SuperFrogStudentService {
         System.out.println("Account deactivated for student: " + student.getFirstName() + " " + student.getLastName() + ". Reason: " + reason);
         
     }
-    
+    @GetMapping
     public List<SuperFrogStudent> findSuperFrogStudents(Optional<String> firstName, Optional<String> lastName, Optional<String> phoneNumber, Optional<String> email) {
-        if (firstName.isPresent() && lastName.isPresent() && phoneNumber.isPresent() && email.isPresent()) {
+        System.out.println("Service - First Name: " + firstName.orElse("Not provided")); 
+        
+    
+        if (isPresentAndNotEmpty(firstName) && isPresentAndNotEmpty(lastName) && isPresentAndNotEmpty(phoneNumber) && isPresentAndNotEmpty(email)) {
             return studentRepository.findByFirstNameAndLastNameAndPhoneNumberAndEmail(firstName.get(), lastName.get(), phoneNumber.get(), email.get());
-        } else if (firstName.isPresent() && lastName.isPresent() && phoneNumber.isPresent()) {
+        } else if (isPresentAndNotEmpty(firstName) && isPresentAndNotEmpty(lastName) && isPresentAndNotEmpty(phoneNumber)) {
             return studentRepository.findByFirstNameAndLastNameAndPhoneNumber(firstName.get(), lastName.get(), phoneNumber.get());
-        } else if (firstName.isPresent() && lastName.isPresent()) {
+        } else if (isPresentAndNotEmpty(firstName) && isPresentAndNotEmpty(lastName)) {
             return studentRepository.findByFirstNameAndLastName(firstName.get(), lastName.get());
-        } else if (firstName.isPresent() && phoneNumber.isPresent()) {
+        } else if (isPresentAndNotEmpty(firstName) && isPresentAndNotEmpty(phoneNumber)) {
             return studentRepository.findByFirstNameAndPhoneNumber(firstName.get(), phoneNumber.get());
-        } else if (firstName.isPresent() && email.isPresent()) {
+        } else if (isPresentAndNotEmpty(firstName) && isPresentAndNotEmpty(email)) {
             return studentRepository.findByFirstNameAndEmail(firstName.get(), email.get());
-        } else if (lastName.isPresent() && phoneNumber.isPresent()) {
+        } else if (isPresentAndNotEmpty(lastName) && isPresentAndNotEmpty(phoneNumber)) {
             return studentRepository.findByLastNameAndPhoneNumber(lastName.get(), phoneNumber.get());
-        } else if (lastName.isPresent() && email.isPresent()) {
+        } else if (isPresentAndNotEmpty(lastName) && isPresentAndNotEmpty(email)) {
             return studentRepository.findByLastNameAndEmail(lastName.get(), email.get());
-        } else if (phoneNumber.isPresent() && email.isPresent()) {
+        } else if (isPresentAndNotEmpty(phoneNumber) && isPresentAndNotEmpty(email)) {
             return studentRepository.findByPhoneNumberAndEmail(phoneNumber.get(), email.get());
-        } else if (firstName.isPresent()) {
+        } else if (isPresentAndNotEmpty(firstName)) {
             return studentRepository.findByFirstName(firstName.get());
-        } else if (lastName.isPresent()) {
+        } else if (isPresentAndNotEmpty(lastName)) {
             return studentRepository.findByLastName(lastName.get());
-        } else if (phoneNumber.isPresent()) {
+        } else if (isPresentAndNotEmpty(phoneNumber)) {
             return studentRepository.findByPhoneNumber(phoneNumber.get());
-        } else if (email.isPresent()) {
+        } else if (isPresentAndNotEmpty(email)) {
             return studentRepository.findByEmail(email.get()).map(Collections::singletonList).orElseGet(Collections::emptyList);
         }
         return Collections.emptyList();
@@ -122,6 +127,7 @@ public class SuperFrogStudentService {
         throw new IllegalArgumentException("Student not found.");
     }
     SuperFrogStudent student = studentOpt.get();
+    Account studentAccount = student.getAccount();
     student.setFirstName(profileUpdate.getFirstName());
     student.setLastName(profileUpdate.getLastName());
     student.setPhoneNumber(profileUpdate.getPhoneNumber());
@@ -129,7 +135,8 @@ public class SuperFrogStudentService {
     student.setEmail(profileUpdate.getEmail());
     student.setInternationalStudent(profileUpdate.getInternationalStudent());
     student.setPaymentPreference(profileUpdate.getPaymentPreference());
-
+    studentAccount.setActive(profileUpdate.getIsActive());
+    accountRepository.save(studentAccount);
     validateStudentProfile(student);
     studentRepository.save(student);
     notifyProfileUpdate(student); // Notify the Spirit Director
@@ -183,6 +190,9 @@ public void notifyProfileUpdate(SuperFrogStudent student) {
         byte[] randomBytes = new byte[12];
         random.nextBytes(randomBytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+    }
+    private boolean isPresentAndNotEmpty(Optional<String> param) {
+        return param.isPresent() && !param.get().trim().isEmpty();
     }
 }
 
