@@ -10,6 +10,21 @@ public class ProfileUpdateDTO {
     private String paymentPreference;
     private Boolean isActive;
 
+
+    @Override
+    public String toString() {
+        return "ProfileUpdateDTO{" +
+               "firstName='" + firstName + '\'' +
+               ", lastName='" + lastName + '\'' +
+               ", phoneNumber='" + phoneNumber + '\'' +
+               ", physicalAddress='" + physicalAddress + '\'' +
+               ", email='" + email + '\'' +
+               ", internationalStudent=" + internationalStudent +
+               ", paymentPreference='" + paymentPreference + '\'' +
+               ", isActive=" + isActive +
+               '}';
+    }
+    
     // Getters and Setters
     public String getFirstName() {
         return firstName;
