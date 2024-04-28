@@ -78,7 +78,7 @@ export default {
                     email: '',
                     passwordHash: '',
                     role: '',
-                    isActive: null, 
+                    isActive: true, 
                 }
             }
         };
@@ -112,7 +112,7 @@ export default {
             });
         },
         goHome() {
-            this.$router.push("/spirit-director");
+            this.$router.push("/");
         },
     },
     created() {
