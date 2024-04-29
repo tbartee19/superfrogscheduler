@@ -87,7 +87,12 @@ export default {
                 if (response.status === 200 && response.data.role=="STUDENT") {
                     alert('Login successful');
                     console.log(response.data);
-                    this.$router.push('/superfrog'); 
+                    const studentData = response.data.student;
+                    this.$router.push({
+                    name: 'superfrog',
+                    query: {
+                        studentData: JSON.stringify(studentData)
+                    }}); 
                 } else {
                     this.errorMessage = 'Login failed';
                 }

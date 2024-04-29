@@ -5,6 +5,7 @@
         <button class="button" v-on:click="goToCalendar">Manage Spirit Director Events</button>
         <button class="button" v-on:click="goToPaymentForms">Generate Payment Forms</button>
         <button class="button" v-on:click="goToPerformanceReports">Generate Student Performance Report</button>
+        <button class="button" v-on:click="goHome">Go Home</button>
     </div>
 </template>
 
@@ -26,6 +27,9 @@
             goToFindStudent() {
                 this.$router.push('/spirit-director/find-student')
             },
+            goHome() {
+                this.$router.push('/')
+            }
         }
     }
 </script>

@@ -127,6 +127,7 @@ public class SuperFrogStudentService {
         throw new IllegalArgumentException("Student not found.");
     }
     SuperFrogStudent student = studentOpt.get();
+    System.out.println(profileUpdate.getFirstName());
     Account studentAccount = student.getAccount();
     student.setFirstName(profileUpdate.getFirstName());
     student.setLastName(profileUpdate.getLastName());
@@ -181,6 +182,18 @@ public void notifyProfileUpdate(SuperFrogStudent student) {
     // just outputting to console
     System.out.println("Notification: Profile updated for student: " + student.getFirstName() + " " + student.getLastName() +
                        " (ID: " + student.getId() + "). Email: " + student.getEmail());
+}
+
+public void changePassword(String studentId, String newPassword) throws Exception {
+    SuperFrogStudent student = studentRepository.findById(studentId)
+        .orElseThrow(() -> new IllegalArgumentException("Student not found with ID: " + studentId));
+    System.out.println("Changing password for student with id:" + studentId);
+
+
+    String encodedPassword = passwordEncoder.encode(newPassword);
+    student.getAccount().setPasswordHash(encodedPassword);
+    accountRepository.save(student.getAccount());
+    studentRepository.save(student);
 }
 
 

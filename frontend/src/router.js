@@ -17,6 +17,7 @@ import ReportGeneratingAlgorithmPage from '@/components/spirit-director-page/pay
 import PerformanceReportsPage from '@/components/spirit-director-page/performance-report-page/main-container.vue'
 
 import SuperFrogPage from '@/components/superfrog-page/main-container.vue'
+import changePasswordPage from '@/components/superfrog-page/change-password/main-container.vue'
 
 const routes = [
     { path: '/', component: App },
@@ -38,7 +39,8 @@ const routes = [
     
 
 
-    { path: '/superfrog', component: SuperFrogPage },
+    { path: '/superfrog', name: 'superfrog', component: SuperFrogPage },
+    { path: '/superfrog/change-password', name: 'change-password', component: changePasswordPage },
     { path: '/:catchAll(.*)', component: App }
     
 ]
