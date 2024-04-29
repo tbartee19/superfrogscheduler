@@ -13,9 +13,10 @@ import AddEventPage from '@/components/spirit-director-page/calendar-page/add-ev
 import EditOrDeletePage from '@/components/spirit-director-page/calendar-page/edit-or-delete-event/main-container.vue'
 import PaymentFormsPage from '@/components/spirit-director-page/payment-forms-page/main-container.vue'
 import PerformanceReportsPage from '@/components/spirit-director-page/performance-report-page/main-container.vue'
-
+import ManageSchedulePage from '@/components/superfrog-page/manage-schedule/main-container.vue'
 import SuperFrogPage from '@/components/superfrog-page/main-container.vue'
 import changePasswordPage from '@/components/superfrog-page/change-password/main-container.vue'
+import editEventPage from '@/components/superfrog-page/manage-schedule/edit-event.vue'
 
 const routes = [
     { path: '/', component: App },
@@ -37,6 +38,8 @@ const routes = [
 
     { path: '/superfrog', name: 'superfrog', component: SuperFrogPage },
     { path: '/superfrog/change-password', name: 'change-password', component: changePasswordPage },
+    { path: '/superfrog/manage-schedule', name: 'manage-schedule', component: ManageSchedulePage },
+    { path: '/superfrog/manage-schedule/edit-event', name: 'edit-event', component: editEventPage },
     { path: '/:catchAll(.*)', component: App }
     
 ]
