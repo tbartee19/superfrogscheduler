@@ -16,9 +16,20 @@ import java.util.Map;
 @Transactional
 public class SuperFrogAppearanceRequestService {
     private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
+    private SuperFrogStudentRepository superfrogStudentRepository;
+    private NotificationService notificationService;
 
     @Autowired
-    private NotificationService notificationService;
+    public SuperFrogAppearanceRequestService(
+            SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository,
+            SuperFrogStudentRepository superfrogStudentRepository,
+            NotificationService notificationService) {
+        this.superFrogAppearanceRequestRepository = superFrogAppearanceRequestRepository;
+        this.superfrogStudentRepository = superfrogStudentRepository;
+        this.notificationService = notificationService;
+    }
+
+
 
     public SuperFrogAppearanceRequestService(
             SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository) {
@@ -57,29 +68,91 @@ public class SuperFrogAppearanceRequestService {
     }
 
     public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update){
-        update.setStatus(RequestStatus.PENDING);
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
-                    oldRequest.setEventDate(update.getEventDate());
-                    oldRequest.setStartTime(update.getStartTime());
-                    oldRequest.setEndTime(update.getEndTime());
-                    oldRequest.setContactFirstName(update.getContactFirstName());
-                    oldRequest.setContactLastName(update.getContactLastName());
-                    oldRequest.setPhoneNumber(update.getPhoneNumber());
-                    oldRequest.setEmail(update.getEmail());
-                    oldRequest.setEventType(update.getEventType().toString());
-                    oldRequest.setEventTitle(update.getEventTitle());
-                    oldRequest.setNameOfOrg(update.getNameOfOrg());
-                    oldRequest.setAddress(update.getAddress());
-                    oldRequest.setSpecialInstructions(update.getSpecialInstructions());
-                    oldRequest.setExpenses(update.getExpenses());
-                    oldRequest.setOutsideOrgs(update.getOutsideOrgs());
-                    oldRequest.setDescription(update.getDescription());
-                    oldRequest.setStatus(update.getStatus()); // TODO status isnt updated
-                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
+                    validateUpdateDetails(update);
+
+                    applyUpdatedDetails(oldRequest, update);
+
+                    SuperFrogAppearanceRequest savedRequest = this.superFrogAppearanceRequestRepository.save(oldRequest);
+
+                    notifyStakeholders(savedRequest);
+
+                    return savedRequest;
                 })
-                .orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
     }
+
+    private void applyUpdatedDetails(SuperFrogAppearanceRequest oldRequest, SuperFrogAppearanceRequest update) {
+        oldRequest.setEventDate(update.getEventDate());
+        oldRequest.setStartTime(update.getStartTime());
+        oldRequest.setEndTime(update.getEndTime());
+        oldRequest.setContactFirstName(update.getContactFirstName());
+        oldRequest.setContactLastName(update.getContactLastName());
+        oldRequest.setPhoneNumber(update.getPhoneNumber());
+        oldRequest.setEmail(update.getEmail());
+        oldRequest.setEventType(update.getEventType().toString());
+        oldRequest.setEventTitle(update.getEventTitle());
+        oldRequest.setNameOfOrg(update.getNameOfOrg());
+        oldRequest.setAddress(update.getAddress());
+        oldRequest.setSpecialInstructions(update.getSpecialInstructions());
+        oldRequest.setExpenses(update.getExpenses());
+        oldRequest.setOutsideOrgs(update.getOutsideOrgs());
+        oldRequest.setDescription(update.getDescription());
+        // Ensure the status is set correctly based on your business rules
+        oldRequest.setStatus(update.getStatus());
+    }
+
+    private void validateUpdateDetails(SuperFrogAppearanceRequest details) {
+        if (details.getContactFirstName() == null || details.getContactFirstName().trim().isEmpty()) {
+            throw new IllegalArgumentException("First name is required.");
+        }
+        if (details.getContactLastName() == null || details.getContactLastName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Last name is required.");
+        }
+        if (details.getPhoneNumber() == null || !details.getPhoneNumber().matches("\\(\\d{3}\\) \\d{3}-\\d{4}")) {
+            throw new IllegalArgumentException("Phone number must be in the format (999) 999-9999.");
+        }
+        if (details.getEmail() == null || !details.getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
+        if (details.getEventDate() == null) {
+            throw new IllegalArgumentException("Event date is required.");
+        }
+        if (details.getStartTime() == null || details.getEndTime() == null) {
+            throw new IllegalArgumentException("Start time and end time are required.");
+        }
+        if (details.getEventType() == null) {
+            throw new IllegalArgumentException("Type of the event is required.");
+        }
+        if (details.getEventTitle() == null || details.getEventTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Event title is required.");
+        }
+        if (details.getNameOfOrg() == null || details.getNameOfOrg().trim().isEmpty()) {
+            throw new IllegalArgumentException("Name of the organization is required.");
+        }
+        if (details.getAddress() == null || details.getAddress().trim().isEmpty()) {
+            throw new IllegalArgumentException("Event address is required.");
+        }
+        if (details.getSpecialInstructions() == null) {
+            details.setSpecialInstructions(""); // Set default empty if null
+        }
+        if (details.getExpenses() == null) {
+            details.setExpenses(""); // Set default empty if null
+        }
+        if (details.getOutsideOrgs() == null) {
+            details.setOutsideOrgs(""); // Set default empty if null
+        }
+        if (details.getDescription() == null || details.getDescription().trim().isEmpty()) {
+            throw new IllegalArgumentException("Detailed event description is required.");
+        }
+    }
+
+
+    private void notifyStakeholders(SuperFrogAppearanceRequest request) {
+        notificationService.sendNotification("The appearance request has been updated: " + request.getEventTitle());
+    }
+
 
     public void delete(Integer requestId) {
         this.superFrogAppearanceRequestRepository.findById(requestId)
@@ -126,21 +199,6 @@ public class SuperFrogAppearanceRequestService {
     }
 
 
-    @Autowired
-    private SuperFrogStudentRepository superfrogStudentRepository;
-
-    public void assignSuperFrogStudent(Integer requestId, Integer studentId) {
-        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Request not found with ID: " + requestId));
-
-        SuperFrogStudent student = superfrogStudentRepository.findById(studentId.toString())
-                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + studentId));
-
-        request.setSuperfrogStudent(student);
-        request.setStatus(RequestStatus.APPROVED); // Assuming RequestStatus is an enum
-        superFrogAppearanceRequestRepository.save(request);
-    }
-
     public List<SuperFrogAppearanceRequest> searchRequests(Map<String, Object> criteria) {
         return superFrogAppearanceRequestRepository.findByCriteria(criteria);
     }
@@ -149,6 +207,35 @@ public class SuperFrogAppearanceRequestService {
         return superFrogAppearanceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
     }
+
+
+
+
+    public void assignSuperFrogStudent(Integer requestId, Integer studentId) {
+        // Fetch the request using the provided request ID
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request not found.", requestId));
+
+        // Fetch the student using the provided student ID
+        SuperFrogStudent student = superfrogStudentRepository.findById(studentId.toString())
+                .orElseThrow(() -> new ObjectNotFoundException("Student not found.", studentId));
+
+        // Ensure the request is approved before assigning a student
+        if (request.getStatus() != RequestStatus.APPROVED) {
+            throw new ObjectNotFoundException("Cannot assign a student to an unapproved request.", requestId);
+        }
+
+        // Assign the student to the request and update the request status
+        request.setSuperfrogStudent(student);
+        request.setStatus(RequestStatus.ASSIGNED);
+        superFrogAppearanceRequestRepository.save(request);
+
+        // Send notifications
+        notificationService.sendNotification("The appearance request has been assigned to: " + student.getFirstName() + " " + student.getLastName());
+        notificationService.sendNotification("You have been assigned to an appearance request on: " + request.getEventDate());
+    }
+
+
 
 }
 

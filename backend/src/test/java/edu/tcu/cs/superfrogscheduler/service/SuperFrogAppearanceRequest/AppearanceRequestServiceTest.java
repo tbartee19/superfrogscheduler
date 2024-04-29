@@ -5,7 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.stream.Collectors;
 
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
+import edu.tcu.cs.superfrogscheduler.repository.SuperFrogStudentRepository;
 import edu.tcu.cs.superfrogscheduler.system.IdWorker;
+import edu.tcu.cs.superfrogscheduler.system.NotificationService;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
@@ -19,14 +22,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.mongodb.assertions.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AppearanceRequestServiceTest {
@@ -40,7 +42,13 @@ public class AppearanceRequestServiceTest {
     @InjectMocks
     SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
 
+    @Mock
+    SuperFrogStudentRepository superfrogStudentRepository;
+    @Mock
+    private NotificationService notificationService;
+
     List<SuperFrogAppearanceRequest> superFrogAppearanceRequests;
+
 
     @BeforeEach
     void setUp(){
@@ -152,7 +160,7 @@ public class AppearanceRequestServiceTest {
     }
 
     @Test
-    void testUpdateSuccess(){
+    void testUpdateSuccess() {
         // Given
         SuperFrogAppearanceRequest oldAppearanceRequest = new SuperFrogAppearanceRequest();
         oldAppearanceRequest.setRequestId(123456);
@@ -168,6 +176,9 @@ public class AppearanceRequestServiceTest {
         oldAppearanceRequest.setExpenses("N/A");
         oldAppearanceRequest.setOutsideOrgs("N/A");
         oldAppearanceRequest.setDescription("description");
+        oldAppearanceRequest.setEventDate(LocalDate.now()); // Ensure event date is set
+        oldAppearanceRequest.setStartTime(LocalTime.of(10, 0)); // Set start time
+        oldAppearanceRequest.setEndTime(LocalTime.of(11, 0)); // Set end time
 
         SuperFrogAppearanceRequest update = new SuperFrogAppearanceRequest();
         update.setContactFirstName("First");
@@ -182,6 +193,9 @@ public class AppearanceRequestServiceTest {
         update.setExpenses("N/A");
         update.setOutsideOrgs("N/A");
         update.setDescription("A new description");
+        update.setEventDate(LocalDate.now()); // Ensure event date is set
+        update.setStartTime(LocalTime.of(10, 0)); // Set start time
+        update.setEndTime(LocalTime.of(11, 0)); // Set end time
 
         given(this.superFrogAppearanceRequestRepository.findById(123456)).willReturn(Optional.of(oldAppearanceRequest));
         given(this.superFrogAppearanceRequestRepository.save(oldAppearanceRequest)).willReturn(oldAppearanceRequest);
@@ -192,9 +206,12 @@ public class AppearanceRequestServiceTest {
         // Then
         assertThat(updatedRequest.getRequestId()).isEqualTo(123456);
         assertThat(updatedRequest.getDescription()).isEqualTo(update.getDescription());
+        assertThat(updatedRequest.getStartTime()).isEqualTo(update.getStartTime()); // Verify start time is updated
+        assertThat(updatedRequest.getEndTime()).isEqualTo(update.getEndTime()); // Verify end time is updated
         verify(this.superFrogAppearanceRequestRepository, times(1)).findById(123456);
         verify(this.superFrogAppearanceRequestRepository, times(1)).save(oldAppearanceRequest);
     }
+
 
     @Test
     void testUpdateNotFound() {
@@ -379,6 +396,107 @@ public class AppearanceRequestServiceTest {
         // When & Then
         assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.findRequestById(requestId));
     }
+    
+
+    @Test
+    void updateRequestDetails_ValidationFailure() {
+        // Given
+        Integer requestId = 1;
+        SuperFrogAppearanceRequest existingRequest = superFrogAppearanceRequests.get(0);
+        SuperFrogAppearanceRequest updateDetails = new SuperFrogAppearanceRequest();
+
+        // Setting updated details with invalid data
+        updateDetails.setContactFirstName(""); // Invalid as it's required
+        updateDetails.setPhoneNumber("invalid phone number");
+
+        // Mocking repository behavior
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.of(existingRequest));
+
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> superFrogAppearanceRequestService.update(requestId, updateDetails),
+                "Expected validateUpdateDetails to throw, but it did not");
+    }
+
+    @Test
+    void updateRequestDetails_NotFound() {
+        // Given
+        Integer requestId = 999; // Non-existent request ID
+        SuperFrogAppearanceRequest updateDetails = new SuperFrogAppearanceRequest();
+
+        // Mocking repository behavior for not found scenario
+        given(superFrogAppearanceRequestRepository.findById(requestId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.update(requestId, updateDetails),
+                "Expected update to throw ObjectNotFoundException, but it did not");
+    }
+
+    @Test
+    void assignStudentToApprovedRequest_Success() {
+        // Given
+        Integer requestId = 2; // ID of an approved request
+        Integer studentId = 1;
+        SuperFrogAppearanceRequest approvedRequest = superFrogAppearanceRequests.get(1); // the approved request from setUp
+        SuperFrogStudent assignedStudent = new SuperFrogStudent();
+        assignedStudent.setId("1");
+        assignedStudent.setFirstName("Super");
+        assignedStudent.setLastName("Frog");
+
+        when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(approvedRequest));
+        when(superfrogStudentRepository.findById(String.valueOf(studentId))).thenReturn(Optional.of(assignedStudent));
+
+        // Act
+        superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId);
+
+        // Assert
+        assertEquals(RequestStatus.ASSIGNED, approvedRequest.getStatus());
+        assertSame(assignedStudent, approvedRequest.getSuperfrogStudent());
+        verify(superFrogAppearanceRequestRepository).save(approvedRequest);
+        verify(notificationService).sendNotification("The appearance request has been assigned to: " + assignedStudent.getFirstName() + " " + assignedStudent.getLastName());
+        verify(notificationService).sendNotification("You have been assigned to an appearance request on: " + approvedRequest.getEventDate().toString());
+    }
+
+    @Test
+    void assignStudentToUnapprovedRequest_Failure() {
+        // Given
+        Integer requestId = 1; // Assume this is a non-approved request ID
+        Integer studentId = 1; // Student ID to assign
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setRequestId(requestId);
+        request.setStatus(RequestStatus.PENDING); // This status should trigger the exception
+
+        SuperFrogStudent student = new SuperFrogStudent();
+        student.setId(studentId.toString());
+
+        when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
+        when(superfrogStudentRepository.findById(studentId.toString())).thenReturn(Optional.of(student));
+
+        // Act & Assert
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+            superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId);
+        });
+
+        String expectedMessage = "Could not find Cannot assign a student to an unapproved request. with Id " + requestId + " :(";
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+
+
+
+
+
+    @Test
+    void assignStudentToRequest_RequestNotFound() {
+        // Given
+        Integer requestId = 999; // Non-existent request ID
+        Integer studentId = 1;
+
+        when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId));
+    }
+
 
 
 

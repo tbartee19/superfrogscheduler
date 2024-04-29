@@ -24,6 +24,7 @@ public interface SuperFrogStudentRepository extends MongoRepository<SuperFrogStu
     Optional<SuperFrogStudent> findById(String id);
 
 
+
     class SuperFrogAppearanceRequestRepository {
 
     }
