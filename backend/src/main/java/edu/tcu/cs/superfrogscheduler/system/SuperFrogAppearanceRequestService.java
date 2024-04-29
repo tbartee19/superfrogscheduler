@@ -1,11 +1,14 @@
 package edu.tcu.cs.superfrogscheduler.system;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -100,6 +103,19 @@ public class SuperFrogAppearanceRequestService {
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
                 .orElseThrow(()-> new ObjectNotFoundException("superfrogappearncerequest", requestId));
+    }
+
+    public SuperFrogAppearanceRequest setIncomplete(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(oldRequest -> {
+                    if(oldRequest.getEndTime().isBefore(LocalTime.now())){
+                        oldRequest.setStatus(RequestStatus.INCOMPLETE);
+                    }
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
 
