@@ -3,6 +3,7 @@
     <div class="button-container">
         <button class="button" v-on:click="goToEditStudent">Edit Student Info</button>
         <button class="button" v-on:click="goToChangePassword">Change Password</button>
+        <button class="button" v-on:click="goToManageSchedule">Personal Schedule</button>
         <button class="button" v-on:click="goHome">Go Home</button>
     </div>
 </template>
@@ -43,6 +44,13 @@
                         studentData: JSON.stringify(this.student)
                     }});
             },
+            goToManageSchedule() {
+                this.$router.push({
+                    name: 'manage-schedule',
+                    query: {
+                        studentData: JSON.stringify(this.student)
+                    }});
+                },
             goHome() {
                 this.$router.push('/')
             }
