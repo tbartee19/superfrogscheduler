@@ -12,6 +12,8 @@ import CalendarPage from '@/components/spirit-director-page/calendar-page/main-c
 import AddEventPage from '@/components/spirit-director-page/calendar-page/add-event/main-container.vue'
 import EditOrDeletePage from '@/components/spirit-director-page/calendar-page/edit-or-delete-event/main-container.vue'
 import PaymentFormsPage from '@/components/spirit-director-page/payment-forms-page/main-container.vue'
+import SelectAppearanceRequestsPage from '@/components/spirit-director-page/payment-forms-page/select-appearance-requests-page/main-container.vue'
+import ReportGeneratingAlgorithmPage from '@/components/spirit-director-page/payment-forms-page/select-appearance-requests-page/report-generating-algorithm-page/main-container.vue'
 import PerformanceReportsPage from '@/components/spirit-director-page/performance-report-page/main-container.vue'
 
 import SuperFrogPage from '@/components/superfrog-page/main-container.vue'
@@ -30,6 +32,8 @@ const routes = [
     { path: '/spirit-director/calendar/add-event', component: AddEventPage },
     { path: '/spirit-director/calendar/edit-or-delete-event/:id', component: EditOrDeletePage, props: true },
     { path: '/spirit-director/payment-forms', component: PaymentFormsPage },
+    { path: '/select-appearance-requests', component: SelectAppearanceRequestsPage },
+    { path: '/report-generating-algorithm/:requestId', component: ReportGeneratingAlgorithmPage, props: true },
     { path: '/spirit-director/performance-reports', component: PerformanceReportsPage },
     
 
