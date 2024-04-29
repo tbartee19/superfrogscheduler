@@ -69,7 +69,7 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
     }
 
-    //Use case 25 - Spirit director
+    //Use case 25 - Spirit director reverses and approval/rejection decision
     @PutMapping("/api/appearance/{requestId}/status/{status}")
     public Result reverseAppearanceDecision(@PathVariable Integer requestId){
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.reverseDecision(requestId);
