@@ -15,6 +15,7 @@ import PaymentFormsPage from '@/components/spirit-director-page/payment-forms-pa
 import SelectAppearanceRequestsPage from '@/components/spirit-director-page/payment-forms-page/select-appearance-requests-page/main-container.vue'
 import ReportGeneratingAlgorithmPage from '@/components/spirit-director-page/payment-forms-page/select-appearance-requests-page/report-generating-algorithm-page/main-container.vue'
 import PerformanceReportsPage from '@/components/spirit-director-page/performance-report-page/main-container.vue'
+import SelectStudentsPage from '@/components/spirit-director-page/performance-report-page/select-students.vue'
 import ManageSchedulePage from '@/components/superfrog-page/manage-schedule/main-container.vue'
 import SuperFrogPage from '@/components/superfrog-page/main-container.vue'
 import changePasswordPage from '@/components/superfrog-page/change-password/main-container.vue'
@@ -37,8 +38,8 @@ const routes = [
     { path: '/select-appearance-requests', component: SelectAppearanceRequestsPage },
     { path: '/report-generating-algorithm/:requestId', component: ReportGeneratingAlgorithmPage, props: true },
     { path: '/spirit-director/performance-reports', component: PerformanceReportsPage },
+    { path: '/select-students', component: SelectStudentsPage },
     
-
 
     { path: '/superfrog', name: 'superfrog', component: SuperFrogPage },
     { path: '/superfrog/change-password', name: 'change-password', component: changePasswordPage },

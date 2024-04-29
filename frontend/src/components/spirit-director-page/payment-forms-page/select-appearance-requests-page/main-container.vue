@@ -31,7 +31,7 @@
               </tr>
               <tr>
                 <td>SuperFrog Student</td>
-                <td>John Doe</td>
+                <td>Johnny Bravo</td>
               </tr>
             </router-link>
           </table>

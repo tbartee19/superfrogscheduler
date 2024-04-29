@@ -5,7 +5,7 @@
       <table class="date-table">
         <tr>
           <td>Student Name</td>
-          <td>John Doe</td>
+          <td>Johnny Bravo</td>
         </tr>
         <tr>
           <td>Enter SSN For Student: </td>
@@ -13,7 +13,7 @@
         </tr>
         <tr>
           <td>Student Address</td>
-          <td>123 Main St, Fort Worth, TX 76109</td>
+          <td>123 Stadium lane</td>
         </tr>
         <tr>
           <td>Amount Owed</td>
