@@ -33,6 +33,8 @@ public class EventService {
         Event existingEvent = eventRepository.findById(eventId)
             .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + eventId));
 
+        System.out.println("Existing Event: " + existingEvent.getEndDateTime());
+        System.out.println("Updated Event: " + updatedEvent.getEndDateTime());
         // Check if the updated event times are changed and if they conflict with other events
         if (!existingEvent.getStartDateTime().equals(updatedEvent.getStartDateTime()) ||
             !existingEvent.getEndDateTime().equals(updatedEvent.getEndDateTime())) {
@@ -44,6 +46,7 @@ public class EventService {
                 updatedEvent.getEndDateTime()).stream()
                 .filter(event -> !event.getId().equals(eventId)) // Exclude current event
                 .collect(Collectors.toList());
+            System.out.println("Conflicting Events: " + conflictingEvents);
 
             if (!conflictingEvents.isEmpty()) {
                 throw new IllegalStateException("Conflict detected: An event already exists within the provided timeframe.");
@@ -56,7 +59,9 @@ public class EventService {
 
 
     public void deleteEvent(String eventId) {
+        System.out.println("Attempting to delete event with ID: " + eventId);
         eventRepository.deleteById(eventId);
+        System.out.println("Deleted event with ID: " + eventId);
     }
 
     public List<Event> getStudentEvents(String studentId) {

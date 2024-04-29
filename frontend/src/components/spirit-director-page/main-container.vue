@@ -1,40 +1,35 @@
 <template>
     <div class="button-container">
-        <button class="button" v-on:click="goToCalendar">Manage Calendar</button>
-        <!-- <button class="button" v-on:click="getrequests">Manage Calendar</button> -->
+        <button class="button" v-on:click="goToCreateStudent">Create Student</button>
+        <button class="button" v-on:click="goToFindStudent">Find Students</button>
+        <button class="button" v-on:click="goToCalendar">Manage Spirit Director Events</button>
         <button class="button" v-on:click="goToPaymentForms">Generate Payment Forms</button>
         <button class="button" v-on:click="goToPerformanceReports">Generate Student Performance Report</button>
+        <button class="button" v-on:click="goHome">Go Home</button>
     </div>
 </template>
 
 <script>
-    import axios from 'axios'
-
     export default {
         methods: {
+            goToCreateStudent() {
+                this.$router.push('/spirit-director/create-student')
+            },
             goToCalendar() {
                 this.$router.push('/spirit-director/calendar')
-
-                // axios.get(`http://localhost:8080/api/appearances`)
-                // .then((response) => {
-                //     this.requests = response.data.data;
-                //     console.log(this.requests)
-                // }).catch((error) => {
-                //     console.log(error.response.status)
-                //     if (error.response.status === 404) {
-                //         this.message = "Sorry, but that request ID could not be found. Please try again."
-                //     }
-                // })
             },
             goToPaymentForms() {
                 this.$router.push('/spirit-director/payment-forms')
             },
             goToPerformanceReports() {
                 this.$router.push('/spirit-director/performance-reports')
+            },
+            goToFindStudent() {
+                this.$router.push('/spirit-director/find-student')
+            },
+            goHome() {
+                this.$router.push('/')
             }
-            // sendData(data){
-            //     this.requests = data;
-            // }
         }
     }
 </script>
