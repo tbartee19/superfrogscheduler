@@ -497,7 +497,102 @@ public class AppearanceRequestServiceTest {
         assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId));
     }
 
+    @Test
+    void testSignupSuccess() {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setStatus(RequestStatus.APPROVED);
+        SuperFrogStudent student = new SuperFrogStudent();
+        student.setId("123");
 
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+        when(superfrogStudentRepository.findById("123")).thenReturn(Optional.of(student));
+
+        superFrogAppearanceRequestService.SuperFrogStudentSignup(1, 123);
+
+        assertEquals(RequestStatus.ASSIGNED, request.getStatus());
+        assertEquals(student, request.getSuperfrogStudent());
+        verify(superFrogAppearanceRequestRepository).save(request);
+    }
+
+    @Test
+    void testSignupRequestNotApproved() {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setStatus(RequestStatus.PENDING);
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
+            superFrogAppearanceRequestService.SuperFrogStudentSignup(1, 123);
+        });
+
+        assertTrue(exception.getMessage().contains("not available for signup"));
+    }
+
+    @Test
+    void testSignupStudentNotFound() {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setStatus(RequestStatus.APPROVED);
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+        when(superfrogStudentRepository.findById("123")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
+            superFrogAppearanceRequestService.SuperFrogStudentSignup(1, 123);
+        });
+
+        assertTrue(exception.getMessage().contains("Student not found"));
+    }
+
+    @Test
+    void testCancellationSuccess() {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setStatus(RequestStatus.ASSIGNED);
+        request.setEventDate(LocalDate.now().plusDays(3));
+        SuperFrogStudent student = new SuperFrogStudent();
+        student.setId("123");
+        request.setSuperfrogStudent(student);
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+
+        superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, 123);
+
+        assertEquals(RequestStatus.APPROVED, request.getStatus());
+        assertNull(request.getSuperfrogStudent());
+        verify(superFrogAppearanceRequestRepository).save(request);
+    }
+
+
+    @Test
+    void testCancellationUnassignedRequest() {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setStatus(RequestStatus.APPROVED);
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
+            superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, 123);
+        });
+
+        assertTrue(exception.getMessage().contains("not currently assigned"));
+    }
+
+    @Test
+    void testCancellationTooLate() {
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setStatus(RequestStatus.ASSIGNED);
+        request.setEventDate(LocalDate.now().plusDays(1)); // One day before the event
+        SuperFrogStudent student = new SuperFrogStudent();
+        student.setId("123");
+        request.setSuperfrogStudent(student);
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
+            superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, 123);
+        });
+
+        assertTrue(exception.getMessage().contains("too late to cancel"));
+    }
 
 
 }

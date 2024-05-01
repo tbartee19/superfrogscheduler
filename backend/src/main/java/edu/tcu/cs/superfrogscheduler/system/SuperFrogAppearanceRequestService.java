@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -208,9 +209,7 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
     }
 
-
-
-
+    // Spirit Director assigns student
     public void assignSuperFrogStudent(Integer requestId, Integer studentId) {
         // Fetch the request using the provided request ID
         SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
@@ -235,8 +234,53 @@ public class SuperFrogAppearanceRequestService {
         notificationService.sendNotification("You have been assigned to an appearance request on: " + request.getEventDate());
     }
 
+    // Student signs-up for an appearance
+    public void SuperFrogStudentSignup(Integer requestId, Integer studentId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request not found.", requestId));
 
+        if (!request.getStatus().equals(RequestStatus.APPROVED)) {
+            throw new ObjectNotFoundException("Request is not available for signup", requestId);
+        }
+
+        SuperFrogStudent student = superfrogStudentRepository.findById(String.valueOf(studentId))
+                .orElseThrow(() -> new ObjectNotFoundException("Student not found.", studentId));
+
+        request.setSuperfrogStudent(student);
+        request.setStatus(RequestStatus.ASSIGNED);
+        superFrogAppearanceRequestRepository.save(request);
+    }
+
+
+    // Student cancels an appearance request sign-up
+    public void SuperFrogStudentCancellation(Integer requestId, Integer studentId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request not found", requestId));
+
+        if (request.getStatus() != RequestStatus.ASSIGNED) {
+            throw new ObjectNotFoundException("Request is not currently assigned", requestId);
+        }
+
+        if (request.getSuperfrogStudent() == null || !request.getSuperfrogStudent().getId().equals(String.valueOf(studentId))) {
+            throw new ObjectNotFoundException("This student is not signed up for this request", studentId);
+        }
+
+        if (LocalDate.now().plusDays(2).isAfter(request.getEventDate())) {
+            throw new ObjectNotFoundException("It is too late to cancel this appearance", requestId);
+        }
+
+        request.setSuperfrogStudent(null);
+        request.setStatus(RequestStatus.APPROVED);
+        superFrogAppearanceRequestRepository.save(request);
+
+    // send notifications about the cancellation
+        notificationService.sendNotification("An appearance request has been cancelled and is now available for sign up again.");
+    }
 
 }
+
+
+
+
 
 

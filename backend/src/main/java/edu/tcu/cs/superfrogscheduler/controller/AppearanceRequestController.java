@@ -37,6 +37,7 @@ public class AppearanceRequestController {
 
     @Autowired
     private NotificationService notificationService;
+
     // constructor
     public AppearanceRequestController(SuperFrogAppearanceRequestService superFrogAppearanceRequestService, SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter, SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter) {
         this.superFrogAppearanceRequestService = superFrogAppearanceRequestService;
@@ -47,7 +48,7 @@ public class AppearanceRequestController {
 
     // use case 1 - Customer requests a SuperFrog appearance
     @PostMapping("/api/appearances")
-    public Result addSuperFrogAppearanceRequest(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto){
+    public Result addSuperFrogAppearanceRequest(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
         SuperFrogAppearanceRequest newAppearance = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
         newAppearance.setStatus(RequestStatus.PENDING);
         SuperFrogAppearanceRequest savedAppearance = this.superFrogAppearanceRequestService.save(newAppearance);
@@ -58,7 +59,7 @@ public class AppearanceRequestController {
 
     // use case 2 - Customer edits request details
     @PutMapping("/api/appearances/{requestId}")
-    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto){
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto) {
         SuperFrogAppearanceRequest update = this.superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(superFrogAppearanceRequestDto);
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.update(requestId, update);
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
@@ -66,7 +67,7 @@ public class AppearanceRequestController {
     }
 
     @PutMapping("/api/appearances/{requestId}/status/{status}")
-    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @PathVariable RequestStatus status){
+    public Result updateSuperFrogAppearanceRequest(@PathVariable Integer requestId, @PathVariable RequestStatus status) {
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.updateStatus(requestId, status);
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
@@ -75,7 +76,7 @@ public class AppearanceRequestController {
 
     // use case 3 - Customer cancels a submitted request
     @DeleteMapping("/api/appearances/{requestId}")
-    public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId){
+    public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId) {
         this.superFrogAppearanceRequestService.delete(requestId);
         return new Result(true, HttpStatusCode.SUCCESS, "Delete Success");
     }
@@ -132,7 +133,7 @@ public class AppearanceRequestController {
     }
 
     @GetMapping("/api/appearances")
-    public Result findAllSuperFrogAppearances(){
+    public Result findAllSuperFrogAppearances() {
         List<SuperFrogAppearanceRequest> foundAppearance = this.superFrogAppearanceRequestService.findAll();
 
         List<SuperFrogAppearanceRequestDto> appearanceRequestDtos = foundAppearance.stream()
@@ -155,17 +156,17 @@ public class AppearanceRequestController {
         }
     }
 
-        @Autowired
-        private SuperFrogAppearanceRequestService service;
+    @Autowired
+    private SuperFrogAppearanceRequestService service;
 
-        @GetMapping("/search")
-        public ResponseEntity<List<SuperFrogAppearanceRequest>> searchRequests(@RequestParam Map<String, Object> criteria) {
-            List<SuperFrogAppearanceRequest> results = service.searchRequests(criteria);
-            if (results.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(results, HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<List<SuperFrogAppearanceRequest>> searchRequests(@RequestParam Map<String, Object> criteria) {
+        List<SuperFrogAppearanceRequest> results = service.searchRequests(criteria);
+        if (results.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(results, HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<SuperFrogAppearanceRequest> getRequestById(@PathVariable Integer id) {
@@ -177,6 +178,27 @@ public class AppearanceRequestController {
         }
     }
 
+    @PostMapping("/signup/{requestId}/{studentId}")
+    public ResponseEntity<String> signUpForAppearance(@PathVariable Integer requestId, @PathVariable Integer studentId) {
+        try {
+            superFrogAppearanceRequestService.SuperFrogStudentSignup(requestId, studentId);
+            return ResponseEntity.ok("Signed up successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    @PostMapping("/cancel-signup/{requestId}/{studentId}")
+    public ResponseEntity<String> cancelSignUp(@PathVariable Integer requestId, @PathVariable Integer studentId) {
+        try {
+            superFrogAppearanceRequestService.SuperFrogStudentCancellation(requestId, studentId);
+            return ResponseEntity.ok("Signup cancelled successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
+}
 
 
