@@ -17,8 +17,9 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> createEvent(@RequestBody Event event) {
+        System.out.println(event);
         try {
             Event savedEvent = eventService.addEvent(event);
             return ResponseEntity.ok(savedEvent);
@@ -29,7 +30,7 @@ public class EventController {
         }
     }
 
-    @PutMapping("/{eventId}")
+    @PutMapping("/update/{eventId}")
     public ResponseEntity<Event> updateEvent(@PathVariable String eventId, @RequestBody Event event) {
         try {
             Event updatedEvent = eventService.updateEvent(eventId, event);
@@ -39,13 +40,15 @@ public class EventController {
         }
     }
 
-    @DeleteMapping("/{eventId}")
+    @DeleteMapping("/delete/{eventId}")
     public ResponseEntity<Void> deleteEvent(@PathVariable String eventId) {
+        System.out.println("Reached controller deleting event:");
+        System.out.print(eventId);
         eventService.deleteEvent(eventId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/student/{studentId}")
+    @GetMapping("/fetch/student/{studentId}")
     public ResponseEntity<List<Event>> getStudentEvents(@PathVariable String studentId) {
         List<Event> events = eventService.getStudentEvents(studentId);
         return ResponseEntity.ok(events);

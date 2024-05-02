@@ -8,4 +8,8 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 server:
+<<<<<<< HEAD
   port: 8080
+=======
+  port: 8080
+>>>>>>> d317e320943ca135c80332e4a4d3c752d46024e4

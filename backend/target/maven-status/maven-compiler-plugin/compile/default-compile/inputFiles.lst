@@ -1,4 +1,42 @@
-/Users/tylerbartee/Desktop/SuperfrogScheduler/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/SuperfrogScheduler.java
-/Users/tylerbartee/Desktop/SuperfrogScheduler/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/ReportController.java
-/Users/tylerbartee/Desktop/SuperfrogScheduler/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/UserController.java
-/Users/tylerbartee/Desktop/SuperfrogScheduler/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/AppearanceRequestController.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/repository/PaymentFormRepository.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/PasswordEncoderConfig.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/Event.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/DataInitializer.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/SuperFrogStudent.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/ReportController.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/repository/SuperFrogStudentRepository.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/SuperfrogScheduler.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/RequestStatus.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/dto/SuperFrogAppearanceRequestDto.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/SecurityConfig.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/PaymentForm.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/LoginController.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/Result.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/SuperFrogSpiritDirector.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/dto/ProfileUpdateDTO.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/converter/SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/EventController.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/CustomUserDetailsService.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/AdminController.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/exception/ObjectNotFoundException.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/StudentController.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/controller/AppearanceRequestController.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/DBDataInitializer.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/repository/EventRepository.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/Period.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/repository/AccountRepository.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/EventType.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/SuperFrogAppearanceRequest.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/JacksonConfig.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/IdWorker.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/dto/SuperFrogStudentDto.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/repository/SuperFrogAppearanceRequestRepository.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/PaymentService.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/LoginRequest.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/HttpStatusCode.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/exception/ExceptionHandlerAdvice.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/EventService.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/Account.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/SuperFrogAppearanceRequestService.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/model/converter/SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.java
+/Users/tylerbartee/Desktop/scheduler dev/superfrogscheduler/backend/src/main/java/edu/tcu/cs/superfrogscheduler/system/SuperFrogStudentService.java
