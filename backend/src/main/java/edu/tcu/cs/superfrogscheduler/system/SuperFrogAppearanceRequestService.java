@@ -118,6 +118,17 @@ public class SuperFrogAppearanceRequestService {
                 }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
+    public SuperFrogAppearanceRequest setComplete(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(doneRequest -> {
+                    RequestStatus currentStatus = doneRequest.getStatus();
+                    if((currentStatus == RequestStatus.APPROVED) && (doneRequest.getEndTime().isBefore(LocalTime.now()))) doneRequest.setStatus(RequestStatus.COMPLETED);
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(doneRequest);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrograppearancerequest", requestId));
+    }
 
     }
 

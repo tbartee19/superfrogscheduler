@@ -140,4 +140,11 @@ public class AppearanceRequestController {
                 .collect(Collectors.toList());
         return new Result(true, HttpStatusCode.SUCCESS, "Find All Success", appearanceRequestDtos);
     }
+
+    @PostMapping
+    public Result completeAppearance(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest doneRequest = this.superFrogAppearanceRequestService.setComplete(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(doneRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance complete success", requestDto);
+    }
 }
