@@ -17,4 +17,6 @@ public interface SuperFrogAppearanceRequestRepository extends JpaRepository<Supe
     // List<SuperFrogAppearanceRequest> findByStatusAndStudent(RequestStatus status,
     // SuperFrogStudent student);
     List<SuperFrogAppearanceRequest> findByCriteria(Map<String, Object> criteria);
+
+
 }

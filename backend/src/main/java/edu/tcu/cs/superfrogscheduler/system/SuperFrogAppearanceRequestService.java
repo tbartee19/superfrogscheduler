@@ -210,50 +210,58 @@ public class SuperFrogAppearanceRequestService {
     }
 
     // Spirit Director assigns student
-    public void assignSuperFrogStudent(Integer requestId, Integer studentId) {
+    public void assignSuperFrogStudent(Integer requestId, String studentId) {
         // Fetch the request using the provided request ID
         SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ObjectNotFoundException("Request not found.", requestId));
 
-        // Fetch the student using the provided student ID
-        SuperFrogStudent student = superfrogStudentRepository.findById(studentId.toString())
-                .orElseThrow(() -> new ObjectNotFoundException("Student not found.", studentId));
+        // Check the existence of the student using the provided student ID
+        if (superfrogStudentRepository.findById(studentId).isEmpty()) {
+            throw new ObjectNotFoundException("Student not found", studentId);
+        }
 
         // Ensure the request is approved before assigning a student
         if (request.getStatus() != RequestStatus.APPROVED) {
-            throw new ObjectNotFoundException("Cannot assign a student to an unapproved request.", requestId);
+            throw new ObjectNotFoundException("Cannot assign a student to an unapproved request.", requestId.toString());
         }
 
-        // Assign the student to the request and update the request status
-        request.setSuperfrogStudent(student);
+        // Update the request status to ASSIGNED and set the student ID
         request.setStatus(RequestStatus.ASSIGNED);
+        request.setStudentId(studentId);  // Make sure you have this setter or similar in your SuperFrogAppearanceRequest class
         superFrogAppearanceRequestRepository.save(request);
 
         // Send notifications
-        notificationService.sendNotification("The appearance request has been assigned to: " + student.getFirstName() + " " + student.getLastName());
+        notificationService.sendNotification("The appearance request has been assigned.");
         notificationService.sendNotification("You have been assigned to an appearance request on: " + request.getEventDate());
     }
 
-    // Student signs-up for an appearance
-    public void SuperFrogStudentSignup(Integer requestId, Integer studentId) {
+
+    public void SuperFrogStudentSignup(Integer requestId, String studentId) {
+        // Fetch the request using the provided request ID
         SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ObjectNotFoundException("Request not found.", requestId));
 
+        // Check the existence of the student using the provided student ID
+        if (superfrogStudentRepository.findById(studentId).isEmpty()) {
+            throw new ObjectNotFoundException("Student not found.", studentId);
+        }
+
+        // Ensure the request is approved before allowing signup
         if (!request.getStatus().equals(RequestStatus.APPROVED)) {
             throw new ObjectNotFoundException("Request is not available for signup", requestId);
         }
 
-        SuperFrogStudent student = superfrogStudentRepository.findById(String.valueOf(studentId))
-                .orElseThrow(() -> new ObjectNotFoundException("Student not found.", studentId));
-
-        request.setSuperfrogStudent(student);
+        // Update the request status to ASSIGNED
         request.setStatus(RequestStatus.ASSIGNED);
         superFrogAppearanceRequestRepository.save(request);
+
+        // Notify about the signup
+        notificationService.sendNotification("A student has signed up for the appearance request on: " + request.getEventDate());
     }
 
 
     // Student cancels an appearance request sign-up
-    public void SuperFrogStudentCancellation(Integer requestId, Integer studentId) {
+    public void SuperFrogStudentCancellation(Integer requestId, String studentId) {
         SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ObjectNotFoundException("Request not found", requestId));
 
@@ -261,7 +269,8 @@ public class SuperFrogAppearanceRequestService {
             throw new ObjectNotFoundException("Request is not currently assigned", requestId);
         }
 
-        if (request.getSuperfrogStudent() == null || !request.getSuperfrogStudent().getId().equals(String.valueOf(studentId))) {
+        // Assuming `studentId` is a string and comparing directly if the stored ID matches
+        if (!request.getStudentId().equals(studentId)) {
             throw new ObjectNotFoundException("This student is not signed up for this request", studentId);
         }
 
@@ -269,13 +278,17 @@ public class SuperFrogAppearanceRequestService {
             throw new ObjectNotFoundException("It is too late to cancel this appearance", requestId);
         }
 
-        request.setSuperfrogStudent(null);
+        // Clear the student ID and set the request back to APPROVED
+        request.setStudentId(null); // Assuming there's a method to remove student ID
         request.setStatus(RequestStatus.APPROVED);
         superFrogAppearanceRequestRepository.save(request);
 
-    // send notifications about the cancellation
+        // Send notifications about the cancellation
         notificationService.sendNotification("An appearance request has been cancelled and is now available for sign up again.");
     }
+
+
+
 
 }
 

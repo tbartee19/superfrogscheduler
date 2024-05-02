@@ -159,6 +159,7 @@ public class AppearanceRequestController {
     @Autowired
     private SuperFrogAppearanceRequestService service;
 
+
     @GetMapping("/search")
     public ResponseEntity<List<SuperFrogAppearanceRequest>> searchRequests(@RequestParam Map<String, Object> criteria) {
         List<SuperFrogAppearanceRequest> results = service.searchRequests(criteria);
@@ -181,7 +182,7 @@ public class AppearanceRequestController {
     @PostMapping("/signup/{requestId}/{studentId}")
     public ResponseEntity<String> signUpForAppearance(@PathVariable Integer requestId, @PathVariable Integer studentId) {
         try {
-            superFrogAppearanceRequestService.SuperFrogStudentSignup(requestId, studentId);
+            superFrogAppearanceRequestService.SuperFrogStudentSignup(requestId, String.valueOf(studentId));
             return ResponseEntity.ok("Signed up successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -191,7 +192,7 @@ public class AppearanceRequestController {
     @PostMapping("/cancel-signup/{requestId}/{studentId}")
     public ResponseEntity<String> cancelSignUp(@PathVariable Integer requestId, @PathVariable Integer studentId) {
         try {
-            superFrogAppearanceRequestService.SuperFrogStudentCancellation(requestId, studentId);
+            superFrogAppearanceRequestService.SuperFrogStudentCancellation(requestId, String.valueOf(studentId));
             return ResponseEntity.ok("Signup cancelled successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

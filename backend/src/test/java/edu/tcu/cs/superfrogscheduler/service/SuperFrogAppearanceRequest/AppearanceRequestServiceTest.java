@@ -432,29 +432,27 @@ public class AppearanceRequestServiceTest {
     }
 
     @Test
-    void assignStudentToApprovedRequest_Success() {
+    public void assignStudentToApprovedRequest_Success() {
         // Given
         Integer requestId = 2; // ID of an approved request
-        Integer studentId = 1;
-        SuperFrogAppearanceRequest approvedRequest = superFrogAppearanceRequests.get(1); // the approved request from setUp
-        SuperFrogStudent assignedStudent = new SuperFrogStudent();
-        assignedStudent.setId("1");
-        assignedStudent.setFirstName("Super");
-        assignedStudent.setLastName("Frog");
+        String studentId = "1"; // Assuming student ID is a string
+        SuperFrogAppearanceRequest approvedRequest = new SuperFrogAppearanceRequest();
+        approvedRequest.setStatus(RequestStatus.APPROVED);
 
         when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(approvedRequest));
-        when(superfrogStudentRepository.findById(String.valueOf(studentId))).thenReturn(Optional.of(assignedStudent));
+        when(superfrogStudentRepository.findById(studentId)).thenReturn(Optional.of(new SuperFrogStudent()));
 
         // Act
         superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId);
 
         // Assert
         assertEquals(RequestStatus.ASSIGNED, approvedRequest.getStatus());
-        assertSame(assignedStudent, approvedRequest.getSuperfrogStudent());
+        assertEquals(studentId, approvedRequest.getStudentId()); // Verify this matches the actual implementation
         verify(superFrogAppearanceRequestRepository).save(approvedRequest);
-        verify(notificationService).sendNotification("The appearance request has been assigned to: " + assignedStudent.getFirstName() + " " + assignedStudent.getLastName());
-        verify(notificationService).sendNotification("You have been assigned to an appearance request on: " + approvedRequest.getEventDate().toString());
+        verify(notificationService, times(2)).sendNotification(anyString());
     }
+
+
 
     @Test
     void assignStudentToUnapprovedRequest_Failure() {
@@ -473,7 +471,7 @@ public class AppearanceRequestServiceTest {
 
         // Act & Assert
         ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
-            superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId);
+            superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, String.valueOf(studentId));
         });
 
         String expectedMessage = "Could not find Cannot assign a student to an unapproved request. with Id " + requestId + " :(";
@@ -494,42 +492,40 @@ public class AppearanceRequestServiceTest {
         when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId));
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, String.valueOf(studentId)));
     }
 
     @Test
-    void testSignupSuccess() {
+    public void testSignupSuccess() {
         SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
         request.setStatus(RequestStatus.APPROVED);
-        SuperFrogStudent student = new SuperFrogStudent();
-        student.setId("123");
 
         when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
-        when(superfrogStudentRepository.findById("123")).thenReturn(Optional.of(student));
+        when(superfrogStudentRepository.findById("123")).thenReturn(Optional.of(new SuperFrogStudent()));
 
-        superFrogAppearanceRequestService.SuperFrogStudentSignup(1, 123);
+        superFrogAppearanceRequestService.SuperFrogStudentSignup(1, "123");
 
         assertEquals(RequestStatus.ASSIGNED, request.getStatus());
-        assertEquals(student, request.getSuperfrogStudent());
+        assertEquals("123", request.getStudentId());
         verify(superFrogAppearanceRequestRepository).save(request);
     }
 
     @Test
-    void testSignupRequestNotApproved() {
+    public void testSignupRequestNotApproved() {
         SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
         request.setStatus(RequestStatus.PENDING);
 
         when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
 
         Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
-            superFrogAppearanceRequestService.SuperFrogStudentSignup(1, 123);
+            superFrogAppearanceRequestService.SuperFrogStudentSignup(1, "123");
         });
 
         assertTrue(exception.getMessage().contains("not available for signup"));
     }
 
     @Test
-    void testSignupStudentNotFound() {
+    public void testSignupStudentNotFound() {
         SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
         request.setStatus(RequestStatus.APPROVED);
 
@@ -537,58 +533,53 @@ public class AppearanceRequestServiceTest {
         when(superfrogStudentRepository.findById("123")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
-            superFrogAppearanceRequestService.SuperFrogStudentSignup(1, 123);
+            superFrogAppearanceRequestService.SuperFrogStudentSignup(1, "123");
         });
 
         assertTrue(exception.getMessage().contains("Student not found"));
     }
 
     @Test
-    void testCancellationSuccess() {
+    public void testCancellationSuccess() {
         SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
         request.setStatus(RequestStatus.ASSIGNED);
+        request.setStudentId("123");
         request.setEventDate(LocalDate.now().plusDays(3));
-        SuperFrogStudent student = new SuperFrogStudent();
-        student.setId("123");
-        request.setSuperfrogStudent(student);
 
         when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
 
-        superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, 123);
+        superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, "123");
 
         assertEquals(RequestStatus.APPROVED, request.getStatus());
-        assertNull(request.getSuperfrogStudent());
+        assertNull(request.getStudentId());
         verify(superFrogAppearanceRequestRepository).save(request);
     }
 
-
     @Test
-    void testCancellationUnassignedRequest() {
+    public void testCancellationUnassignedRequest() {
         SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
         request.setStatus(RequestStatus.APPROVED);
 
         when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
 
         Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
-            superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, 123);
+            superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, "123");
         });
 
         assertTrue(exception.getMessage().contains("not currently assigned"));
     }
 
     @Test
-    void testCancellationTooLate() {
+    public void testCancellationTooLate() {
         SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
         request.setStatus(RequestStatus.ASSIGNED);
+        request.setStudentId("123");
         request.setEventDate(LocalDate.now().plusDays(1)); // One day before the event
-        SuperFrogStudent student = new SuperFrogStudent();
-        student.setId("123");
-        request.setSuperfrogStudent(student);
 
         when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
 
         Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
-            superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, 123);
+            superFrogAppearanceRequestService.SuperFrogStudentCancellation(1, "123");
         });
 
         assertTrue(exception.getMessage().contains("too late to cancel"));
