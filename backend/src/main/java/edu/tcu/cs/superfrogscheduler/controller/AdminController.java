@@ -18,10 +18,10 @@ import edu.tcu.cs.superfrogscheduler.system.SuperFrogStudentService;
 // use cases 13-16
 
 @RestController
-@RequestMapping("/api/admin") 
+@RequestMapping("/api/admin")
 public class AdminController {
 
-   @Autowired
+    @Autowired
     private SuperFrogStudentService studentService;
 
     //use case 13
@@ -35,7 +35,7 @@ public class AdminController {
             return ResponseEntity.badRequest().body("Error creating account: " + e.getMessage());
         }
     }
-    
+
     @PostMapping("/deactivateStudent/{studentId}")
     public ResponseEntity<String> deactivateStudent(@PathVariable String studentId, @RequestParam(required = false) String reason) {
         try {
@@ -47,20 +47,20 @@ public class AdminController {
     }
     @GetMapping("/searchStudents")
     public ResponseEntity<List<SuperFrogStudent>> searchSuperFrogStudents(
-        @RequestParam(required = false) String firstName,
-        @RequestParam(required = false) String lastName,
-        @RequestParam(required = false) String phoneNumber,
-        @RequestParam(required = false) String email) {
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) String email) {
         try {
             System.out.println(firstName);
             List<SuperFrogStudent> students = studentService.findSuperFrogStudents(
-                Optional.ofNullable(firstName), 
-                Optional.ofNullable(lastName), 
-                Optional.ofNullable(phoneNumber), 
-                Optional.ofNullable(email));
+                    Optional.ofNullable(firstName),
+                    Optional.ofNullable(lastName),
+                    Optional.ofNullable(phoneNumber),
+                    Optional.ofNullable(email));
             if (students.isEmpty()) {
                 System.out.println("No students found.");
-            return ResponseEntity.ok(Collections.emptyList());
+                return ResponseEntity.ok(Collections.emptyList());
             }
             else {
                 System.out.println("Found students: " + students.size());
@@ -86,7 +86,7 @@ public class AdminController {
     }
 
 
-    // other methods 
+
+
+    // other methods
 }
-
-

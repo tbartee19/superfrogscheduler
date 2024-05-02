@@ -8,7 +8,7 @@ import java.util.Optional;
 
 // repository to store superfrog students in database
 public interface SuperFrogStudentRepository extends MongoRepository<SuperFrogStudent, String> {
-    
+
     List<SuperFrogStudent> findByFirstNameAndLastNameAndPhoneNumberAndEmail(String firstName, String lastName, String phoneNumber, String email);
     List<SuperFrogStudent> findByFirstNameAndLastNameAndPhoneNumber(String firstName, String lastName, String phoneNumber);
     List<SuperFrogStudent> findByFirstNameAndLastName(String firstName, String lastName);
@@ -22,11 +22,7 @@ public interface SuperFrogStudentRepository extends MongoRepository<SuperFrogStu
     List<SuperFrogStudent> findByPhoneNumber(String phoneNumber);
     Optional<SuperFrogStudent> findByEmail(String email);
     Optional<SuperFrogStudent> findById(String id);
-
-
-
     class SuperFrogAppearanceRequestRepository {
 
     }
-
 }

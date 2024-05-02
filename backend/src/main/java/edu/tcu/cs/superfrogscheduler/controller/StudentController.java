@@ -31,7 +31,7 @@ public class StudentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     @PutMapping("/changePassword/{studentId}")
     public ResponseEntity<?> changeStudentPassword(@PathVariable String studentId, @RequestBody PasswordUpdateDTO passwordUpdateDTO) {
         try {

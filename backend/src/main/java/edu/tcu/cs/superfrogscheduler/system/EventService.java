@@ -18,34 +18,34 @@ public class EventService {
 
     public Event addEvent(Event event) {
         List<Event> existingEvents = eventRepository.findByStudentIdAndStartDateTimeBetween(
-            event.getStudentId(),
-            event.getStartDateTime(),
-            event.getEndDateTime());
-    
+                event.getStudentId(),
+                event.getStartDateTime(),
+                event.getEndDateTime());
+
         if (!existingEvents.isEmpty()) {
             throw new IllegalStateException("Conflict detected: An event already exists within the provided timeframe.");
         }
         return eventRepository.save(event);
     }
-    
+
 
     public Event updateEvent(String eventId, Event updatedEvent) throws Exception {
         Event existingEvent = eventRepository.findById(eventId)
-            .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + eventId));
+                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + eventId));
 
         System.out.println("Existing Event: " + existingEvent.getEndDateTime());
         System.out.println("Updated Event: " + updatedEvent.getEndDateTime());
         // Check if the updated event times are changed and if they conflict with other events
         if (!existingEvent.getStartDateTime().equals(updatedEvent.getStartDateTime()) ||
-            !existingEvent.getEndDateTime().equals(updatedEvent.getEndDateTime())) {
+                !existingEvent.getEndDateTime().equals(updatedEvent.getEndDateTime())) {
 
             // Find any events that overlap the new time frame, excluding the current event
             List<Event> conflictingEvents = eventRepository.findByStudentIdAndStartDateTimeBetween(
-                updatedEvent.getStudentId(),
-                updatedEvent.getStartDateTime(),
-                updatedEvent.getEndDateTime()).stream()
-                .filter(event -> !event.getId().equals(eventId)) // Exclude current event
-                .collect(Collectors.toList());
+                            updatedEvent.getStudentId(),
+                            updatedEvent.getStartDateTime(),
+                            updatedEvent.getEndDateTime()).stream()
+                    .filter(event -> !event.getId().equals(eventId)) // Exclude current event
+                    .collect(Collectors.toList());
             System.out.println("Conflicting Events: " + conflictingEvents);
 
             if (!conflictingEvents.isEmpty()) {
@@ -53,9 +53,9 @@ public class EventService {
             }
         }
 
-    // No conflicts, proceed to save the updated event
-    return eventRepository.save(updatedEvent);
-}
+        // No conflicts, proceed to save the updated event
+        return eventRepository.save(updatedEvent);
+    }
 
 
     public void deleteEvent(String eventId) {
@@ -68,4 +68,3 @@ public class EventService {
         return eventRepository.findByStudentId(studentId);
     }
 }
-

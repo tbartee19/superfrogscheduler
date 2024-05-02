@@ -32,6 +32,6 @@ public class SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter 
                 source.getOutsideOrgs(),
                 source.getDescription(),
                 source.getStatus());
-                // source.getStudent() != null ? this.superfrogToSuperfrogDtoConverter.convert(source.getStudent()) : null);
+        // source.getStudent() != null ? this.superfrogToSuperfrogDtoConverter.convert(source.getStudent()) : null);
     }
 }

@@ -14,17 +14,17 @@ public class ProfileUpdateDTO {
     @Override
     public String toString() {
         return "ProfileUpdateDTO{" +
-               "firstName='" + firstName + '\'' +
-               ", lastName='" + lastName + '\'' +
-               ", phoneNumber='" + phoneNumber + '\'' +
-               ", physicalAddress='" + physicalAddress + '\'' +
-               ", email='" + email + '\'' +
-               ", internationalStudent=" + internationalStudent +
-               ", paymentPreference='" + paymentPreference + '\'' +
-               ", isActive=" + isActive +
-               '}';
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", physicalAddress='" + physicalAddress + '\'' +
+                ", email='" + email + '\'' +
+                ", internationalStudent=" + internationalStudent +
+                ", paymentPreference='" + paymentPreference + '\'' +
+                ", isActive=" + isActive +
+                '}';
     }
-    
+
     // Getters and Setters
     public String getFirstName() {
         return firstName;
@@ -88,4 +88,3 @@ public class ProfileUpdateDTO {
         this.isActive = isActive;
     }
 }
-

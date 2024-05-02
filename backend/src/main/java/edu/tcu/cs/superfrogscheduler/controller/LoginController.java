@@ -29,7 +29,7 @@ public class LoginController {
     @Autowired
     private AccountRepository accountRepository;
 
-    @Autowired 
+    @Autowired
     private SuperFrogStudentRepository studentRepository;
 
     @PostMapping("/api/login")
@@ -45,7 +45,7 @@ public class LoginController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             Account account = accountRepository.findByEmail(loginRequest.getUsername()).orElseThrow(
-                () -> new Exception("User not found")
+                    () -> new Exception("User not found")
             );
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User authenticated successfully");
@@ -60,11 +60,11 @@ public class LoginController {
             }
 
             // Determine the role and customize response based on the role
-            
-            
+
+
             response.put("role", account.getRole()); // Send role back to the client
-           
-            
+
+
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -73,4 +73,3 @@ public class LoginController {
     }
 
 }
-

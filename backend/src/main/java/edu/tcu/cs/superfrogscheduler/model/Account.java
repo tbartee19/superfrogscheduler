@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 // account model for storing account credentials username password role and id to access
 @Document
 public class Account {
-    
+
     // mongo sets their own object ids
     @Id
     private String id;
@@ -15,7 +15,7 @@ public class Account {
     private String email; // email used as username
 
     private String passwordHash;
-    
+
     private String role;
 
     private boolean isActive = true;
@@ -54,7 +54,7 @@ public class Account {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
-    
+
     public String getRole() {
         return role;
     }

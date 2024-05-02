@@ -7,6 +7,4 @@ public class HttpStatusCode {
     public static final int FORBIDDEN = 403; // no permission
     public static final int NOT_FOUND = 404; // not found
     public static final int INTERNAL_SERVER_ERROR = 500; // server internal error
-    public static final int CONFLICT = 409;
-
 }

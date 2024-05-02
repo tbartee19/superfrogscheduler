@@ -29,17 +29,17 @@ public class SpiritDirectorEventService {
 
     public SpiritDirectorEvent update(Integer id, SpiritDirectorEvent update){
         return this.spiritDirectorEventRepository.findById(id)
-            .map(oldEvent -> {
-                oldEvent.setEventTitle(update.getEventTitle());
-                oldEvent.setStartDate(update.getStartDate());
-                oldEvent.setStartTime(update.getStartTime());
-                oldEvent.setEndDate(update.getEndDate());
-                oldEvent.setEndTime(update.getEndTime());
-                oldEvent.setRecurrenceStart(update.getRecurrenceStart());
-                oldEvent.setRecurrenceEnd(update.getRecurrenceEnd());
-                return this.spiritDirectorEventRepository.save(oldEvent);
-            })
-            .orElseThrow(() -> new ObjectNotFoundException("spiritdirectorevent", id));
+                .map(oldEvent -> {
+                    oldEvent.setEventTitle(update.getEventTitle());
+                    oldEvent.setStartDate(update.getStartDate());
+                    oldEvent.setStartTime(update.getStartTime());
+                    oldEvent.setEndDate(update.getEndDate());
+                    oldEvent.setEndTime(update.getEndTime());
+                    oldEvent.setRecurrenceStart(update.getRecurrenceStart());
+                    oldEvent.setRecurrenceEnd(update.getRecurrenceEnd());
+                    return this.spiritDirectorEventRepository.save(oldEvent);
+                })
+                .orElseThrow(() -> new ObjectNotFoundException("spiritdirectorevent", id));
     }
 
     public void delete(Integer id) {

@@ -99,4 +99,3 @@ public class SuperFrogSpiritDirector {
         this.account = account;
     }
 }
-

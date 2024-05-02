@@ -27,7 +27,7 @@ public class SpiritDirectorEventController {
         this.spiritDirectorEventToSpiritDirectorEventDtoConverter = spiritDirectorEventToSpiritDirectorEventDtoConverter;
         this.spiritDirectorEventDtoToSpiritDirectorEventConverter = spiritDirectorEventDtoToSpiritDirectorEventConverter;
     }
-    
+
     // use case 17 - Spirit Director can add an event
     @PostMapping("/api/spirit-director-events")
     public Result addSpiritDirectorEvent(@Valid @RequestBody SpiritDirectorEventDto spiritDirectorEventDto){

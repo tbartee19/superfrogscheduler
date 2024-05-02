@@ -36,14 +36,14 @@ public class SuperFrogStudent {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-    
+
     private Boolean internationalStudent;
 
     private String paymentPreference;  // Mail Check or Pick Up Check
 
     @DBRef
     private Account account;
-    
+
 
     public SuperFrogStudent() {
         // default constructor
@@ -114,7 +114,7 @@ public class SuperFrogStudent {
     public void setPaymentPreference(String paymentPreference) {
         this.paymentPreference = paymentPreference;
     }
-    
+
     public Account getAccount() {
         return account;
     }
@@ -123,4 +123,3 @@ public class SuperFrogStudent {
         this.account = account;
     }
 }
-

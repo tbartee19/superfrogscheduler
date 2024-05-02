@@ -18,13 +18,10 @@ import javax.validation.constraints.Pattern;
 @Entity
 public class SuperFrogAppearanceRequest implements Serializable {
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer requestId;
 
-    private String studentId;
     // added date, start time, and end time
     private LocalDate eventDate;
     private LocalTime startTime;
@@ -199,18 +196,6 @@ public class SuperFrogAppearanceRequest implements Serializable {
 
     }
 
-//    @ManyToOne
-//    @JoinColumn(name = "student_id")
-//    private SuperFrogStudent superfrogStudent;
-//
-//    // Getters and setters...
-//    public SuperFrogStudent getSuperfrogStudent() {
-//        return superfrogStudent;
-//    }
-//
-//    public void setSuperfrogStudent(SuperFrogStudent superfrogStudent) {
-//        this.superfrogStudent = superfrogStudent;
-//    }
     public SuperFrogAppearanceRequest(Integer requestId, LocalDate eventDate, LocalTime startTime, LocalTime endTime, String contactFirstName, String contactLastName, String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address, String specialInstructions, String expenses, String outsideOrgs, String description, RequestStatus status) {
         this.requestId = requestId;
         this.eventDate = eventDate;
@@ -229,15 +214,5 @@ public class SuperFrogAppearanceRequest implements Serializable {
         this.outsideOrgs = outsideOrgs;
         this.description = description;
         this.status = status;
-
     }
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
-    }
-
-    public String getStudentId() {
-        return studentId;
-    }
-
-
 }

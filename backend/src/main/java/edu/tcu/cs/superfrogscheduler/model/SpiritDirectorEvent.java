@@ -83,5 +83,3 @@ public class SpiritDirectorEvent implements Serializable {
         this.recurrenceEnd = recurrenceEnd;
     }
 }
-
-
