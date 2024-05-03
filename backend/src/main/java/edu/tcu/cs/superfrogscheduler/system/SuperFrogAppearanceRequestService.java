@@ -29,7 +29,7 @@ public class SuperFrogAppearanceRequestService {
 
 
     public SuperFrogAppearanceRequest findById(Integer requestId) {
-        return this.superFrogAppearanceRequestRepository.findById(requestId)
+        return superFrogAppearanceRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
     }
 
@@ -189,7 +189,7 @@ public class SuperFrogAppearanceRequestService {
                     existingRequest.setContactLastName(requestDto.contactLastName());
                     existingRequest.setPhoneNumber(requestDto.phoneNumber());
                     existingRequest.setEmail(requestDto.email());
-                    existingRequest.setEventType(String.valueOf(EventType.valueOf(requestDto.eventType())));
+                    existingRequest.setEventType(String.valueOf(EventType.valueOf(String.valueOf(requestDto.eventType()))));
                     existingRequest.setEventTitle(requestDto.eventTitle());
                     existingRequest.setNameOfOrg(requestDto.nameOfOrg());
                     existingRequest.setAddress(requestDto.address());
@@ -205,4 +205,6 @@ public class SuperFrogAppearanceRequestService {
     public List<SuperFrogAppearanceRequest> getRequestsByDateAndTitle(LocalDate date, String title) {
         return superFrogAppearanceRequestRepository.findByEventDateAndEventTitle(date, title);
     }
+
+
 }

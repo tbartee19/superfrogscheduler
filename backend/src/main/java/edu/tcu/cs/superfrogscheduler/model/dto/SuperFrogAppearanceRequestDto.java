@@ -1,6 +1,7 @@
 package edu.tcu.cs.superfrogscheduler.model.dto;
 
 import edu.tcu.cs.superfrogscheduler.model.EventType;
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
 import java.time.LocalDate;
@@ -29,5 +30,22 @@ public record SuperFrogAppearanceRequestDto(
 
         return null;
     }
+
+    private void updateExistingRequestFromDto(SuperFrogAppearanceRequest existingRequest, SuperFrogAppearanceRequestDto requestDto) {
+        existingRequest.setContactFirstName(requestDto.contactFirstName());
+        existingRequest.setContactLastName(requestDto.contactLastName());
+        existingRequest.setPhoneNumber(requestDto.phoneNumber());
+        existingRequest.setEmail(requestDto.email());
+        existingRequest.setEventType(requestDto.eventType());
+        existingRequest.setEventTitle(requestDto.eventTitle());
+        existingRequest.setNameOfOrg(requestDto.nameOfOrg());
+        existingRequest.setAddress(requestDto.address());
+        existingRequest.setSpecialInstructions(requestDto.specialInstructions());
+        existingRequest.setExpenses(requestDto.expenses());
+        existingRequest.setOutsideOrgs(requestDto.outsideOrgs());
+        existingRequest.setDescription(requestDto.description());
+        // Update additional fields as necessary
+    }
+
 
 }

@@ -9,12 +9,11 @@ import static org.mockito.BDDMockito.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
@@ -33,6 +32,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,10 @@ public class AppearanceRequestControllerTest {
     ObjectMapper objectMapper;
 
     List<SuperFrogAppearanceRequest> superFrogAppearanceRequests;
+
+    @MockBean
+    private SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter converter;
+
 
     @BeforeEach
     void setUp() {
@@ -321,50 +326,105 @@ public class AppearanceRequestControllerTest {
                 .andExpect(jsonPath("$.rejectionReason").value("Not suitable"));
     }
 
-//    @Test
-//    void testRequestTcuAppearanceSuccess() throws Exception {
-//        // Given
-//        SuperFrogAppearanceRequestDto dto = new SuperFrogAppearanceRequestDto();
-//        dto.setEventTitle("TCU Game Day");
-//        dto.setEventType("TCU");
-//        dto.setAddress("TCU Stadium");
-//        dto.setStatus(RequestStatus.PENDING);
-//
-//        SuperFrogAppearanceRequest savedRequest = new SuperFrogAppearanceRequest();
-//        savedRequest.setStatus(RequestStatus.ASSIGNED);
-//        savedRequest.setEventTitle("TCU Game Day");
-//        savedRequest.setEventType("TCU");
-//        savedRequest.setAddress("TCU Stadium");
-//
-//        given(superFrogAppearanceRequestService.EventRequest(Mockito.any(SuperFrogAppearanceRequest.class)))
-//                .willReturn(savedRequest);
-//
-//        String jsonRequest = objectMapper.writeValueAsString(dto);
-//
-//        // When & Then
-//        mockMvc.perform(post("/api/tcu/appearances")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonRequest))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.flag").value(true))
-//                .andExpect(jsonPath("$.code").value(HttpStatusCode.SUCCESS))
-//                .andExpect(jsonPath("$.message").value("TCU Event Request Created"))
-//                .andExpect(jsonPath("$.data.eventTitle").value("TCU Game Day"))
-//                .andExpect(jsonPath("$.data.status").value("ASSIGNED"));
-//    }
-//
-//    @Test
-//    void testRequestTcuAppearanceFailure() throws Exception {
-//        // Given
-//        SuperFrogAppearanceRequestDto dto = new SuperFrogAppearanceRequestDto(); // missing mandatory fields
-//        String jsonRequest = objectMapper.writeValueAsString(dto);
-//
-//        // When & Then
-//        mockMvc.perform(post("/api/tcu/appearances")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonRequest))
-//                .andExpect(status().isBadRequest());  // Assuming that your controller or global exception handler deals with validation errors
-//    }
+
+    @Test
+    void testViewAppearanceRequest_Success() throws Exception {
+        SuperFrogAppearanceRequest appearanceRequest = new SuperFrogAppearanceRequest();
+        appearanceRequest.setRequestId(1);
+        // Additional setup as necessary
+
+        SuperFrogAppearanceRequestDto dto = new SuperFrogAppearanceRequestDto(
+                1, // requestId
+                LocalDate.of(2024, 5, 15), // eventDate
+                LocalTime.of(14, 0), // startTime
+                LocalTime.of(16, 0), // endTime
+                "John", // contactFirstName
+                "Doe", // contactLastName
+                "123-456-7890", // phoneNumber
+                "johndoe@example.com", // email
+                "TCU", // eventType
+                "Alumni Gathering", // eventTitle
+                "TCU Alumni Association", // nameOfOrg
+                "2800 S University Dr, Fort Worth, TX", // address
+                "Bring TCU memorabilia.", // specialInstructions
+                "200", // expenses
+                "Local food vendors", // outsideOrgs
+                "A gathering of TCU alumni for networking and celebration.", // description
+                RequestStatus.PENDING // status
+        );
+
+
+        when(superFrogAppearanceRequestService.findById(1)).thenReturn(appearanceRequest);
+        when(converter.convert(appearanceRequest)).thenReturn(dto);
+
+        mockMvc.perform(get("/api/appearances/{requestId}/view", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.requestId").value(dto.requestId())) // Here, accessing the record's methods
+        // Add more JSON path assertions for each field in the DTO
+        ;
+    }
+
+    @Test
+    void testViewAppearanceRequest_NotFound() throws Exception {
+        when(superFrogAppearanceRequestService.findById(1)).thenThrow(new ObjectNotFoundException("AppearanceRequest", 1));
+
+        mockMvc.perform(get("/api/appearances/{requestId}/view", 1))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testViewAppearanceRequest_Error() throws Exception {
+        when(superFrogAppearanceRequestService.findById(1)).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(get("/api/appearances/{requestId}/view", 1))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void testEditAppearanceRequestSuccess() throws Exception {
+        // Given
+        Integer requestId = 1;
+        SuperFrogAppearanceRequest existingRequest = new SuperFrogAppearanceRequest();
+        existingRequest.setRequestId(requestId);
+        existingRequest.setContactFirstName("John");
+        existingRequest.setContactLastName("Doe");
+
+        SuperFrogAppearanceRequestDto requestDto = new SuperFrogAppearanceRequestDto(
+                requestId, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), "Jane", "Doe",
+                "(123) 456-7890", "jane.doe@example.com", "PRIVATE", "Meeting", "Company X",
+                "123 Main St, City, State, 12345", "None", "None", "None", "Discussion", RequestStatus.PENDING
+        );
+
+        given(superFrogAppearanceRequestService.findById(requestId)).willReturn(existingRequest);
+        given(superFrogAppearanceRequestService.save(any(SuperFrogAppearanceRequest.class))).willReturn(existingRequest);
+
+        // When & Then
+        mockMvc.perform(put("/api/appearances/{requestId}/edit", requestId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contactFirstName").value("Jane")); // Verifying one changed field
+    }
+
+
+    @Test
+    public void testEditAppearanceRequestNotFound() throws Exception {
+        // Given
+        Integer requestId = 999;
+        SuperFrogAppearanceRequestDto requestDto = new SuperFrogAppearanceRequestDto(
+                requestId, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), "Jane", "Doe",
+                "(123) 456-7890", "jane.doe@example.com", "PRIVATE", "Meeting", "Company X",
+                "123 Main St, City, State, 12345", "None", "None", "None", "Discussion", RequestStatus.PENDING
+        );
+
+        given(superFrogAppearanceRequestService.findById(requestId)).willReturn(null);
+
+        // When & Then
+        mockMvc.perform(put("/api/appearances/{requestId}/edit", requestId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isNotFound());
+    }
 
 
 

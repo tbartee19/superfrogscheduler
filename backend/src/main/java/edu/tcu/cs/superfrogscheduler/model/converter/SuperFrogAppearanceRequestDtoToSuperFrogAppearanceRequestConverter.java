@@ -24,7 +24,7 @@ public class SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter
         superFrogAppearanceRequest.setContactLastName(source.contactLastName());
         superFrogAppearanceRequest.setPhoneNumber(source.phoneNumber());
         superFrogAppearanceRequest.setEmail(source.email());
-        superFrogAppearanceRequest.setEventType(source.eventType());
+        superFrogAppearanceRequest.setEventType(String.valueOf(source.eventType()));
         superFrogAppearanceRequest.setEventTitle(source.eventTitle());
         superFrogAppearanceRequest.setNameOfOrg(source.nameOfOrg());
         superFrogAppearanceRequest.setAddress(source.address());

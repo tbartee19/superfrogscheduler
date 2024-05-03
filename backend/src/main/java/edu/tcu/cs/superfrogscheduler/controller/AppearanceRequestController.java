@@ -2,6 +2,7 @@ package edu.tcu.cs.superfrogscheduler.controller;
 
 import javax.validation.Valid;
 
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
@@ -35,6 +36,24 @@ public class AppearanceRequestController {
     private final SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
     private final SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
     private final SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+
+    // Inside your AppearanceRequestController class
+
+    private void updateExistingRequestFromDto(SuperFrogAppearanceRequest existingRequest, SuperFrogAppearanceRequestDto requestDto) {
+        existingRequest.setContactFirstName(requestDto.contactFirstName());
+        existingRequest.setContactLastName(requestDto.contactLastName());
+        existingRequest.setPhoneNumber(requestDto.phoneNumber());
+        existingRequest.setEmail(requestDto.email());
+        existingRequest.setEventType(requestDto.eventType());
+        existingRequest.setEventTitle(requestDto.eventTitle());
+        existingRequest.setNameOfOrg(requestDto.nameOfOrg());
+        existingRequest.setAddress(requestDto.address());
+        existingRequest.setSpecialInstructions(requestDto.specialInstructions());
+        existingRequest.setExpenses(requestDto.expenses());
+        existingRequest.setOutsideOrgs(requestDto.outsideOrgs());
+        existingRequest.setDescription(requestDto.description());
+        existingRequest.setStatus(requestDto.status()); // Assumes your entity supports direct status setting
+    }
 
     // constructor
     public AppearanceRequestController(SuperFrogAppearanceRequestService superFrogAppearanceRequestService, SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter, SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter) {
@@ -167,21 +186,51 @@ public class AppearanceRequestController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving appearance request: " + e.getMessage());
         }
-   }
+    }
+
 
 
     @PutMapping("/api/appearances/{requestId}/edit")
-    public ResponseEntity<?> editAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto requestDto) {
+    public ResponseEntity<?> editAppearanceRequest(@PathVariable Integer requestId, @RequestBody SuperFrogAppearanceRequestDto requestDto) {
         try {
-            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.editAppearanceRequest(requestId, requestDto);
-            SuperFrogAppearanceRequestDto updatedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
-            return new ResponseEntity<>(new Result(true, HttpStatusCode.SUCCESS, "Request successfully updated", updatedRequestDto), HttpStatus.OK);
+            SuperFrogAppearanceRequest existingRequest = superFrogAppearanceRequestService.findById(requestId);
+            if (existingRequest == null) {
+                return ResponseEntity.notFound().build();
+            }
+            updateExistingRequestFromDto(existingRequest, requestDto);
+            superFrogAppearanceRequestService.save(existingRequest);
+
+            SuperFrogAppearanceRequestDto responseDto = convert(existingRequest);
+            return ResponseEntity.ok(responseDto);
         } catch (ObjectNotFoundException e) {
-            return new ResponseEntity<>(new Result(false, HttpStatusCode.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Failed to update the request: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating appearance request: " + e.getMessage());
         }
     }
+
+    private SuperFrogAppearanceRequestDto convert(SuperFrogAppearanceRequest source) {
+        return new SuperFrogAppearanceRequestDto(
+                source.getRequestId(),
+                source.getEventDate(),
+                source.getStartTime(),
+                source.getEndTime(),
+                source.getContactFirstName(),
+                source.getContactLastName(),
+                source.getPhoneNumber(),
+                source.getEmail(),
+                source.getEventType().toString(),  // Convert EventType enum to String here
+                source.getEventTitle(),
+                source.getNameOfOrg(),
+                source.getAddress(),
+                source.getSpecialInstructions(),
+                source.getExpenses(),
+                source.getOutsideOrgs(),
+                source.getDescription(),
+                source.getStatus()
+        );
+    }
+
 
 
 
@@ -208,6 +257,40 @@ public class AppearanceRequestController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
+
+//    @PostMapping("/api/appearances/{requestId}/assign/{studentId}")
+//    public ResponseEntity<?> assignSuperFrogStudent(@PathVariable Integer requestId, @PathVariable Integer studentId) {
+//        try {
+//            // Check if the request exists and is in "Approved" status
+//            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.findById(requestId);
+//            if (request == null || request.getStatus() != RequestStatus.APPROVED) {
+//                return ResponseEntity.notFound().build();
+//            }
+//
+//            // Check if the student exists and is available
+//            SuperFrogStudent student = superFrogStudentService.findById(studentId);
+//            if (student == null || !student.isAvailable()) {
+//                return ResponseEntity.badRequest().body("Selected student is not available.");
+//            }
+//
+//            // Assign the student to the request
+//            request.setAssignedStudent(student);
+//            request.setStatus(RequestStatus.ASSIGNED);
+//            superFrogAppearanceRequestService.save(request);
+//
+//            // Update the student's personal schedule
+//            student.addAppearanceRequest(request);
+//            superFrogStudentService.save(student);
+//
+//            // Notify relevant actors
+//            notifyRequestAssignment(request);
+//
+//            return ResponseEntity.ok("SuperFrog Student assigned successfully.");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error assigning SuperFrog Student: " + e.getMessage());
+//        }
+//    }
+
 
 }
 

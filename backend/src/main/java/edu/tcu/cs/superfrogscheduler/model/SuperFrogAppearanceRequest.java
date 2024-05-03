@@ -1,5 +1,6 @@
 package edu.tcu.cs.superfrogscheduler.model;
 
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
 import java.io.Serializable;
@@ -217,6 +218,22 @@ public class SuperFrogAppearanceRequest implements Serializable {
         this.outsideOrgs = outsideOrgs;
         this.description = description;
         this.status = status;
+    }
+
+    private void updateExistingRequestFromDto(SuperFrogAppearanceRequest existingRequest, SuperFrogAppearanceRequestDto requestDto) {
+        existingRequest.setContactFirstName(requestDto.contactFirstName());
+        existingRequest.setContactLastName(requestDto.contactLastName());
+        existingRequest.setPhoneNumber(requestDto.phoneNumber());
+        existingRequest.setEmail(requestDto.email());
+        existingRequest.setEventType(String.valueOf(requestDto.eventType()));
+        existingRequest.setEventTitle(requestDto.eventTitle());
+        existingRequest.setNameOfOrg(requestDto.nameOfOrg());
+        existingRequest.setAddress(requestDto.address());
+        existingRequest.setSpecialInstructions(requestDto.specialInstructions());
+        existingRequest.setExpenses(requestDto.expenses());
+        existingRequest.setOutsideOrgs(requestDto.outsideOrgs());
+        existingRequest.setDescription(requestDto.description());
+        // Update additional fields as necessary
     }
 
     public String getAssignedSuperFrog() {
