@@ -38,7 +38,7 @@ public class SuperFrogAppearanceRequestService {
     public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String rejectionReason) {
         SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
         request.setStatus(RequestStatus.REJECTED);
-        request.setRejectionReason(rejectionReason);
+        request.setReason(rejectionReason);
         return superFrogAppearanceRequestRepository.save(request);
     }
 
@@ -128,6 +128,18 @@ public class SuperFrogAppearanceRequestService {
                     }
                     return this.superFrogAppearanceRequestRepository.save(doneRequest);
                 }).orElseThrow(()-> new ObjectNotFoundException("superfrograppearancerequest", requestId));
+    }
+
+    public SuperFrogAppearanceRequest cancelRequest(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(cancel -> {
+                    RequestStatus currentStatus = cancel.getStatus();
+                    if((currentStatus == RequestStatus.ASSIGNED)) cancel.setStatus(RequestStatus.APPROVED);
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(cancel);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
     }

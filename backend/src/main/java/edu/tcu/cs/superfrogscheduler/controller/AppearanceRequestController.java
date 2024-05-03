@@ -86,6 +86,13 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Appearance set as incomplete", requestDto);
     }
 
+    @PutMapping("/api/appearance/{requestId}/cancel")
+    public Result cancelApprovedRequest(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest canceledRequest = this.superFrogAppearanceRequestService.cancelRequest(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(canceledRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance canceled successfully", requestDto);
+    }
+
     // use case 3 - Customer cancels a submitted request
     @DeleteMapping("/api/appearances/{requestId}")
     public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId){
@@ -148,4 +155,6 @@ public class AppearanceRequestController {
         SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(doneRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Appearance complete success", requestDto);
     }
+
+    //use case
 }
