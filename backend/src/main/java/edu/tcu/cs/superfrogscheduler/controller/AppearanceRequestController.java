@@ -71,7 +71,7 @@ public class AppearanceRequestController {
     }
     
     // use case 25 - spirit director reverses an approval/rejection decision
-    @PutMapping("/api/appearance/{requestId}")
+    @PutMapping("/api/appearance/{requestId}/reverse")
     public Result reverseAppearanceDecision(@PathVariable Integer requestId){
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.reverseDecision(requestId);
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
@@ -79,7 +79,7 @@ public class AppearanceRequestController {
     }
 
     // use case 26 - the spirit director marks an appearance as incomplete
-    @PutMapping("/api/appearance/{requestId}")
+    @PutMapping("/api/appearance/{requestId}/incomplete")
     public Result markIncomplete(@PathVariable Integer requestId){
         SuperFrogAppearanceRequest incompleteRequest = this.superFrogAppearanceRequestService.setIncomplete(requestId);
         SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(incompleteRequest);
@@ -141,7 +141,8 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Find All Success", appearanceRequestDtos);
     }
 
-    @PostMapping
+    //use case 24 mark an appearance as completed
+    @PutMapping("/api/appearances/{requestId}/complete")
     public Result completeAppearance(@PathVariable Integer requestId){
         SuperFrogAppearanceRequest doneRequest = this.superFrogAppearanceRequestService.setComplete(requestId);
         SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(doneRequest);
