@@ -8,6 +8,7 @@ public enum RequestStatus {
     REJECTED,
     APPROVED,
 
+    ASSIGNED,
     CANCELLED,
 
     INCOMPLETE
