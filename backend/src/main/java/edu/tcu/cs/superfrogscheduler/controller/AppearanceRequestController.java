@@ -19,6 +19,7 @@ import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestT
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 // AppearanceRequestController
 // manages appearance requests
 // this could include creating, editing, viewing, and deleting requests
@@ -68,15 +69,22 @@ public class AppearanceRequestController {
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
     }
-
-    //Use case 25 - Spirit director reverses and approval/rejection decision
-    @PutMapping("/api/appearance/{requestId}/status/{status}")
+    
+    // use case 25 - spirit director reverses an approval/rejection decision
+    @PutMapping("/api/appearance/{requestId}/reverse")
     public Result reverseAppearanceDecision(@PathVariable Integer requestId){
         SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.reverseDecision(requestId);
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Status reverse success", updatedRequestDto);
     }
 
+    // use case 26 - the spirit director marks an appearance as incomplete
+    @PutMapping("/api/appearance/{requestId}/incomplete")
+    public Result markIncomplete(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest incompleteRequest = this.superFrogAppearanceRequestService.setIncomplete(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(incompleteRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance set as incomplete", requestDto);
+    }
 
     // use case 3 - Customer cancels a submitted request
     @DeleteMapping("/api/appearances/{requestId}")
@@ -115,21 +123,6 @@ public class AppearanceRequestController {
         }
     }
 
-    // use case 5 - The Spirit Director requests a SuperFrog for TCU events
-    @PostMapping("/spirit-director/requests")
-    public ResponseEntity<Result> createRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
-        try {
-            SuperFrogAppearanceRequest newRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
-            newRequest.setStatus(RequestStatus.PENDING);
-            SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.save(newRequest);
-            SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
-            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Successfully Created", savedRequestDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error Creating Request: " + e.getMessage()));
-        }
-    }
-
     // other methods
     @GetMapping("/api/appearances/{requestId}")
     public Result findSuperFrogAppearanceById(@PathVariable int requestId) {
@@ -146,5 +139,13 @@ public class AppearanceRequestController {
                 .map(this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter::convert)
                 .collect(Collectors.toList());
         return new Result(true, HttpStatusCode.SUCCESS, "Find All Success", appearanceRequestDtos);
+    }
+
+    //use case 24 mark an appearance as completed
+    @PutMapping("/api/appearances/{requestId}/complete")
+    public Result completeAppearance(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest doneRequest = this.superFrogAppearanceRequestService.setComplete(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(doneRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance complete success", requestDto);
     }
 }

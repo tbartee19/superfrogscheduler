@@ -1,12 +1,8 @@
 package edu.tcu.cs.superfrogscheduler.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.tcu.cs.superfrogscheduler.controller.AdminController;
-import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
-import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 import edu.tcu.cs.superfrogscheduler.system.*;
 import edu.tcu.cs.superfrogscheduler.model.*;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,16 +17,12 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-
-import javax.annotation.processing.SupportedOptions;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -42,17 +34,8 @@ public class AdminControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    ObjectMapper objectMapper;
-
     @MockBean
     private SuperFrogStudentService studentService;
-
-    @MockBean
-    private SuperFrogAppearanceRequestService appearanceRequestService;
-
-    @MockBean
-    private SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
     @Test
     @WithMockUser(username="spiritdirector", roles={"ADMIN"})
@@ -171,69 +154,6 @@ public class AdminControllerTest {
         mockMvc.perform(get("/api/admin/student/{studentId}", studentId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser(username="spiritdirector", roles={"ADMIN"})
-    public void testReverseAppearanceDecision_Success() throws Exception {
-        // Given
-        SuperFrogAppearanceRequestDto requestDto = new SuperFrogAppearanceRequestDto(
-                1,
-                LocalDate.now(),
-                LocalTime.of(10, 0),
-                LocalTime.of(11, 0),
-                "John",
-                "Doe",
-                "1234567890",
-                "johndoe@example.com",
-                "PUBLIC",
-                "Annual Fundraiser",
-                "Local Charity",
-                "1234 Main St, Anytown",
-                "Please arrive 15 minutes early",
-                "None",
-                "No",
-                "A community event to raise funds",
-                RequestStatus.APPROVED
-        );
-
-        String requestDtoJson = objectMapper.writeValueAsString(requestDto);
-
-        // When - Set up the existing appearance request for comparison
-        SuperFrogAppearanceRequest existingRequest = new SuperFrogAppearanceRequest(
-                1,
-                requestDto.eventDate(),
-                requestDto.startTime(),
-                requestDto.endTime(),
-                requestDto.contactFirstName(),
-                requestDto.contactLastName(),
-                requestDto.phoneNumber(),
-                requestDto.email(),
-                EventType.valueOf(requestDto.eventType()), // Assuming EventType is an enum with values corresponding to the string types
-                requestDto.eventTitle(),
-                requestDto.nameOfOrg(),
-                requestDto.address(),
-                requestDto.specialInstructions(),
-                requestDto.expenses(),
-                requestDto.outsideOrgs(),
-                requestDto.description(),
-                requestDto.status()
-        );
-
-        // Assuming the service method reverses the status and returns the updated request
-        when(appearanceRequestService.reverseDecision(anyInt()))
-                .thenReturn(existingRequest);
-
-        // When - Then
-        this.mockMvc.perform(put("/api/appearance/{requestId}", existingRequest.getRequestId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestDtoJson)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("APPROVED")))  // Assuming the JSON response contains a status field at the root level
-                .andExpect(jsonPath("$.data.requestId", is(existingRequest.getRequestId())))
-                .andExpect(jsonPath("$.data.eventTitle", is(existingRequest.getEventTitle())))
-                .andExpect(jsonPath("$.data.description", is(existingRequest.getDescription())));
     }
 
 

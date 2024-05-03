@@ -4,23 +4,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
-import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
-import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
-import edu.tcu.cs.superfrogscheduler.system.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
-import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
-
+import edu.tcu.cs.superfrogscheduler.system.SuperFrogStudentService;
 
 // AdminController
 // handles user-related functionalities like account creation, deactivation, editing 
 // and managing schedules for spirit directors with admin role
 
-// use cases 10-16 25-26
+// use cases 13-16
 
 @RestController
 @RequestMapping("/api/admin") 
@@ -28,12 +23,6 @@ public class AdminController {
 
    @Autowired
     private SuperFrogStudentService studentService;
-
-    private SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
-
-    private SuperFrogAppearanceRequest superFrogAppearanceRequest;
-
-    private SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
     //use case 13
     @PostMapping("/createStudent")
@@ -63,15 +52,20 @@ public class AdminController {
         @RequestParam(required = false) String phoneNumber,
         @RequestParam(required = false) String email) {
         try {
+            System.out.println(firstName);
             List<SuperFrogStudent> students = studentService.findSuperFrogStudents(
                 Optional.ofNullable(firstName), 
                 Optional.ofNullable(lastName), 
                 Optional.ofNullable(phoneNumber), 
                 Optional.ofNullable(email));
             if (students.isEmpty()) {
-                return ResponseEntity.ok(Collections.emptyList());
+                System.out.println("No students found.");
+            return ResponseEntity.ok(Collections.emptyList());
             }
-            return ResponseEntity.ok(students);
+            else {
+                System.out.println("Found students: " + students.size());
+                return ResponseEntity.ok(students);
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -91,5 +85,10 @@ public class AdminController {
         }
     }
 
+
+
+
     // other methods 
 }
+
+

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import edu.tcu.cs.superfrogscheduler.system.IdWorker;
+import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,12 +21,11 @@ import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AppearanceRequestServiceTest {
@@ -192,6 +192,8 @@ public class AppearanceRequestServiceTest {
         verify(this.superFrogAppearanceRequestRepository, times(1)).save(oldAppearanceRequest);
     }
 
+
+
     @Test
     void testUpdateNotFound() {
         // Given
@@ -219,6 +221,108 @@ public class AppearanceRequestServiceTest {
         // Then
         verify(this.superFrogAppearanceRequestRepository, times(1)).findById(123456);
     }
+
+    @Test
+    void testReverseDecisionApprovedToRejected() {
+        // Given
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setRequestId(1);
+        request.setStatus(RequestStatus.APPROVED);
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+        when(superFrogAppearanceRequestRepository.save(request)).thenReturn(request);
+
+        // When
+        SuperFrogAppearanceRequest result = superFrogAppearanceRequestService.reverseDecision(1);
+
+        // Then
+        assertEquals(RequestStatus.REJECTED, result.getStatus());
+        verify(superFrogAppearanceRequestRepository).save(request);
+        verify(superFrogAppearanceRequestRepository).findById(1);
+    }
+
+    @Test
+    void testReverseDecisionRejectedToApproved() {
+        // Given
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setRequestId(1);
+        request.setStatus(RequestStatus.REJECTED);
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+        when(superFrogAppearanceRequestRepository.save(request)).thenReturn(request);
+
+        // When
+        SuperFrogAppearanceRequest result = superFrogAppearanceRequestService.reverseDecision(1);
+
+        // Then
+        assertEquals(RequestStatus.APPROVED, result.getStatus());
+        verify(superFrogAppearanceRequestRepository).save(request);
+        verify(superFrogAppearanceRequestRepository).findById(1);
+    }
+
+    @Test
+    void testReverseDecisionNotFound() {
+        // Given
+        when(superFrogAppearanceRequestRepository.findById(99)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.reverseDecision(99));
+        verify(superFrogAppearanceRequestRepository, never()).save(any(SuperFrogAppearanceRequest.class));
+        verify(superFrogAppearanceRequestRepository).findById(99);
+    }
+
+    @Test
+    void testMarkCompleteSuccess(){
+        //Given
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setRequestId(1);
+        request.setStatus(RequestStatus.APPROVED);
+        request.setEndTime(LocalTime.now().minusMinutes(30));
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+        when(superFrogAppearanceRequestRepository.save(request)).thenReturn(request);
+
+        // When
+        SuperFrogAppearanceRequest result = superFrogAppearanceRequestService.setComplete(1);
+
+        // Then
+        assertEquals(RequestStatus.COMPLETED, result.getStatus());
+        verify(superFrogAppearanceRequestRepository).save(request);
+        verify(superFrogAppearanceRequestRepository).findById(1);
+    }
+
+    @Test
+    void testMarkCompleteNotFound(){
+        // Given
+        when(superFrogAppearanceRequestRepository.findById(99)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.setComplete(99));
+        verify(superFrogAppearanceRequestRepository, never()).save(any(SuperFrogAppearanceRequest.class));
+        verify(superFrogAppearanceRequestRepository).findById(99);
+    }
+
+    @Test
+    void testMarkIncompleteSuccess(){
+        //Given
+        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+        request.setRequestId(1);
+        request.setStatus(RequestStatus.APPROVED);
+        request.setEndTime(LocalTime.now().minusMinutes(30));
+
+        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
+        when(superFrogAppearanceRequestRepository.save(request)).thenReturn(request);
+
+        // When
+        SuperFrogAppearanceRequest result = superFrogAppearanceRequestService.setIncomplete(1);
+
+        // Then
+        assertEquals(RequestStatus.INCOMPLETE, result.getStatus());
+        verify(superFrogAppearanceRequestRepository).save(request);
+        verify(superFrogAppearanceRequestRepository).findById(1);
+    }
+
+
 
     @Test
     void testDeleteSuccess() {
