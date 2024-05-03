@@ -3,7 +3,7 @@ package edu.tcu.cs.superfrogscheduler.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearance;
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 
 // ReportController

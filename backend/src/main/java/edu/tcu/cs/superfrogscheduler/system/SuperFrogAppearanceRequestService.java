@@ -1,11 +1,14 @@
 package edu.tcu.cs.superfrogscheduler.system;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -91,6 +94,41 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
+    public SuperFrogAppearanceRequest reverseDecision(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(oldRequest -> {
+                    RequestStatus currentStatus = oldRequest.getStatus();
+                    if(currentStatus == RequestStatus.APPROVED) oldRequest.setStatus(RequestStatus.REJECTED);
+                    else if(currentStatus == RequestStatus.REJECTED) oldRequest.setStatus(RequestStatus.APPROVED);
+                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
+                })
+                .orElseThrow(()-> new ObjectNotFoundException("superfrogappearncerequest", requestId));
+    }
+
+    public SuperFrogAppearanceRequest setIncomplete(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(oldRequest -> {
+                    if(oldRequest.getEndTime().isBefore(LocalTime.now())){
+                        oldRequest.setStatus(RequestStatus.INCOMPLETE);
+                    }
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+    }
+
+    public SuperFrogAppearanceRequest setComplete(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(doneRequest -> {
+                    RequestStatus currentStatus = doneRequest.getStatus();
+                    if((currentStatus == RequestStatus.APPROVED) && (doneRequest.getEndTime().isBefore(LocalTime.now()))) doneRequest.setStatus(RequestStatus.COMPLETED);
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(doneRequest);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrograppearancerequest", requestId));
+    }
 
     }
 

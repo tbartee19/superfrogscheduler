@@ -52,15 +52,20 @@ public class AdminController {
         @RequestParam(required = false) String phoneNumber,
         @RequestParam(required = false) String email) {
         try {
+            System.out.println(firstName);
             List<SuperFrogStudent> students = studentService.findSuperFrogStudents(
                 Optional.ofNullable(firstName), 
                 Optional.ofNullable(lastName), 
                 Optional.ofNullable(phoneNumber), 
                 Optional.ofNullable(email));
             if (students.isEmpty()) {
-                return ResponseEntity.ok(Collections.emptyList());
+                System.out.println("No students found.");
+            return ResponseEntity.ok(Collections.emptyList());
             }
-            return ResponseEntity.ok(students);
+            else {
+                System.out.println("Found students: " + students.size());
+                return ResponseEntity.ok(students);
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -79,6 +84,8 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving student details: " + e.getMessage());
         }
     }
+
+
 
 
     // other methods 

@@ -78,7 +78,7 @@
     </div>
     <div>
       <span style="display: inline;">Address of Event</span>
-      <span><input placeholder="(street, suite/room/floor, city, state, postal code" type="text" class="normal-text" v-model="requests.address" ></span>
+      <span><input placeholder="Street, City, State, Zip Code" type="text" class="normal-text" v-model="requests.address" ></span>
     </div>
   </div>
     
@@ -167,16 +167,6 @@ export default {
     },
     
     submit() {
-      // let containsCommonElement = false
-      // let differentVars = this.findDifferentVars(this.$data.requests, this.$data.ogReq)
-      // const pendingVars = ['startTime', 'endTime', 'eventDate', 'eventType', 'eventTitle', 'address', 'description', 'outsideOrgs', 'expenses', 'nameOfOrg', ]
-      // pendingVars.forEach((key) => {
-      //   if (differentVars.includes(key)) {
-      //     containsCommonElement = true
-      //   }
-      // });
-
-      // console.log(differentVars);
 
       const headers = {
                 'Content-Type': 'application/json'

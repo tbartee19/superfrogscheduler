@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import edu.tcu.cs.superfrogscheduler.model.*;
+import edu.tcu.cs.superfrogscheduler.model.dto.PasswordUpdateDTO;
 import edu.tcu.cs.superfrogscheduler.model.dto.ProfileUpdateDTO;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogStudentService;
 
@@ -20,12 +21,24 @@ public class StudentController {
     private SuperFrogStudentService studentService;
 
     @PutMapping("/updateProfile")
-    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal User user, @RequestBody ProfileUpdateDTO profileUpdate) {
+    public ResponseEntity<?> updateProfile(@RequestBody ProfileUpdateDTO profileUpdate) {
         try {
-            SuperFrogStudent updatedStudent = studentService.updateStudentProfile(user.getUsername(), profileUpdate);
+            System.out.print("edit student called");
+            System.out.println("Received profile update: " + profileUpdate.toString());
+            SuperFrogStudent updatedStudent = studentService.updateStudentProfile(profileUpdate.getEmail(), profileUpdate);
             return ResponseEntity.ok(updatedStudent);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @PutMapping("/changePassword/{studentId}")
+    public ResponseEntity<?> changeStudentPassword(@PathVariable String studentId, @RequestBody PasswordUpdateDTO passwordUpdateDTO) {
+        try {
+            studentService.changePassword(studentId, passwordUpdateDTO.getNewPassword());
+            return ResponseEntity.ok("Password updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating password: " + e.getMessage());
         }
     }
 
