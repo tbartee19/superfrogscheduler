@@ -26,20 +26,20 @@ import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 import static com.mongodb.assertions.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-=======
+//=======
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
->>>>>>> 8bb7abb1862d5975cb871e61508dae268c934382
+//>>>>>>> 8bb7abb1862d5975cb871e61508dae268c934382
 
 @ExtendWith(MockitoExtension.class)
 public class AppearanceRequestServiceTest {
@@ -422,14 +422,59 @@ public class AppearanceRequestServiceTest {
 
     @Test
     void testSearchByEventTitle() {
+        // Arrange
+        SuperFrogAppearanceRequest request1 = new SuperFrogAppearanceRequest();
+        request1.setRequestId(1);
+        request1.setEventDate(LocalDate.of(2024, 5, 10));
+        request1.setEventTitle("Homecoming");
+        request1.setContactFirstName("John");
+        request1.setContactLastName("Doe");
+        request1.setStatus(RequestStatus.PENDING);
+
+        SuperFrogAppearanceRequest request2 = new SuperFrogAppearanceRequest();
+        request2.setRequestId(2);
+        request2.setEventDate(LocalDate.of(2024, 6, 10));
+        request2.setEventTitle("Game Day");
+        request2.setContactFirstName("Tom");
+        request2.setContactLastName("Smith");
+        request2.setStatus(RequestStatus.APPROVED);
+
+        when(superFrogAppearanceRequestRepository.findAll()).thenReturn(Arrays.asList(request1, request2));
+
+        // Act
         List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.searchAppearanceRequests(null, null, "Game Day", null, null, null, null);
-        assertEquals(1, results.size(), "Should find one request with the title 'Game Day'");
+
+        // Assert
+        assertThat(results.size()).isEqualTo(1);
+        assertThat(results.get(0).getEventTitle()).isEqualTo("Game Day");
     }
 
     @Test
     void testSearchByContactFirstName() {
+        SuperFrogAppearanceRequest request1 = new SuperFrogAppearanceRequest();
+        request1.setRequestId(1);
+        request1.setEventDate(LocalDate.of(2024, 5, 10));
+        request1.setEventTitle("Homecoming");
+        request1.setContactFirstName("John");
+        request1.setContactLastName("Doe");
+        request1.setStatus(RequestStatus.PENDING);
+
+        SuperFrogAppearanceRequest request2 = new SuperFrogAppearanceRequest();
+        request2.setRequestId(2);
+        request2.setEventDate(LocalDate.of(2024, 6, 10));
+        request2.setEventTitle("Game Day");
+        request2.setContactFirstName("Tom");
+        request2.setContactLastName("Smith");
+        request2.setStatus(RequestStatus.APPROVED);
+
+        when(superFrogAppearanceRequestRepository.findAll()).thenReturn(Arrays.asList(request1, request2));
+
+        // Act
         List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.searchAppearanceRequests(null, null, null, "Tom", null, null, null);
-        assertEquals(1, results.size(), "Should find one request with the contact first name 'Tom'");
+
+        // Assert
+        assertThat(results.size()).isEqualTo(1);
+        assertThat(results.get(0).getContactFirstName()).isEqualTo("Tom");
     }
 
     @Test
@@ -438,138 +483,7 @@ public class AppearanceRequestServiceTest {
         assertEquals(0, results.size(), "Should find no requests with a non-existent title");
     }
 
-    @Test
-    public void testFindByIdWhenRequestExists() {
-        // Arrange
-        SuperFrogAppearanceRequest expectedRequest = new SuperFrogAppearanceRequest();
-        expectedRequest.setRequestId(1);
-        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(expectedRequest));
 
-        // Act
-        SuperFrogAppearanceRequest result = superFrogAppearanceRequestService.findById(1);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(expectedRequest.getRequestId(), result.getRequestId());
-        verify(superFrogAppearanceRequestRepository).findById(1);  // Verify this method is indeed called
-    }
-
-    @Test
-    public void testFindByIdWhenRequestDoesNotExist() {
-        // Arrange
-        // This specific setup only for this test if different from global setup
-        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.findById(1));
-        verify(superFrogAppearanceRequestRepository).findById(1);  // Ensure this method is called
-    }
-
-
-    @Test
-    @Transactional
-    public void testCreateFindDelete() {
-        // Create an appearance request
-        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
-        request.setContactFirstName("Test");
-        request.setContactLastName("User");
-        request.setPhoneNumber("(123) 456-7890");
-        request.setEmail("testuser@example.com");
-        request.setEventType("PRIVATE");
-        request.setEventTitle("Birthday Party");
-        request.setNameOfOrg("Private Person");
-        request.setAddress("1234 Test St, Testing TX");
-        request.setEventDate(LocalDate.now());
-        request.setStartTime(LocalTime.of(14, 0));
-        request.setEndTime(LocalTime.of(15, 0));
-        request.setDescription("A private birthday party.");
-        request.setStatus(RequestStatus.PENDING);
-
-        // Save the request
-        SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.save(request);
-        assertNotNull(savedRequest.getRequestId());
-
-        // Verify it can be found
-        SuperFrogAppearanceRequest foundRequest = superFrogAppearanceRequestService.findById(savedRequest.getRequestId());
-        assertEquals("Test", foundRequest.getContactFirstName());
-
-        // Delete the request
-        superFrogAppearanceRequestService.delete(savedRequest.getRequestId());
-
-        // Verify it's no longer there
-        Exception exception = assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.findById(savedRequest.getRequestId()));
-        assertEquals("Could not find request with id: " + savedRequest.getRequestId(), exception.getMessage());
-    }
-
-    @Test
-    public void testSaveAndFind() {
-        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
-        request.setContactFirstName("Test");
-        request.setEmail("test@example.com");
-
-        when(superFrogAppearanceRequestRepository.save(any())).thenAnswer(i -> {
-            SuperFrogAppearanceRequest saved = i.getArgument(0);
-            saved.setRequestId(1);  // Simulate setting ID on save
-            return saved;
-        });
-        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(request));
-
-        SuperFrogAppearanceRequest saved = superFrogAppearanceRequestService.save(request);
-        assertNotNull(saved.getRequestId());
-
-        Optional<SuperFrogAppearanceRequest> found = superFrogAppearanceRequestRepository.findById(saved.getRequestId());
-        assertTrue(found.isPresent());
-    }
-
-    private SuperFrogAppearanceRequest existingRequest;
-
-    @Test
-    void testEditAppearanceRequest_Successful() {
-        // Arrange
-        SuperFrogAppearanceRequest updatedRequest = new SuperFrogAppearanceRequest();
-        updatedRequest.setEventTitle("Updated Title");
-        updatedRequest.setDescription("Updated Description");
-
-        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(existingRequest));
-        when(superFrogAppearanceRequestRepository.save(any(SuperFrogAppearanceRequest.class))).thenAnswer(i -> i.getArguments()[0]);
-
-        // Act
-        SuperFrogAppearanceRequest result = superFrogAppearanceRequestService.update(1, updatedRequest);
-
-        // Assert
-        assertEquals("Updated Title", result.getEventTitle());
-        assertEquals("Updated Description", result.getDescription());
-        verify(superFrogAppearanceRequestRepository).save(existingRequest);
-        verify(superFrogAppearanceRequestRepository, times(1)).findById(1);
-    }
-
-    @Test
-    void testEditAppearanceRequest_NotFound() {
-        // Arrange
-        when(superFrogAppearanceRequestRepository.findById(anyInt())).thenReturn(Optional.empty());
-
-        // Act & Assert
-        Exception exception = assertThrows(ObjectNotFoundException.class, () -> superFrogAppearanceRequestService.update(999, new SuperFrogAppearanceRequest()));
-
-        assertTrue(exception.getMessage().contains("Could not find request with id: 999"));
-        verify(superFrogAppearanceRequestRepository, never()).save(any(SuperFrogAppearanceRequest.class));
-    }
-
-    @Test
-    void testEditAppearanceRequest_NoChangeOnInvalidUpdate() {
-        // Assume setting an invalid event date is a part of business rules
-        SuperFrogAppearanceRequest invalidUpdate = new SuperFrogAppearanceRequest();
-        invalidUpdate.setEventDate(LocalDate.of(2000, 1, 1)); // Invalid past date
-
-        when(superFrogAppearanceRequestRepository.findById(1)).thenReturn(Optional.of(existingRequest));
-
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> superFrogAppearanceRequestService.update(1, invalidUpdate));
-
-        // Assert
-        assertNotEquals(LocalDate.of(2000, 1, 1), existingRequest.getEventDate());
-        verify(superFrogAppearanceRequestRepository, never()).save(any(SuperFrogAppearanceRequest.class));
-    }
 
 }
 

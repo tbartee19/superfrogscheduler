@@ -16,6 +16,7 @@ import edu.tcu.cs.superfrogscheduler.system.Result;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,8 +119,8 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Find All Success", appearanceRequestDtos);
     }
 
-<<<<<<< HEAD
-    // Endpoint to approve an appearance request
+
+
     @PutMapping("/api/appearances/{requestId}/approve")
     public ResponseEntity<Result> approveRequest(@PathVariable Integer requestId) {
         SuperFrogAppearanceRequest approvedRequest = superFrogAppearanceRequestService.approveRequest(requestId);
@@ -135,7 +136,7 @@ public class AppearanceRequestController {
         return new ResponseEntity<>(new Result(true, HttpStatusCode.SUCCESS, "Request Rejected", dto), HttpStatus.OK);
     }
 
-    // Endpoint to request a SuperFrog appearance for TCU events
+
     @PostMapping("/api/tcu/appearances")
     public ResponseEntity<Result> requestTcuAppearance(@Valid @RequestBody SuperFrogAppearanceRequestDto requestDto) {
         SuperFrogAppearanceRequest request = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(requestDto);
@@ -145,7 +146,14 @@ public class AppearanceRequestController {
         return new ResponseEntity<>(new Result(true, HttpStatusCode.SUCCESS, "TCU Event Request Created", dto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/api/appearances/{requestId}")
+    @GetMapping("/requests")
+    public List<SuperFrogAppearanceRequest> getRequestsByDateAndTitle(
+            @RequestParam("date") LocalDate date,
+            @RequestParam("title") String title) {
+        return superFrogAppearanceRequestService.getRequestsByDateAndTitle(date, title);
+    }
+
+    @GetMapping("/api/appearances/{requestId}/view")
     public ResponseEntity<?> viewAppearanceRequest(@PathVariable Integer requestId) {
         try {
             SuperFrogAppearanceRequest appearanceRequest = superFrogAppearanceRequestService.findById(requestId);
@@ -159,11 +167,11 @@ public class AppearanceRequestController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving appearance request: " + e.getMessage());
         }
-    }
+   }
 
 
-    @PutMapping("/api/appearances/{requestId}")
-    public ResponseEntity<Result> editAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto requestDto) {
+    @PutMapping("/api/appearances/{requestId}/edit")
+    public ResponseEntity<?> editAppearanceRequest(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto requestDto) {
         try {
             SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.editAppearanceRequest(requestId, requestDto);
             SuperFrogAppearanceRequestDto updatedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
@@ -176,8 +184,8 @@ public class AppearanceRequestController {
     }
 
 
-}
-=======
+
+
     //use case 24 mark an appearance as completed
     @PutMapping("/api/appearances/{requestId}/complete")
     public Result completeAppearance(@PathVariable Integer requestId){
@@ -185,5 +193,21 @@ public class AppearanceRequestController {
         SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(doneRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Appearance complete success", requestDto);
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<SuperFrogAppearanceRequestDto>> searchAppearanceRequests(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String assignedSuperFrog) {
+        List<SuperFrogAppearanceRequest> requests = superFrogAppearanceRequestService.searchAppearanceRequests(startDate, endDate, title, firstName, lastName, status, assignedSuperFrog);
+        List<SuperFrogAppearanceRequestDto> dtos = requests.stream()
+                .map(superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter::convert)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
 }
->>>>>>> 8bb7abb1862d5975cb871e61508dae268c934382
+

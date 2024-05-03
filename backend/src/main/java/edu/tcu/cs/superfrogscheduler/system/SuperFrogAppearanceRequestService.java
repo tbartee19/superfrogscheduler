@@ -1,16 +1,18 @@
 package edu.tcu.cs.superfrogscheduler.system;
 
 import edu.tcu.cs.superfrogscheduler.model.EventType;
+import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
-import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +20,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class SuperFrogAppearanceRequestService {
     private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
-
 
 
     public SuperFrogAppearanceRequestService(
@@ -67,7 +68,7 @@ public class SuperFrogAppearanceRequestService {
         return this.superFrogAppearanceRequestRepository.save(newSuperFrogAppearanceRequest);
     }
 
-    public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update){
+    public SuperFrogAppearanceRequest update(Integer requestId, SuperFrogAppearanceRequest update) {
         update.setStatus(RequestStatus.PENDING);
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
@@ -89,7 +90,7 @@ public class SuperFrogAppearanceRequestService {
                     oldRequest.setStatus(update.getStatus()); // TODO status isnt updated
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
-                .orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
     public void delete(Integer requestId) {
@@ -107,61 +108,75 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
-    public SuperFrogAppearanceRequest reverseDecision(Integer requestId){
+    public SuperFrogAppearanceRequest reverseDecision(Integer requestId) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
                     RequestStatus currentStatus = oldRequest.getStatus();
-                    if(currentStatus == RequestStatus.APPROVED) oldRequest.setStatus(RequestStatus.REJECTED);
-                    else if(currentStatus == RequestStatus.REJECTED) oldRequest.setStatus(RequestStatus.APPROVED);
+                    if (currentStatus == RequestStatus.APPROVED) oldRequest.setStatus(RequestStatus.REJECTED);
+                    else if (currentStatus == RequestStatus.REJECTED) oldRequest.setStatus(RequestStatus.APPROVED);
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
                 })
-                .orElseThrow(()-> new ObjectNotFoundException("superfrogappearncerequest", requestId));
+                .orElseThrow(() -> new ObjectNotFoundException("superfrogappearncerequest", requestId));
     }
 
-    public SuperFrogAppearanceRequest setIncomplete(Integer requestId){
+    public SuperFrogAppearanceRequest setIncomplete(Integer requestId) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(oldRequest -> {
-                    if(oldRequest.getEndTime().isBefore(LocalTime.now())){
+                    if (oldRequest.getEndTime().isBefore(LocalTime.now())) {
                         oldRequest.setStatus(RequestStatus.INCOMPLETE);
-                    }
-                    else{
+                    } else {
                         //trigger warning
                     }
                     return this.superFrogAppearanceRequestRepository.save(oldRequest);
-                }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+                }).orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
-<<<<<<< HEAD
+
     // Method to handle TCU event requests specifically
     public SuperFrogAppearanceRequest EventRequest(SuperFrogAppearanceRequest request) {
         // You might need to implement a check to ensure there's no overlapping TCU event
         // For now, it directly assigns/approves the event
         request.setStatus(RequestStatus.ASSIGNED);  // or APPROVED, based on internal decision logic
         return superFrogAppearanceRequestRepository.save(request);
-=======
-    public SuperFrogAppearanceRequest setComplete(Integer requestId){
+    }
+
+
+    public SuperFrogAppearanceRequest setComplete(Integer requestId) {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(doneRequest -> {
                     RequestStatus currentStatus = doneRequest.getStatus();
-                    if((currentStatus == RequestStatus.APPROVED) && (doneRequest.getEndTime().isBefore(LocalTime.now()))) doneRequest.setStatus(RequestStatus.COMPLETED);
-                    else{
+                    if ((currentStatus == RequestStatus.APPROVED) && (doneRequest.getEndTime().isBefore(LocalTime.now())))
+                        doneRequest.setStatus(RequestStatus.COMPLETED);
+                    else {
                         //trigger warning
                     }
                     return this.superFrogAppearanceRequestRepository.save(doneRequest);
-                }).orElseThrow(()-> new ObjectNotFoundException("superfrograppearancerequest", requestId));
->>>>>>> 8bb7abb1862d5975cb871e61508dae268c934382
+                }).orElseThrow(() -> new ObjectNotFoundException("superfrograppearancerequest", requestId));
+
     }
 
+    // In SuperFrogAppearanceRequestService
     public List<SuperFrogAppearanceRequest> searchAppearanceRequests(LocalDate startDate, LocalDate endDate, String title, String firstName, String lastName, String status, String assignedSuperFrog) {
         return superFrogAppearanceRequestRepository.findAll().stream()
-                .filter(request -> (startDate == null || endDate == null || (request.getEventDate().isEqual(startDate) || request.getEventDate().isEqual(endDate) || (request.getEventDate().isAfter(startDate) && request.getEventDate().isBefore(endDate))))
-                        && (title == null || request.getEventTitle().equalsIgnoreCase(title))
-                        && (firstName == null || request.getContactFirstName().equalsIgnoreCase(firstName))
-                        && (lastName == null || request.getContactLastName().equalsIgnoreCase(lastName))
-                        && (status == null || request.getStatus().toString().equalsIgnoreCase(status))
-                        && (assignedSuperFrog == null || request.getAssignedSuperFrog().equalsIgnoreCase(assignedSuperFrog)))
+                .filter(request -> {
+                    boolean dateMatch = true;
+                    if (startDate != null && endDate != null) {
+                        dateMatch = !request.getEventDate().isBefore(startDate) && !request.getEventDate().isAfter(endDate);
+                    } else if (startDate != null) {
+                        dateMatch = !request.getEventDate().isBefore(startDate);
+                    } else if (endDate != null) {
+                        dateMatch = !request.getEventDate().isAfter(endDate);
+                    }
+                    return dateMatch &&
+                            (title == null || request.getEventTitle().equalsIgnoreCase(title)) &&
+                            (firstName == null || request.getContactFirstName().equalsIgnoreCase(firstName)) &&
+                            (lastName == null || request.getContactLastName().equalsIgnoreCase(lastName)) &&
+                            (status == null || request.getStatus().toString().equalsIgnoreCase(status)) &&
+                            (assignedSuperFrog == null || request.getAssignedSuperFrog().equalsIgnoreCase(assignedSuperFrog));
+                })
                 .collect(Collectors.toList());
     }
+
 
     // In SuperFrogAppearanceRequestService
     public SuperFrogAppearanceRequest editAppearanceRequest(Integer requestId, SuperFrogAppearanceRequestDto requestDto) {
@@ -187,6 +202,7 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
     }
 
-
-
+    public List<SuperFrogAppearanceRequest> getRequestsByDateAndTitle(LocalDate date, String title) {
+        return superFrogAppearanceRequestRepository.findByEventDateAndEventTitle(date, title);
+    }
 }

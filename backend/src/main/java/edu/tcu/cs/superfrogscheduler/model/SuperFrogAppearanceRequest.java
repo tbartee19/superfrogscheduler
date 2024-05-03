@@ -22,6 +22,7 @@ public class SuperFrogAppearanceRequest implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer requestId;
 
+
     // added date, start time, and end time
     private LocalDate eventDate;
     private LocalTime startTime;

@@ -1,5 +1,8 @@
-package edu.tcu.cs.superfrogscheduler.model.dto;
+package edu.tcu.cs.superfrogscheduler.model;
 
+import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.Predicate;
 import java.time.LocalDate;
 
 public class SearchCriteria {
@@ -67,4 +70,43 @@ public class SearchCriteria {
     public void setAssignedSuperFrog(String assignedSuperFrog) {
         this.assignedSuperFrog = assignedSuperFrog;
     }
-}
+
+
+        public Specification<SuperFrogAppearanceRequest> toSpecification() {
+            return (root, query, cb) -> {
+                Predicate p = cb.conjunction();
+
+                if (startDate != null && endDate != null) {
+                    p = cb.and(p, cb.between(root.get("eventDate"), startDate, endDate));
+                } else if (startDate != null) {
+                    p = cb.and(p, cb.greaterThanOrEqualTo(root.get("eventDate"), startDate));
+                } else if (endDate != null) {
+                    p = cb.and(p, cb.lessThanOrEqualTo(root.get("eventDate"), endDate));
+                }
+
+                if (title != null) {
+                    p = cb.and(p, cb.like(root.get("eventTitle"), "%" + title + "%"));
+                }
+
+                if (firstName != null) {
+                    p = cb.and(p, cb.like(root.get("contactFirstName"), "%" + firstName + "%"));
+                }
+
+                if (lastName != null) {
+                    p = cb.and(p, cb.like(root.get("contactLastName"), "%" + lastName + "%"));
+                }
+
+                if (status != null) {
+                    p = cb.and(p, cb.equal(root.get("status"), status));
+                }
+
+                if (assignedSuperFrog != null) {
+                    p = cb.and(p, cb.equal(root.get("assignedSuperFrog"), assignedSuperFrog));
+                }
+
+                return p;
+            };
+        }
+    }
+
+

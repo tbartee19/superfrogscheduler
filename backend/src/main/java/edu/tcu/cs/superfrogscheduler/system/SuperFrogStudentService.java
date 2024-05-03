@@ -1,8 +1,10 @@
 package edu.tcu.cs.superfrogscheduler.system;
 
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.model.Account;
 import edu.tcu.cs.superfrogscheduler.model.dto.ProfileUpdateDTO;
+import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogStudentRepository;
 import edu.tcu.cs.superfrogscheduler.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import javax.validation.ValidationException;
 
@@ -33,6 +31,8 @@ public class SuperFrogStudentService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
 
 
 
@@ -207,4 +207,5 @@ public class SuperFrogStudentService {
     private boolean isPresentAndNotEmpty(Optional<String> param) {
         return param.isPresent() && !param.get().trim().isEmpty();
     }
+
 }
