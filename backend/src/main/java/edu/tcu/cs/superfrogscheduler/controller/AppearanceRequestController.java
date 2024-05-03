@@ -7,8 +7,10 @@ import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
         import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
@@ -258,39 +260,48 @@ public class AppearanceRequestController {
         return ResponseEntity.ok(dtos);
     }
 
-//    @PostMapping("/api/appearances/{requestId}/assign/{studentId}")
-//    public ResponseEntity<?> assignSuperFrogStudent(@PathVariable Integer requestId, @PathVariable Integer studentId) {
-//        try {
-//            // Check if the request exists and is in "Approved" status
-//            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.findById(requestId);
-//            if (request == null || request.getStatus() != RequestStatus.APPROVED) {
-//                return ResponseEntity.notFound().build();
-//            }
-//
-//            // Check if the student exists and is available
-//            SuperFrogStudent student = superFrogStudentService.findById(studentId);
-//            if (student == null || !student.isAvailable()) {
-//                return ResponseEntity.badRequest().body("Selected student is not available.");
-//            }
-//
-//            // Assign the student to the request
-//            request.setAssignedStudent(student);
-//            request.setStatus(RequestStatus.ASSIGNED);
-//            superFrogAppearanceRequestService.save(request);
-//
-//            // Update the student's personal schedule
-//            student.addAppearanceRequest(request);
-//            superFrogStudentService.save(student);
-//
-//            // Notify relevant actors
-//            notifyRequestAssignment(request);
-//
-//            return ResponseEntity.ok("SuperFrog Student assigned successfully.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error assigning SuperFrog Student: " + e.getMessage());
-//        }
-//    }
+
+    @PutMapping("/api/appearances/{requestId}/signup")
+    public ResponseEntity<Result> signUpForAppearance(@PathVariable Integer requestId, @AuthenticationPrincipal String studentId) {
+        try {
+            SuperFrogAppearanceRequest signedUpRequest = superFrogAppearanceRequestService.signUpForAppearance(requestId, studentId);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Signed up successfully", signedUpRequest));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new Result(false, HttpStatusCode.INVALID_ARGUMENT, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error during sign up."));
+        }
+    }
+
+
+
+    @PutMapping("/{requestId}/assign/{studentId}")
+        public ResponseEntity<?> assignStudentToRequest(@PathVariable Integer requestId, @PathVariable String studentId) {
+            try {
+                SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.assignStudentToRequest(requestId, studentId);
+                return ResponseEntity.ok(request);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+            }
+        }
+
+
+    @PutMapping("/api/appearances/{requestId}/cancel")
+    public ResponseEntity<?> cancelAppearance(@PathVariable Integer requestId) {
+        try {
+            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.cancelAppearanceRequest(requestId);
+            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Appearance request cancelled successfully", request));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new Result(false, HttpStatusCode.INVALID_ARGUMENT, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error processing your cancellation request."));
+        }
+    }
+
 
 
 }
+
+
+
 

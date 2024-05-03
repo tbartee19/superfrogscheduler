@@ -7,8 +7,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
+import edu.tcu.cs.superfrogscheduler.repository.SuperFrogStudentRepository;
 import edu.tcu.cs.superfrogscheduler.system.IdWorker;
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
@@ -53,11 +55,15 @@ public class AppearanceRequestServiceTest {
     @InjectMocks
     SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
 
+    @Mock
+    private SuperFrogStudentRepository studentRepository;
     List<SuperFrogAppearanceRequest> superFrogAppearanceRequests;
 
     @MockBean
     private SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter converter;
 
+    private SuperFrogAppearanceRequest request;
+    private SuperFrogStudent student;
 
 
     private List<SuperFrogAppearanceRequest> allRequests;
@@ -483,6 +489,118 @@ public class AppearanceRequestServiceTest {
         assertEquals(0, results.size(), "Should find no requests with a non-existent title");
     }
 
+//    @Test
+//    void testAssignStudentToRequest_Success() {
+//        // Given
+//        int requestId = 1;
+//        int studentId = 1;
+//        SuperFrogAppearanceRequest approvedRequest = new SuperFrogAppearanceRequest();
+//        approvedRequest.setRequestId(requestId);
+//        approvedRequest.setStatus(RequestStatus.APPROVED); // Ensure the request is approved
+//
+//        SuperFrogStudent student = new SuperFrogStudent();
+//        student.setId(String.valueOf(studentId)); // Assuming the student ID is an integer
+//
+//        when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(approvedRequest));
+//        when(studentRepository.findById(String.valueOf(studentId))).thenReturn(Optional.of(student));
+//
+//        // When
+//        superFrogAppearanceRequestService.assignStudentToRequest(requestId, String.valueOf(studentId));
+//
+//        // Then
+//        assertEquals(RequestStatus.ASSIGNED, approvedRequest.getStatus(), "The request status should be updated to ASSIGNED");
+//        assertTrue(approvedRequest.getAssignedSuperFrog() != null, "The request should have an assigned SuperFrog");
+//        verify(superFrogAppearanceRequestRepository).save(approvedRequest);
+//    }
+
+//    @Test
+//    void testAssignStudentToRequest_RequestNotFound() {
+//        int invalidRequestId = 999;
+//        int studentId = 1;
+//
+//        when(superFrogAppearanceRequestRepository.findById(invalidRequestId)).thenReturn(Optional.empty());
+//
+//        assertThrows(ObjectNotFoundException.class, () -> {
+//            superFrogAppearanceRequestService.assignStudentToRequest(invalidRequestId, String.valueOf(studentId));
+//        });
+//    }
+//
+//    @Test
+//    void testAssignStudentToRequest_StudentNotFound() {
+//        int requestId = 1;
+//        int invalidStudentId = 999;
+//        SuperFrogAppearanceRequest approvedRequest = new SuperFrogAppearanceRequest();
+//        approvedRequest.setRequestId(requestId);
+//        approvedRequest.setStatus(RequestStatus.APPROVED);
+//
+//        when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(approvedRequest));
+//        when(studentRepository.findById(String.valueOf(invalidStudentId))).thenReturn(Optional.empty());
+//
+//        assertThrows(ObjectNotFoundException.class, () -> {
+//            superFrogAppearanceRequestService.assignStudentToRequest(requestId, String.valueOf(invalidStudentId));
+//        });
+//    }
+//
+//    @Test
+//    void testAssignStudentToRequest_InvalidStatus() {
+//        int requestId = 1;
+//        int studentId = 1;
+//        SuperFrogAppearanceRequest unapprovedRequest = new SuperFrogAppearanceRequest();
+//        unapprovedRequest.setRequestId(requestId);
+//        unapprovedRequest.setStatus(RequestStatus.PENDING); // Status not approved
+//
+//        SuperFrogStudent student = new SuperFrogStudent();
+//        student.setId(String.valueOf(studentId));
+//
+//        when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(unapprovedRequest));
+//        when(studentRepository.findById(String.valueOf(studentId))).thenReturn(Optional.of(student));
+//
+//        assertThrows(IllegalStateException.class, () -> {
+//            superFrogAppearanceRequestService.assignStudentToRequest(requestId, String.valueOf(studentId));
+//        });
+//    }
+//@Test
+//void testSignUpForAppearance_Success() {
+//    // Given
+//    Integer requestId = 1;
+//    String studentId = "student123";
+//    SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+//    request.setRequestId(requestId);
+//    request.setStatus(RequestStatus.APPROVED);
+//    request.setAssignedSuperFrog(null); // Ensure no frog is assigned yet
+//
+//    when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
+//    when(superFrogAppearanceRequestRepository.save(any(SuperFrogAppearanceRequest.class))).thenReturn(request);
+//
+//    // When
+//    boolean result = superFrogAppearanceRequestService.signUpForAppearance(requestId, studentId);
+//
+//    // Then
+//    assertTrue(result);
+//    assertEquals(RequestStatus.ASSIGNED, request.getStatus());
+//    assertEquals(studentId, request.getAssignedSuperFrog());
+//    verify(superFrogAppearanceRequestRepository).save(request);
+//}
+//
+//    @Test
+//    void testSignUpForAppearance_FailAlreadyAssigned() {
+//        // Given
+//        Integer requestId = 1;
+//        String studentId = "student123";
+//        SuperFrogAppearanceRequest request = new SuperFrogAppearanceRequest();
+//        request.setRequestId(requestId);
+//        request.setStatus(RequestStatus.APPROVED);
+//        request.setAssignedSuperFrog("anotherStudent"); // Another student is already assigned
+//
+//        when(superFrogAppearanceRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
+//
+//        // When
+//        boolean result = superFrogAppearanceRequestService.signUpForAppearance(requestId, studentId);
+//
+//        // Then
+//        assertFalse(result);
+//        verify(superFrogAppearanceRequestRepository, never()).save(request);
+//    }
 
 
 }

@@ -3,9 +3,12 @@ package edu.tcu.cs.superfrogscheduler.system;
 import edu.tcu.cs.superfrogscheduler.model.EventType;
 import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
+import edu.tcu.cs.superfrogscheduler.repository.SuperFrogStudentRepository;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +25,11 @@ import java.util.stream.Collectors;
 public class SuperFrogAppearanceRequestService {
     private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
 
+    @Autowired
+    private NotificationService notificationService;
 
+    @Autowired
+    private SuperFrogStudentRepository studentRepository;
     public SuperFrogAppearanceRequestService(
             SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository) {
         this.superFrogAppearanceRequestRepository = superFrogAppearanceRequestRepository;
@@ -204,6 +212,89 @@ public class SuperFrogAppearanceRequestService {
 
     public List<SuperFrogAppearanceRequest> getRequestsByDateAndTitle(LocalDate date, String title) {
         return superFrogAppearanceRequestRepository.findByEventDateAndEventTitle(date, title);
+    }
+
+
+    public SuperFrogAppearanceRequest assignStudentToRequest(Integer requestId, String studentIdStr) {
+        Integer studentId;
+        try {
+            studentId = Integer.parseInt(studentIdStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid student ID format");
+        }
+
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
+
+        if (!request.getStatus().equals(RequestStatus.APPROVED)) {
+            throw new IllegalStateException("Request is not in an approved state");
+        }
+
+        SuperFrogStudent student = studentRepository.findById(String.valueOf(studentId))
+                .orElseThrow(() -> new ObjectNotFoundException("SuperFrogStudent", studentId));
+
+        request.setAssignedSuperFrog(studentId.toString()); // Assuming the setAssignedSuperFrog expects a String
+        request.setStatus(RequestStatus.ASSIGNED);
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestRepository.save(request);
+
+        // Notify the customer and the student
+        notificationService.sendNotification("Your request has been assigned to a SuperFrog Student.", request.getEmail()); // to the customer
+        notificationService.sendNotification("You have been assigned to an event.", student.getEmail()); // to the student
+
+        return updatedRequest;
+    }
+
+    public SuperFrogAppearanceRequest signUpForAppearance(Integer requestId, String studentId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request not found with ID: ", requestId));
+
+        if (request.getStatus() != RequestStatus.APPROVED) {
+            throw new IllegalStateException("This request is not available for sign-up.");
+        }
+
+        if (hasScheduleConflict(request, studentId)) {
+            throw new IllegalStateException("There is a scheduling conflict with this request.");
+        }
+
+        request.setStatus(RequestStatus.ASSIGNED);
+        request.setAssignedSuperFrog(studentId);  // This field stores the ID of the student who signed up
+        superFrogAppearanceRequestRepository.save(request);
+
+        // Add to student's schedule if necessary
+        addToStudentSchedule(request, studentId);
+
+        // Notify involved parties
+        notificationService.sendNotification("You have successfully signed up for the appearance on " + request.getEventDate(), studentId); // to the student
+
+        return request;
+    }
+
+    private boolean hasScheduleConflict(SuperFrogAppearanceRequest request, String studentId) {
+        // Check the student's schedule for any overlapping appearance requests
+        return false; // Placeholder for actual implementation
+    }
+
+    private void addToStudentSchedule(SuperFrogAppearanceRequest request, String studentId) {
+    }
+
+
+    public SuperFrogAppearanceRequest cancelAppearanceRequest(Integer requestId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request not found with ID: ", requestId));
+
+        // Check if cancellation is allowed (2 days prior to the event date)
+        if (request.getEventDate().minusDays(2).isAfter(LocalDate.now())) {
+            throw new IllegalStateException("Cancellation is only allowed at least 2 days prior to the event date.");
+        }
+
+        request.setStatus(RequestStatus.APPROVED); // Resetting to APPROVED for other students to pick
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestRepository.save(request);
+
+        // Notification to involved parties
+        notificationService.sendNotification("The request for " + request.getEventTitle() + " on " + request.getEventDate() + " has been cancelled.", request.getEmail()); // to the customer
+        // Additional notification calls for Spirit Director and other students
+
+        return updatedRequest;
     }
 
 
