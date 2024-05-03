@@ -131,12 +131,25 @@ public class SuperFrogAppearanceRequestService {
                 }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
+<<<<<<< HEAD
     // Method to handle TCU event requests specifically
     public SuperFrogAppearanceRequest EventRequest(SuperFrogAppearanceRequest request) {
         // You might need to implement a check to ensure there's no overlapping TCU event
         // For now, it directly assigns/approves the event
         request.setStatus(RequestStatus.ASSIGNED);  // or APPROVED, based on internal decision logic
         return superFrogAppearanceRequestRepository.save(request);
+=======
+    public SuperFrogAppearanceRequest setComplete(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(doneRequest -> {
+                    RequestStatus currentStatus = doneRequest.getStatus();
+                    if((currentStatus == RequestStatus.APPROVED) && (doneRequest.getEndTime().isBefore(LocalTime.now()))) doneRequest.setStatus(RequestStatus.COMPLETED);
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(doneRequest);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrograppearancerequest", requestId));
+>>>>>>> 8bb7abb1862d5975cb871e61508dae268c934382
     }
 
     public List<SuperFrogAppearanceRequest> searchAppearanceRequests(LocalDate startDate, LocalDate endDate, String title, String firstName, String lastName, String status, String assignedSuperFrog) {
