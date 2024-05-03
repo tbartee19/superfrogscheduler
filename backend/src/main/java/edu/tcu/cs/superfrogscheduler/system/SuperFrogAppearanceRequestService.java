@@ -134,7 +134,10 @@ public class SuperFrogAppearanceRequestService {
         return this.superFrogAppearanceRequestRepository.findById(requestId)
                 .map(cancel -> {
                     RequestStatus currentStatus = cancel.getStatus();
-                    if((currentStatus == RequestStatus.ASSIGNED)) cancel.setStatus(RequestStatus.APPROVED);
+                    if((currentStatus == RequestStatus.ASSIGNED || currentStatus == RequestStatus.APPROVED)){
+                        cancel.setStatus(RequestStatus.CANCELLED);
+                        cancel.setReason("Cancelled by Spirit Director");
+                    }
                     else{
                         //trigger warning
                     }
