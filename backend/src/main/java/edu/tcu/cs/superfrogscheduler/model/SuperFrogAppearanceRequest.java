@@ -192,6 +192,8 @@ public class SuperFrogAppearanceRequest implements Serializable {
         this.rejectionReason = rejectionReason;
     }
 
+    private String assignedSuperFrog;
+
     public SuperFrogAppearanceRequest() {
 
     }
@@ -214,5 +216,13 @@ public class SuperFrogAppearanceRequest implements Serializable {
         this.outsideOrgs = outsideOrgs;
         this.description = description;
         this.status = status;
+    }
+
+    public String getAssignedSuperFrog() {
+        return assignedSuperFrog;
+    }
+
+    public void setAssignedSuperFrog(String assignedSuperFrog) {
+        this.assignedSuperFrog = assignedSuperFrog;
     }
 }

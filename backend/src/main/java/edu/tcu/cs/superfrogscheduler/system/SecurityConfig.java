@@ -46,14 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .cors().and()
                 .authorizeRequests()
-                // .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/admin/**").permitAll()
-                // .antMatchers("/api/students/**", "/api/events/**").hasRole("STUDENT")
-                .antMatchers("/api/students/**").permitAll()
-                .antMatchers("/api/appearances/**").permitAll()
-                .antMatchers("/api/spirit-director-events/**").permitAll()
-                .antMatchers("/api/events/**").permitAll()
-
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/students/**", "/api/events/**").hasRole("STUDENT")
+                .antMatchers("/api/appearances/**").hasAnyRole("ADMIN", "STUDENT")  // Assuming both roles can access
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()
@@ -79,4 +74,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
 }

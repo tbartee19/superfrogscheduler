@@ -29,4 +29,5 @@ public record SuperFrogAppearanceRequestDto(
 
         return null;
     }
+
 }
