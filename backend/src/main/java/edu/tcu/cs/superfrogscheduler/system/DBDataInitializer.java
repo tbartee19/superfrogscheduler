@@ -2,6 +2,7 @@ package edu.tcu.cs.superfrogscheduler.system;
 
 import edu.tcu.cs.superfrogscheduler.model.EventType;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ public class DBDataInitializer implements CommandLineRunner {
                 LocalDate.of(2024, 10, 10),
                 LocalTime.of(10, 0),
                 LocalTime.of(11, 0),
+
                 "First",
                 "Last",
                 "(111) 111-1111",
@@ -72,5 +74,11 @@ public class DBDataInitializer implements CommandLineRunner {
                 "description 3",
                 RequestStatus.PENDING);
 
+//        SuperFrogStudent u1 =  new SuperFrogStudent();
+//        u1.setId("1");
+//        u1.
+
     }
+
+
 }
