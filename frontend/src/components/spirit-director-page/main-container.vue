@@ -3,6 +3,7 @@
         <button class="button" v-on:click="goToCreateStudent">Create Student</button>
         <button class="button" v-on:click="goToFindStudent">Find Students</button>
         <button class="button" v-on:click="goToCalendar">Manage Spirit Director Events</button>
+        <button class="button" v-on:click="goToAppearanceRequests">Manage Appearance Requests</button>
         <button class="button" v-on:click="goToPaymentForms">Generate Payment Forms</button>
         <button class="button" v-on:click="goToPerformanceReports">Generate Student Performance Report</button>
         <button class="button" v-on:click="goHome">Go Home</button>
@@ -26,6 +27,9 @@
             },
             goToFindStudent() {
                 this.$router.push('/spirit-director/find-student')
+            },
+            goToAppearanceRequests(){
+                this.$router.push('/spirit-director/appearance-requests')
             },
             goHome() {
                 this.$router.push('/')
