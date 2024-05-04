@@ -22,6 +22,8 @@ public class SuperFrogAppearanceRequest implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer requestId;
 
+
+
     // added date, start time, and end time
     private LocalDate eventDate;
     private LocalTime startTime;
@@ -41,6 +43,8 @@ public class SuperFrogAppearanceRequest implements Serializable {
     private RequestStatus status;
 
     private String rejectionReason;
+
+    private String assignedSuperFrog;
 
     public Integer getRequestId() {
         return requestId;
@@ -192,6 +196,14 @@ public class SuperFrogAppearanceRequest implements Serializable {
         this.rejectionReason = rejectionReason;
     }
 
+    public String getAssignedSuperFrog() {
+        return assignedSuperFrog;
+    }
+
+    public void setAssignedSuperFrog(String assignedSuperFrog) {
+        this.assignedSuperFrog = assignedSuperFrog;
+    }
+
     public SuperFrogAppearanceRequest() {
 
     }
@@ -215,4 +227,6 @@ public class SuperFrogAppearanceRequest implements Serializable {
         this.description = description;
         this.status = status;
     }
+
+
 }

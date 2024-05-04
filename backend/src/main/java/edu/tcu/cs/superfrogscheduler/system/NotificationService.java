@@ -15,4 +15,8 @@ public class NotificationService {
         // Send email or internal message notification
         System.out.println("Notification sent for rejected request: " + request.getRequestId() + " with reason: " + reason);
     }
+    public void notifySuperFrogStudent(String studentId, String message) {
+        // Implementation to send notification
+        System.out.println("Notification sent to student ID " + studentId + ": " + message);
+    }
 }

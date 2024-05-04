@@ -7,6 +7,7 @@ import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
@@ -131,9 +132,12 @@ public class AppearanceRequestController {
         }
     }
 
+    @PutMapping("/{requestId}/assign/{studentId}")
+    public ResponseEntity<SuperFrogAppearanceRequest> assignSuperFrogStudentToRequest(@PathVariable Integer requestId, @PathVariable String studentId) {
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId);
+        return ResponseEntity.ok(updatedRequest);
+    }
 
-
-    // other methods
     @GetMapping("/api/appearances/{requestId}")
     public Result findSuperFrogAppearanceById(@PathVariable int requestId) {
         SuperFrogAppearanceRequest foundAppearance = this.superFrogAppearanceRequestService.findById(requestId);
@@ -152,6 +156,8 @@ public class AppearanceRequestController {
     }
 
     //use case 24 mark an appearance as completed
+
+
     @PutMapping("/api/appearances/{requestId}/complete")
     public Result completeAppearance(@PathVariable Integer requestId){
         SuperFrogAppearanceRequest doneRequest = this.superFrogAppearanceRequestService.setComplete(requestId);
@@ -159,4 +165,45 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Appearance complete success", requestDto);
     }
 
+    @PostMapping("/create")
+    public ResponseEntity<SuperFrogAppearanceRequest> createRequest(@RequestBody SuperFrogAppearanceRequest request) {
+        SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.createRequest(request);
+        return ResponseEntity.ok(savedRequest);
+    }
+
+    @PutMapping("/assign/{requestId}/{studentId}")
+    public ResponseEntity<SuperFrogAppearanceRequest> assignStudent(@PathVariable Integer requestId, @PathVariable String studentId) {
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignStudent(requestId, studentId);
+        return ResponseEntity.ok(updatedRequest);
+    }
+
+    @PutMapping("/updateStatus/{requestId}")
+    public ResponseEntity<SuperFrogAppearanceRequest> updateStatus(@PathVariable Integer requestId, @RequestParam("status") String status) {
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.updateStatus(requestId, status);
+        return ResponseEntity.ok(updatedRequest);
+    }
+
+    @GetMapping("/search")
+    public List<SuperFrogAppearanceRequest> search(
+            @RequestParam(required = false) String eventTitle,
+            @RequestParam(required = false) String customerName,
+            @RequestParam(required = false) String status) {
+
+        Specification<SuperFrogAppearanceRequest> spec = Specification.where(null);
+
+        if (eventTitle != null) {
+            spec = spec.and((root, query, cb) -> cb.like(root.get("eventTitle"), "%" + eventTitle + "%"));
+        }
+        if (customerName != null) {
+            spec = spec.and((root, query, cb) -> cb.or(
+                    cb.like(root.get("customerFirstName"), "%" + customerName + "%"),
+                    cb.like(root.get("customerLastName"), "%" + customerName + "%")
+            ));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+
+        return superFrogAppearanceRequestService.findByCriteria(spec);
+    }
 }

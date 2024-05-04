@@ -5,6 +5,8 @@ import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestT
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,8 +19,12 @@ import java.util.List;
 public class SuperFrogAppearanceRequestService {
     private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
 
+    @Autowired
+    private NotificationService notificationService;
 
-
+    public List<SuperFrogAppearanceRequest> findByCriteria(Specification<SuperFrogAppearanceRequest> spec) {
+        return superFrogAppearanceRequestRepository.findAll(spec);
+    }
     public SuperFrogAppearanceRequestService(
             SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository) {
         this.superFrogAppearanceRequestRepository = superFrogAppearanceRequestRepository;
@@ -176,7 +182,48 @@ public class SuperFrogAppearanceRequestService {
                 }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
+    // Add method to assign a SuperFrog Student
+    public SuperFrogAppearanceRequest assignSuperFrogStudent(Integer requestId, String studentId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
 
+        // Check if the request is suitable for assignment (e.g., status checks)
+        if (!"Assigned".equals(request.getStatus()) && !"Approved".equals(request.getStatus())) {
+            throw new IllegalStateException("Request is not in a state that allows assignment");
+        }
+
+        // Additional logic to ensure the student is suitable for assignment
+        // This might include checking the student's availability, skills, etc.
+
+        request.setAssignedSuperFrog(studentId); // Assume a field that keeps track of the assigned student
+        superFrogAppearanceRequestRepository.save(request);
+
+        // Notify the assigned SuperFrog Student
+        notificationService.notifySuperFrogStudent(studentId, "You have been assigned to a TCU event on " + request.getEventDate());
+
+        return request;
     }
+    public SuperFrogAppearanceRequest createRequest(SuperFrogAppearanceRequest request) {
+        request.setStatus(RequestStatus.valueOf("Pending"));
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+    public SuperFrogAppearanceRequest assignStudent(Integer requestId, String studentId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        request.setAssignedSuperFrog(studentId);
+        request.setStatus(RequestStatus.valueOf("Assigned"));
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+    public SuperFrogAppearanceRequest updateStatus(Integer requestId, String status) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        request.setStatus(RequestStatus.valueOf(status));
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+}
+
+
 
 
