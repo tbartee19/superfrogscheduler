@@ -8,6 +8,7 @@ import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -29,18 +30,47 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
     }
 
-    public SuperFrogAppearanceRequest approveRequest(Integer requestId) {
-        SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
+    public SuperFrogAppearanceRequest approveRequest(Integer requestId) throws Exception {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request", requestId));
+
+        if (request.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalStateException("Request must be in 'PENDING' status.");
+        }
+
+        // Check for competing requests
+        handleCompetingRequests(requestId, request.getEventDate(), request.getStartTime(), request.getEndTime());
+
         request.setStatus(RequestStatus.APPROVED);
         return superFrogAppearanceRequestRepository.save(request);
     }
 
-    public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String rejectionReason) {
-        SuperFrogAppearanceRequest request = findById(requestId);  // Reuse the findById to handle not found exception
+    private void handleCompetingRequests(Integer requestId, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        List<SuperFrogAppearanceRequest> competingRequests = superFrogAppearanceRequestRepository.findByEventDateAndStartTimeAndEndTime(date, startTime, endTime);
+        for (SuperFrogAppearanceRequest compRequest : competingRequests) {
+            if (!compRequest.getRequestId().equals(requestId)) {
+                compRequest.setStatus(RequestStatus.REJECTED);
+                compRequest.setReason("Time slot no longer available due to another approval.");
+                superFrogAppearanceRequestRepository.save(compRequest);
+            }
+        }
+    }
+
+
+    public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String reason) throws Exception {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request", requestId));
+
+        if (request.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalStateException("Request must be in 'PENDING' status.");
+        }
+
         request.setStatus(RequestStatus.REJECTED);
-        request.setRejectionReason(rejectionReason);
+        request.setReason(reason);
         return superFrogAppearanceRequestRepository.save(request);
     }
+
+
 
     public List<SuperFrogAppearanceRequest> findAll() {
         return this.superFrogAppearanceRequestRepository.findAll();
@@ -129,6 +159,23 @@ public class SuperFrogAppearanceRequestService {
                     return this.superFrogAppearanceRequestRepository.save(doneRequest);
                 }).orElseThrow(()-> new ObjectNotFoundException("superfrograppearancerequest", requestId));
     }
+
+
+    public SuperFrogAppearanceRequest cancelRequest(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(cancel -> {
+                    RequestStatus currentStatus = cancel.getStatus();
+                    if((currentStatus == RequestStatus.ASSIGNED || currentStatus == RequestStatus.APPROVED)){
+                        cancel.setStatus(RequestStatus.CANCELLED);
+                        cancel.setReason("Cancelled by Spirit Director");
+                    }
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(cancel);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+    }
+
 
     }
 

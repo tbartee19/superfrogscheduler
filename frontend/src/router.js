@@ -21,6 +21,14 @@ import SuperFrogPage from '@/components/superfrog-page/main-container.vue'
 import changePasswordPage from '@/components/superfrog-page/change-password/main-container.vue'
 import editEventPage from '@/components/superfrog-page/manage-schedule/edit-event.vue'
 
+import AppearanceRequestPage from '@/components/spirit-director-page/appearance-request-page/main-container.vue'
+import EditRequestPage from '@/components/spirit-director-page/appearance-request-page/edit-request/main-container.vue'
+import ApproveRejectRequestPage from '@/components/spirit-director-page/appearance-request-page/edit-request/approve-reject-request/main-container.vue';
+
+Vue.use(Router);
+
+
+
 const routes = [
     { path: '/', component: App },
     { path: '/request', component: RequestPage },
@@ -38,6 +46,10 @@ const routes = [
     { path: '/select-appearance-requests', component: SelectAppearanceRequestsPage },
     { path: '/report-generating-algorithm/:requestId', component: ReportGeneratingAlgorithmPage, props: true },
     { path: '/spirit-director/performance-reports', component: PerformanceReportsPage },
+
+    { path: '/spirit-director/appearance-requests', component: AppearanceRequestPage},
+    { path: '/spirit-director/appearance-requests/edit-request/:id', component: EditRequestPage, props: true},
+    { path: '/requests/:requestId', name: 'ApproveRejectRequest', component: ApproveRejectRequestPage },
     { path: '/select-students', component: SelectStudentsPage },
     
 

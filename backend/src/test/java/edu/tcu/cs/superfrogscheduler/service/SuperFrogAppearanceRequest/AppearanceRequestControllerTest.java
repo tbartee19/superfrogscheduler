@@ -4,12 +4,15 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
@@ -24,10 +27,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +44,9 @@ public class AppearanceRequestControllerTest {
 
     @MockBean
     SuperFrogAppearanceRequestService superFrogAppearanceRequestService;
+
+    @MockBean
+    SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -161,10 +168,77 @@ public class AppearanceRequestControllerTest {
 
 //     }
 
+     @Test
+     void testUpdateAppearanceRequestSuccess() throws Exception {
+         // Given
+         SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto = new SuperFrogAppearanceRequestDto(2,
+                 LocalDate.now(),
+                 LocalTime.of(10,0),
+                 LocalTime.of(11, 0),
+                 "Tom",
+                 "Smith",
+                 "(000) 000-0000",
+                 "tomsmith@gmail.com",
+                 "TCU",
+                 "game day",
+                 "TCU",
+                 "2850 Stadium Drive, Fort Worth TX 76109",
+                 "yes",
+                 "N/A",
+                 "N/A",
+                 "football game",
+                 RequestStatus.PENDING);
+         String json = this.objectMapper.writeValueAsString(superFrogAppearanceRequestDto);
+
+         SuperFrogAppearanceRequest updatedAppearanceRequest = new SuperFrogAppearanceRequest();
+         updatedAppearanceRequest.setRequestId(2);
+         updatedAppearanceRequest.setContactFirstName("Tom");
+         updatedAppearanceRequest.setContactLastName("Smith");
+         updatedAppearanceRequest.setPhoneNumber("(000) 000-0000");
+         updatedAppearanceRequest.setEmail("tomsmith@gmail.com");
+         updatedAppearanceRequest.setEventType("TCU");
+         updatedAppearanceRequest.setEventTitle("game day");
+         updatedAppearanceRequest.setNameOfOrg("TCU");
+         updatedAppearanceRequest.setAddress("2850 Stadium Drive, Fort Worth TX 76109");
+         updatedAppearanceRequest.setSpecialInstructions("N/A");
+         updatedAppearanceRequest.setExpenses("N/A");
+         updatedAppearanceRequest.setOutsideOrgs("N/A");
+         updatedAppearanceRequest.setDescription("football game");
+         updatedAppearanceRequest.setStatus(RequestStatus.PENDING);
+
+         given(this.superFrogAppearanceRequestService.update(eq(2), Mockito.any(SuperFrogAppearanceRequest.class)))
+                 .willReturn(updatedAppearanceRequest);
+
+         // When and then
+         this.mockMvc
+                 .perform(put("/api/appearances/2").contentType(MediaType.APPLICATION_JSON)
+                         .content(json).accept(MediaType.APPLICATION_JSON))
+                 .andExpect(jsonPath("$.flag").value(true))
+                 .andExpect(jsonPath("$.code").value(HttpStatusCode.SUCCESS))
+                 .andExpect(jsonPath("$.message").value("Update Success"))
+                 .andExpect(jsonPath("$.data.requestId").isNotEmpty())
+                 .andExpect(jsonPath("$.data.contactFirstName").value(updatedAppearanceRequest.getContactFirstName()))
+                 .andExpect(jsonPath("$.data.contactLastName").value(updatedAppearanceRequest.getContactLastName()))
+                 .andExpect(jsonPath("$.data.phoneNumber").value(updatedAppearanceRequest.getPhoneNumber()))
+                 .andExpect(jsonPath("$.data.email").value(updatedAppearanceRequest.getEmail()))
+                 .andExpect(jsonPath("$.data.eventType").value(updatedAppearanceRequest.getEventType().toString()))
+                 .andExpect(jsonPath("$.data.eventTitle").value(updatedAppearanceRequest.getEventTitle()))
+                 .andExpect(jsonPath("$.data.nameOfOrg").value(updatedAppearanceRequest.getNameOfOrg()))
+                 .andExpect(jsonPath("$.data.address").value(updatedAppearanceRequest.getAddress()))
+                 .andExpect(jsonPath("$.data.specialInstructions").value(updatedAppearanceRequest.getSpecialInstructions()))
+                 .andExpect(jsonPath("$.data.expenses").value(updatedAppearanceRequest.getExpenses()))
+                 .andExpect(jsonPath("$.data.outsideOrgs").value(updatedAppearanceRequest.getOutsideOrgs()))
+                 .andExpect(jsonPath("$.data.description").value(updatedAppearanceRequest.getDescription()))
+                 .andExpect(jsonPath("$.data.status").value(updatedAppearanceRequest.getStatus().toString()));
+     }
+
 //     @Test
-//     void testUpdateAppearanceRequestSuccess() throws Exception {
-//         // Given
+//     void testReverseApprovedDecisionSuccess() throws Exception {
+//        // Given
 //         SuperFrogAppearanceRequestDto superFrogAppearanceRequestDto = new SuperFrogAppearanceRequestDto(2,
+//                 LocalDate.now(),
+//                 LocalTime.of(10,0),
+//                 LocalTime.of(11, 0),
 //                 "Tom",
 //                 "Smith",
 //                 "(000) 000-0000",
@@ -176,11 +250,10 @@ public class AppearanceRequestControllerTest {
 //                 "yes",
 //                 "N/A",
 //                 "N/A",
-//                 "N/A",
 //                 "football game",
-//                 RequestStatus.PENDING);
+//                 RequestStatus.APPROVED);
 //         String json = this.objectMapper.writeValueAsString(superFrogAppearanceRequestDto);
-
+//
 //         SuperFrogAppearanceRequest updatedAppearanceRequest = new SuperFrogAppearanceRequest();
 //         updatedAppearanceRequest.setRequestId(2);
 //         updatedAppearanceRequest.setContactFirstName("Tom");
@@ -195,18 +268,18 @@ public class AppearanceRequestControllerTest {
 //         updatedAppearanceRequest.setExpenses("N/A");
 //         updatedAppearanceRequest.setOutsideOrgs("N/A");
 //         updatedAppearanceRequest.setDescription("football game");
-//         updatedAppearanceRequest.setStatus(RequestStatus.PENDING);
-
-//         given(this.superFrogAppearanceRequestService.update(eq(2), Mockito.any(SuperFrogAppearanceRequest.class)))
-//                 .willReturn(updatedAppearanceRequest);
-
+//         updatedAppearanceRequest.setStatus(RequestStatus.APPROVED);
+//
+//         given(this.superFrogAppearanceRequestService.reverseDecision(eq(2)))
+//            .willReturn(updatedAppearanceRequest);
+//
 //         // When and then
 //         this.mockMvc
 //                 .perform(put("/api/appearances/2").contentType(MediaType.APPLICATION_JSON)
 //                         .content(json).accept(MediaType.APPLICATION_JSON))
 //                 .andExpect(jsonPath("$.flag").value(true))
 //                 .andExpect(jsonPath("$.code").value(HttpStatusCode.SUCCESS))
-//                 .andExpect(jsonPath("$.message").value("Update Success"))
+//                 .andExpect(jsonPath("$.message").value("Status reverse success"))
 //                 .andExpect(jsonPath("$.data.requestId").isNotEmpty())
 //                 .andExpect(jsonPath("$.data.contactFirstName").value(updatedAppearanceRequest.getContactFirstName()))
 //                 .andExpect(jsonPath("$.data.contactLastName").value(updatedAppearanceRequest.getContactLastName()))
@@ -216,19 +289,62 @@ public class AppearanceRequestControllerTest {
 //                 .andExpect(jsonPath("$.data.eventTitle").value(updatedAppearanceRequest.getEventTitle()))
 //                 .andExpect(jsonPath("$.data.nameOfOrg").value(updatedAppearanceRequest.getNameOfOrg()))
 //                 .andExpect(jsonPath("$.data.address").value(updatedAppearanceRequest.getAddress()))
-//                 .andExpect(jsonPath("$.data.isOnTCUCampus").value(updatedAppearanceRequest.getIsOnTCUCampus()))
-//                 .andExpect(
-//                         jsonPath("$.data.specialInstructions").value(updatedAppearanceRequest.getSpecialInstructions()))
+//                 .andExpect(jsonPath("$.data.specialInstructions").value(updatedAppearanceRequest.getSpecialInstructions()))
 //                 .andExpect(jsonPath("$.data.expenses").value(updatedAppearanceRequest.getExpenses()))
 //                 .andExpect(jsonPath("$.data.outsideOrgs").value(updatedAppearanceRequest.getOutsideOrgs()))
 //                 .andExpect(jsonPath("$.data.description").value(updatedAppearanceRequest.getDescription()))
 //                 .andExpect(jsonPath("$.data.status").value(updatedAppearanceRequest.getStatus().toString()));
+//
 //     }
+
+        @Test
+        @WithMockUser(username="admin", roles={"ADMIN"})
+        public void testReverseAppearanceDecision_Success() throws Exception {
+            // Given
+            Integer requestId = 1;
+            SuperFrogAppearanceRequest updatedRequest = new SuperFrogAppearanceRequest();
+            updatedRequest.setRequestId(requestId);
+            updatedRequest.setStatus(RequestStatus.REJECTED);
+
+            SuperFrogAppearanceRequestDto updatedRequestDto = new SuperFrogAppearanceRequestDto(1,
+                    LocalDate.now(),
+                    LocalTime.of(10,0),
+                    LocalTime.of(11, 0),
+                    "Tom",
+                    "Smith",
+                    "(000) 000-0000",
+                    "tomsmith@gmail.com",
+                    "TCU",
+                    "game day",
+                    "TCU",
+                    "2850 Stadium Drive, Fort Worth TX 76109",
+                    "yes",
+                    "N/A",
+                    "N/A",
+                    "football game",
+                    RequestStatus.APPROVED);
+
+            when(superFrogAppearanceRequestService.reverseDecision(eq(requestId))).thenReturn(updatedRequest);
+            when(superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest)).thenReturn(updatedRequestDto);
+
+            // When & Then
+            mockMvc.perform(put("/api/appearance/{requestId}/status/{status}", requestId, "REJECTED")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.flag").value(true))
+                    .andExpect(jsonPath("$.code").value(HttpStatusCode.SUCCESS))
+                    .andExpect(jsonPath("$.message").value("Status reverse success"))
+                    .andExpect(jsonPath("$.data.requestId").value(updatedRequestDto.requestId()));
+        }
 
 //     @Test
 //     void testUpdateAppearanceRequestWithNonExistentId() throws Exception {
 //         // Given
 //         SuperFrogAppearanceRequestDto appearanceRequestDto = new SuperFrogAppearanceRequestDto(123456,
+//                 LocalDate.now(),
+//                 LocalTime.of(10, 0),
+//                 LocalTime.of(11, 0),
 //                 "First",
 //                 "Last",
 //                 "(333) 333-3333",
@@ -240,14 +356,14 @@ public class AppearanceRequestControllerTest {
 //                 "yes",
 //                 "N/A",
 //                 "N/A",
-//                 "N/A",
 //                 "description",
 //                 RequestStatus.PENDING);
 //         String json = this.objectMapper.writeValueAsString(appearanceRequestDto);
-
+//
+//
 //         given(this.superFrogAppearanceRequestService.update(eq(123456), Mockito.any(SuperFrogAppearanceRequest.class)))
 //                 .willThrow(new ObjectNotFoundException("superfrogappearancerequest", 123456));
-
+//
 //         // When and then
 //         this.mockMvc
 //                 .perform(put("/api/appearances/123456").contentType(MediaType.APPLICATION_JSON)

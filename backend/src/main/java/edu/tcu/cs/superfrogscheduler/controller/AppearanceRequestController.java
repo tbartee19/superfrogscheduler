@@ -2,9 +2,7 @@ package edu.tcu.cs.superfrogscheduler.controller;
 
 import javax.validation.Valid;
 
-import edu.tcu.cs.superfrogscheduler.system.HttpStatusCode;
-import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
-import edu.tcu.cs.superfrogscheduler.system.SuperFrogAppearanceRequestService;
+import edu.tcu.cs.superfrogscheduler.system.*;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
-import edu.tcu.cs.superfrogscheduler.system.Result;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
@@ -25,7 +22,7 @@ import java.util.stream.Collectors;
 // this could include creating, editing, viewing, and deleting requests
 // as well as approval/rejection by the Spirit Director.
 
-// use Cases 1-12, 24, 25, 26 i believe
+// use Cases 1-12, 24, 25, 26 I believe
 
 
 @RestController
@@ -35,6 +32,7 @@ public class AppearanceRequestController {
     private final SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
     private final SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
+    private NotificationService notificationService;
     // constructor
     public AppearanceRequestController(SuperFrogAppearanceRequestService superFrogAppearanceRequestService, SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter, SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter) {
         this.superFrogAppearanceRequestService = superFrogAppearanceRequestService;
@@ -86,6 +84,15 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Appearance set as incomplete", requestDto);
     }
 
+
+    @PutMapping("/api/appearance/{requestId}/cancel")
+    public Result cancelApprovedRequest(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest canceledRequest = this.superFrogAppearanceRequestService.cancelRequest(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(canceledRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance canceled successfully", requestDto);
+    }
+
+
     // use case 3 - Customer cancels a submitted request
     @DeleteMapping("/api/appearances/{requestId}")
     public Result deleteSuperFrogAppearanceRequest(@PathVariable Integer requestId){
@@ -108,6 +115,7 @@ public class AppearanceRequestController {
         }
     }
 
+
     // use case 4 - rejects an appearance request
     @PostMapping("/requests/{id}/reject")
     public ResponseEntity<Result> rejectRequest(@PathVariable Integer id, @RequestBody String rejectionReason) {
@@ -122,6 +130,8 @@ public class AppearanceRequestController {
                     .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Rejection Error: " + e.getMessage()));
         }
     }
+
+
 
     // other methods
     @GetMapping("/api/appearances/{requestId}")
@@ -148,4 +158,5 @@ public class AppearanceRequestController {
         SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(doneRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Appearance complete success", requestDto);
     }
+
 }
