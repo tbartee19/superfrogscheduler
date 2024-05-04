@@ -1,22 +1,31 @@
 package edu.tcu.cs.superfrogscheduler.system;
 
-import java.time.LocalDate;
-import org.springframework.security.access.prepost.PreAuthorize;
-import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
+import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
+import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.repository.SuperFrogAppearanceRequestRepository;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class SuperFrogAppearanceRequestService {
     private final SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository;
 
+    @Autowired
+    private NotificationService notificationService;
 
+    public List<SuperFrogAppearanceRequest> findByCriteria(Specification<SuperFrogAppearanceRequest> spec) {
+        return superFrogAppearanceRequestRepository.findAll(spec);
+    }
 
     public SuperFrogAppearanceRequestService(
             SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository) {
@@ -24,65 +33,52 @@ public class SuperFrogAppearanceRequestService {
     }
 
 
-    public SuperFrogAppearanceRequest findById(Integer requestId) {
-        return this.superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
+
+    public SuperFrogAppearanceRequest findById(Integer id) {
+        return superFrogAppearanceRequestRepository.findById(id).orElse(null); // Returns null if not found
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public SuperFrogAppearanceRequest approveRequest(Integer requestId) {
-        SuperFrogAppearanceRequest request = findById(requestId);
-        if(request.getStatus() == RequestStatus.PENDING && request.getEventDate().isAfter(LocalDate.now().plusDays(5))) {
-            request.setStatus(RequestStatus.APPROVED);
-            superFrogAppearanceRequestRepository.save(request);
-            sendApprovalNotification(request);
-            manageConflictingRequests(request);
-            System.out.println("Request Approved: " + request.getRequestId());
-        } else {
-            throw new IllegalStateException("Request cannot be approved: Either not pending or too close to event date.");
+    public SuperFrogAppearanceRequest approveRequest(Integer requestId) throws Exception {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request", requestId));
+
+        if (request.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalStateException("Request must be in 'PENDING' status.");
         }
-        return request;
+
+        // Check for competing requests
+        handleCompetingRequests(requestId, request.getEventDate(), request.getStartTime(), request.getEndTime());
+
+        request.setStatus(RequestStatus.APPROVED);
+        return superFrogAppearanceRequestRepository.save(request);
     }
 
-    private void manageConflictingRequests(SuperFrogAppearanceRequest approvedRequest) {
-        List<SuperFrogAppearanceRequest> conflictingRequests = superFrogAppearanceRequestRepository.findByEventDate(approvedRequest.getEventDate());
-        for (SuperFrogAppearanceRequest req : conflictingRequests) {
-            if (!req.getRequestId().equals(approvedRequest.getRequestId())) {
-                req.setStatus(RequestStatus.REJECTED);
-                req.setRejectionReason("Date and time not available anymore due to another approved event");
-                superFrogAppearanceRequestRepository.save(req);
+    private void handleCompetingRequests(Integer requestId, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        List<SuperFrogAppearanceRequest> competingRequests = superFrogAppearanceRequestRepository.findByEventDateAndStartTimeAndEndTime(date, startTime, endTime);
+        for (SuperFrogAppearanceRequest compRequest : competingRequests) {
+            if (!compRequest.getRequestId().equals(requestId)) {
+                compRequest.setStatus(RequestStatus.REJECTED);
+                compRequest.setReason("Time slot no longer available due to another approval.");
+                superFrogAppearanceRequestRepository.save(compRequest);
             }
         }
     }
 
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String rejectionReason) {
-        SuperFrogAppearanceRequest request = findById(requestId);
-        if(request.getStatus() == RequestStatus.PENDING) {
-            request.setStatus(RequestStatus.REJECTED);
-            request.setRejectionReason(rejectionReason);
-            superFrogAppearanceRequestRepository.save(request);
-            sendRejectionNotification(request);
-            System.out.println("Request Rejected: " + request.getRequestId() + " with reason: " + rejectionReason);
-        } else {
-            throw new IllegalStateException("Request cannot be rejected because it is not in PENDING status: " + requestId);
+    public SuperFrogAppearanceRequest rejectRequest(Integer requestId, String reason) throws Exception {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException("Request", requestId));
+
+        if (request.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalStateException("Request must be in 'PENDING' status.");
         }
-        return request;
+
+        request.setStatus(RequestStatus.REJECTED);
+        request.setReason(reason);
+        return superFrogAppearanceRequestRepository.save(request);
     }
 
 
-    private void sendApprovalNotification(SuperFrogAppearanceRequest request) {
-        // Placeholder for sending approval notification
-        System.out.println("Sending approval notification for Request ID: " + request.getRequestId());
-        // Actual email/notification sending logic goes here
-    }
-
-    private void sendRejectionNotification(SuperFrogAppearanceRequest request) {
-        // Placeholder for sending rejection notification
-        System.out.println("Sending rejection notification for Request ID: " + request.getRequestId() + ", Reason: " + request.getRejectionReason());
-        // Actual email/notification sending logic goes here
-    }
 
     public List<SuperFrogAppearanceRequest> findAll() {
         return this.superFrogAppearanceRequestRepository.findAll();
@@ -136,34 +132,145 @@ public class SuperFrogAppearanceRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("superfrogappearancerequest", requestId));
     }
 
-    public List<SuperFrogAppearanceRequest> search(SearchCriteria criteria) {
+    public SuperFrogAppearanceRequest reverseDecision(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(oldRequest -> {
+                    RequestStatus currentStatus = oldRequest.getStatus();
+                    if(currentStatus == RequestStatus.APPROVED) oldRequest.setStatus(RequestStatus.REJECTED);
+                    else if(currentStatus == RequestStatus.REJECTED) oldRequest.setStatus(RequestStatus.APPROVED);
+                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
+                })
+                .orElseThrow(()-> new ObjectNotFoundException("superfrogappearncerequest", requestId));
+    }
 
-        return null;
+    public SuperFrogAppearanceRequest setIncomplete(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(oldRequest -> {
+                    if(oldRequest.getEndTime().isBefore(LocalTime.now())){
+                        oldRequest.setStatus(RequestStatus.INCOMPLETE);
+                    }
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(oldRequest);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+    }
+
+    public SuperFrogAppearanceRequest setComplete(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(doneRequest -> {
+                    RequestStatus currentStatus = doneRequest.getStatus();
+                    if((currentStatus == RequestStatus.APPROVED) && (doneRequest.getEndTime().isBefore(LocalTime.now()))) doneRequest.setStatus(RequestStatus.COMPLETED);
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(doneRequest);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrograppearancerequest", requestId));
     }
 
 
-//    public List<SuperFrogAppearanceRequest> search(SearchCriteria criteria) {
-//        return superFrogAppearanceRequestRepository.findAll((Specification<SuperFrogAppearanceRequest>) (root, query, cb) -> {
-//            List<Predicate> predicates = new ArrayList<>();
-//
-//            if (criteria.getEventTitle() != null) {
-//                predicates.add(cb.like(cb.lower(root.get("eventTitle")), "%" + criteria.getEventTitle().toLowerCase() + "%"));
-//            }
-//            if (criteria.getEventDate() != null) {
-//                predicates.add(cb.equal(root.get("eventDateTime"), criteria.getEventDate()));
-//            }
-//            if (criteria.getContactName() != null) {
-//                Predicate firstNamePredicate = cb.like(cb.lower(root.get("contactFirstName")), "%" + criteria.getContactName().toLowerCase() + "%");
-//                Predicate lastNamePredicate = cb.like(cb.lower(root.get("contactLastName")), "%" + criteria.getContactName().toLowerCase() + "%");
-//                predicates.add(cb.or(firstNamePredicate, lastNamePredicate));
-//            }
-//            if (criteria.getStatus() != null) {
-//                predicates.add(cb.equal(root.get("status"), criteria.getStatus()));
-//            }
-//
-//            return cb.and(predicates.toArray(new Predicate[0]));
-//        });
-//    }
+    public SuperFrogAppearanceRequest cancelRequest(Integer requestId){
+        return this.superFrogAppearanceRequestRepository.findById(requestId)
+                .map(cancel -> {
+                    RequestStatus currentStatus = cancel.getStatus();
+                    if((currentStatus == RequestStatus.ASSIGNED || currentStatus == RequestStatus.APPROVED)){
+                        cancel.setStatus(RequestStatus.CANCELLED);
+                        cancel.setReason("Cancelled by Spirit Director");
+                    }
+                    else{
+                        //trigger warning
+                    }
+                    return this.superFrogAppearanceRequestRepository.save(cancel);
+                }).orElseThrow(()-> new ObjectNotFoundException("superfrogappearancerequest", requestId));
+    }
+
+    // Add method to assign a SuperFrog Student
+    public SuperFrogAppearanceRequest assignSuperFrogStudent(Integer requestId, String studentId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        // Check if the request is suitable for assignment (e.g., status checks)
+        if (!"Assigned".equals(request.getStatus()) && !"Approved".equals(request.getStatus())) {
+            throw new IllegalStateException("Request is not in a state that allows assignment");
+        }
+
+        // Additional logic to ensure the student is suitable for assignment
+        // This might include checking the student's availability, skills, etc.
+
+        request.setAssignedSuperFrog(studentId); // Assume a field that keeps track of the assigned student
+        superFrogAppearanceRequestRepository.save(request);
+
+        // Notify the assigned SuperFrog Student
+        notificationService.notifySuperFrogStudent(studentId, "You have been assigned to a TCU event on " + request.getEventDate());
+
+        return request;
+    }
+    public SuperFrogAppearanceRequest createRequest(SuperFrogAppearanceRequest request) {
+        request.setStatus(RequestStatus.valueOf("Pending"));
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+    public SuperFrogAppearanceRequest assignStudent(Integer requestId, String studentId) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        request.setAssignedSuperFrog(studentId);
+        request.setStatus(RequestStatus.valueOf("Assigned"));
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+    public SuperFrogAppearanceRequest updateStatus(Integer requestId, String status) {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+        request.setStatus(RequestStatus.valueOf(status));
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+    public SuperFrogAppearanceRequest updateRequest(Integer id, SuperFrogAppearanceRequest updatedRequest) throws Exception {
+        // Fetch the existing request from the database
+        SuperFrogAppearanceRequest existingRequest = superFrogAppearanceRequestRepository.findById(id)
+                .orElseThrow(() -> new Exception("Request not found with ID: " + id));
+
+        // Update the existing request with the values from the updated request
+        existingRequest.setContactFirstName(updatedRequest.getContactFirstName());
+        existingRequest.setContactLastName(updatedRequest.getContactLastName());
+        existingRequest.setPhoneNumber(updatedRequest.getPhoneNumber());
+        existingRequest.setEmail(updatedRequest.getEmail());
+        existingRequest.setEventDate(updatedRequest.getEventDate());
+        existingRequest.setStartTime(updatedRequest.getStartTime());
+        existingRequest.setEndTime(updatedRequest.getEndTime());
+        existingRequest.setEventType(updatedRequest.getEventType());
+        existingRequest.setEventTitle(updatedRequest.getEventTitle());
+        existingRequest.setNameOfOrg(updatedRequest.getNameOfOrg());
+        existingRequest.setAddress(updatedRequest.getAddress());
+        existingRequest.setSpecialInstructions(updatedRequest.getSpecialInstructions());
+        existingRequest.setExpenses(updatedRequest.getExpenses());
+        existingRequest.setOutsideOrgs(updatedRequest.getOutsideOrgs());
+        existingRequest.setDescription(updatedRequest.getDescription());
+        existingRequest.setStatus(updatedRequest.getStatus());
+
+        // Save the updated request back to the database
+        return superFrogAppearanceRequestRepository.save(existingRequest);
+    }
+
+    public SuperFrogAppearanceRequest assignSuperFrogToRequest(Integer requestId, String superFrogStudentId) throws Exception {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new Exception("Request not found with ID: " + requestId));
+
+        if (!request.getStatus().equals(RequestStatus.APPROVED)) {
+            throw new IllegalArgumentException("Request must be in 'Approved' status to assign a SuperFrog Student.");
+        }
+
+        request.setAssignedSuperFrog(superFrogStudentId);
+        request.setStatus(RequestStatus.ASSIGNED);
+
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+
+
 }
+
+
+
 
 

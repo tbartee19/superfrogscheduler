@@ -36,7 +36,10 @@ public class SuperFrogStudent {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
+    
+    private Boolean internationalStudent;
 
+    private String paymentPreference;  // Mail Check or Pick Up Check
 
     @DBRef
     private Account account;
@@ -96,6 +99,22 @@ public class SuperFrogStudent {
         this.email = email;
     }
 
+    public Boolean getInternationalStudent() {
+        return internationalStudent;
+    }
+
+    public void setInternationalStudent(Boolean internationalStudent) {
+        this.internationalStudent = internationalStudent;
+    }
+
+    public String getPaymentPreference() {
+        return paymentPreference;
+    }
+
+    public void setPaymentPreference(String paymentPreference) {
+        this.paymentPreference = paymentPreference;
+    }
+    
     public Account getAccount() {
         return account;
     }

@@ -2,59 +2,44 @@ package edu.tcu.cs.superfrogscheduler.model;
 
 import edu.tcu.cs.superfrogscheduler.system.RequestStatus;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import javax.persistence.*;
 
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
 // SuperFrogAppearanceRequest includes event-related information
 @Entity
-public class SuperFrogAppearanceRequest {
-    // likely will need to add date and time of the event to this class
+public class SuperFrogAppearanceRequest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer requestId;
 
-    @NotBlank(message = "First name is required")
+
+
+    // added date, start time, and end time
+    private LocalDate eventDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String contactFirstName;
-    @NotBlank(message = "Last name is required")
     private String contactLastName;
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "\\(\\d{3}\\) \\d{3}-\\d{4}", message = "Phone number must be in the format (999) 999-9999")
     private String phoneNumber;
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
     private String email;
-    @NotNull(message = "Event type is required")
     private EventType eventType;
-    @NotBlank(message = "Event title is required")
     private String eventTitle;
-    @NotBlank(message = "Name of organization is required")
     private String nameOfOrg;
-    @NotBlank(message = "Address is required")
     private String address;
-    @NotBlank(message = "Must specify whether event is on TCU campus")
-    private String isOnTCUCampus;
     private String specialInstructions;
     private String expenses;
     private String outsideOrgs;
-    @NotBlank(message = "Must provide a detailed event description")
     private String description;
     private RequestStatus status;
 
-    private String reason;
+    private String rejectionReason;
 
-    private String EventDetails;
-
-    private LocalTime startTime;
-    private LocalTime endTime;
-
-    private LocalDate eventDate;
+    private String assignedSuperFrog;
 
     public Integer getRequestId() {
         return requestId;
@@ -62,6 +47,30 @@ public class SuperFrogAppearanceRequest {
 
     public void setRequestId(Integer requestId) {
         this.requestId = requestId;
+    }
+
+    public LocalDate getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(LocalDate eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getContactFirstName() {
@@ -96,7 +105,7 @@ public class SuperFrogAppearanceRequest {
         this.email = email;
     }
 
-    public @NotNull(message = "Event type is required") EventType getEventType() {
+    public String getEventType() {
         return eventType;
     }
 
@@ -133,7 +142,6 @@ public class SuperFrogAppearanceRequest {
     public void setAddress(String address) {
         this.address = address;
     }
-
 
     public String getSpecialInstructions() {
         return specialInstructions;
@@ -176,23 +184,26 @@ public class SuperFrogAppearanceRequest {
     }
 
     public String getReason() {
-        return reason;
+        return rejectionReason;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    public void setReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 
+    public String getAssignedSuperFrog() {
+        return assignedSuperFrog;
+    }
+
+    public void setAssignedSuperFrog(String assignedSuperFrog) {
+        this.assignedSuperFrog = assignedSuperFrog;
+    }
 
     public SuperFrogAppearanceRequest() {
 
     }
 
-    public SuperFrogAppearanceRequest(Integer requestId, LocalDate eventDate, LocalTime startTime, LocalTime endTime,
-                                      String contactFirstName, String contactLastName, String phoneNumber, String email,
-                                      EventType eventType, String eventTitle, String nameOfOrg, String address,
-                                      String specialInstructions, String expenses, String outsideOrgs, String description,
-                                      RequestStatus status) {
+    public SuperFrogAppearanceRequest(Integer requestId, LocalDate eventDate, LocalTime startTime, LocalTime endTime, String contactFirstName, String contactLastName, String phoneNumber, String email, EventType eventType, String eventTitle, String nameOfOrg, String address, String specialInstructions, String expenses, String outsideOrgs, String description, RequestStatus status) {
         this.requestId = requestId;
         this.eventDate = eventDate;
         this.startTime = startTime;
@@ -212,41 +223,5 @@ public class SuperFrogAppearanceRequest {
         this.status = status;
     }
 
-
-
-    public LocalDate getEventDate() {
-        return eventDate;
-    }
-
-    public void setEventDate(LocalDate eventDate) {
-        this.eventDate = eventDate;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) {
-
-        this.endTime = endTime;
-    }
-
-    public String getRejectionReason() {
-
-        return reason;
-    }
-
-    public void setRejectionReason(String rejectionReason) {
-
-        this.reason = rejectionReason;
-    }
 
 }

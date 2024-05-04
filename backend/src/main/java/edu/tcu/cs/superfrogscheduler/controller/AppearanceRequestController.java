@@ -2,20 +2,18 @@ package edu.tcu.cs.superfrogscheduler.controller;
 
 import javax.validation.Valid;
 
-import edu.tcu.cs.superfrogscheduler.model.SearchCriteria;
-import edu.tcu.cs.superfrogscheduler.model.SuperFrogStudent;
 import edu.tcu.cs.superfrogscheduler.system.*;
 import edu.tcu.cs.superfrogscheduler.system.exception.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import edu.tcu.cs.superfrogscheduler.model.SuperFrogAppearanceRequest;
 import edu.tcu.cs.superfrogscheduler.model.dto.SuperFrogAppearanceRequestDto;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
 import edu.tcu.cs.superfrogscheduler.model.converter.SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 // this could include creating, editing, viewing, and deleting requests
 // as well as approval/rejection by the Spirit Director.
 
-// use Cases 1-12, 24, 25, 26 i believe
+// use Cases 1-12, 24, 25, 26 I believe
 
 
 @RestController
@@ -35,6 +33,7 @@ public class AppearanceRequestController {
     private final SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter;
     private final SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter;
 
+    private NotificationService notificationService;
     // constructor
     public AppearanceRequestController(SuperFrogAppearanceRequestService superFrogAppearanceRequestService, SuperFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter, SuperFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter) {
         this.superFrogAppearanceRequestService = superFrogAppearanceRequestService;
@@ -69,6 +68,30 @@ public class AppearanceRequestController {
         SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
         return new Result(true, HttpStatusCode.SUCCESS, "Update Status Success", updatedRequestDto);
     }
+    
+    // use case 25 - spirit director reverses an approval/rejection decision
+    @PutMapping("/api/appearance/{requestId}/reverse")
+    public Result reverseAppearanceDecision(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest updatedRequest = this.superFrogAppearanceRequestService.reverseDecision(requestId);
+        SuperFrogAppearanceRequestDto updatedRequestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(updatedRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Status reverse success", updatedRequestDto);
+    }
+
+    // use case 26 - the spirit director marks an appearance as incomplete
+    @PutMapping("/api/appearance/{requestId}/incomplete")
+    public Result markIncomplete(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest incompleteRequest = this.superFrogAppearanceRequestService.setIncomplete(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(incompleteRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance set as incomplete", requestDto);
+    }
+
+
+    @PutMapping("/api/appearance/{requestId}/cancel")
+    public Result cancelApprovedRequest(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest canceledRequest = this.superFrogAppearanceRequestService.cancelRequest(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(canceledRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance canceled successfully", requestDto);
+    }
 
 
     // use case 3 - Customer cancels a submitted request
@@ -93,6 +116,7 @@ public class AppearanceRequestController {
         }
     }
 
+
     // use case 4 - rejects an appearance request
     @PostMapping("/requests/{id}/reject")
     public ResponseEntity<Result> rejectRequest(@PathVariable Integer id, @RequestBody String rejectionReason) {
@@ -108,69 +132,10 @@ public class AppearanceRequestController {
         }
     }
 
-    // use case 5 - The Spirit Director requests a SuperFrog for TCU events
-    @PostMapping("/spirit-director/requests")
-    public ResponseEntity<Result> createRequestBySpiritDirector(@Valid @RequestBody SuperFrogAppearanceRequestDto appearanceRequestDto) {
-        try {
-            SuperFrogAppearanceRequest newRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(appearanceRequestDto);
-
-            if (newRequest.getEventDate().isBefore(LocalDate.now().plusDays(5))) {
-                return ResponseEntity.badRequest().body(new Result(false, HttpStatusCode.INVALID_ARGUMENT, "Event date must be at least 5 days in the future"));
-            }
-
-            newRequest.setStatus(RequestStatus.ASSIGNED);
-
-            SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.save(newRequest);
-
-            SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
-
-            NotificationService notificationService = new NotificationService();
-            notificationService.sendNotification("New SuperFrog appearance request created with ID: " + savedRequest.getRequestId());
-
-            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Successfully Created", savedRequestDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error Creating Request: " + e.getMessage()));
-        }
-    }
-
-
-
-
-
-
-    // Use Case 6: The Spirit Director/SuperFrog Student finds appearance requests
-    @PostMapping("/search")
-    public ResponseEntity<Result> search(@RequestBody SearchCriteria criteria) {
-        List<SuperFrogAppearanceRequest> results = superFrogAppearanceRequestService.search(criteria);
-        return ResponseEntity.ok(new Result(true, 200, "Search results", results));
-    }
-
-    // Use Case 7: The Spirit Director/SuperFrog Student views an appearance request
-    @GetMapping("/{id}")
-    public ResponseEntity<SuperFrogAppearanceRequest> getAppearanceRequestById(@PathVariable Integer id) {
-        try {
-            SuperFrogAppearanceRequest request = superFrogAppearanceRequestService.findById(id);
-            return new ResponseEntity<>(request, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
-
-    // Use Case 8: Edit an appearance request
-    // Handles HTTP PUT requests to update a specific appearance request by its ID
-    @PutMapping("/{requestId}")
-    public ResponseEntity<Result> update(@PathVariable Integer requestId, @Valid @RequestBody SuperFrogAppearanceRequestDto requestDto) {
-        try {
-            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestDtoToSuperFrogAppearanceRequestConverter.convert(requestDto);
-            SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.update(requestId, updatedRequest);
-            SuperFrogAppearanceRequestDto savedRequestDto = superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(savedRequest);
-            return ResponseEntity.ok(new Result(true, HttpStatusCode.SUCCESS, "Request Successfully Updated", savedRequestDto));
-        } catch (ObjectNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result(false, HttpStatusCode.NOT_FOUND, "Request not found"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Result(false, HttpStatusCode.INTERNAL_SERVER_ERROR, "Error updating request: " + e.getMessage()));
-        }
+    @PutMapping("/{requestId}/assign/{studentId}")
+    public ResponseEntity<SuperFrogAppearanceRequest> assignSuperFrogStudentToRequest(@PathVariable Integer requestId, @PathVariable String studentId) {
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignSuperFrogStudent(requestId, studentId);
+        return ResponseEntity.ok(updatedRequest);
     }
 
     @GetMapping("/api/appearances/{requestId}")
@@ -190,6 +155,95 @@ public class AppearanceRequestController {
         return new Result(true, HttpStatusCode.SUCCESS, "Find All Success", appearanceRequestDtos);
     }
 
-    // other methods
+    //use case 24 mark an appearance as completed
 
-}
+
+    @PutMapping("/api/appearances/{requestId}/complete")
+    public Result completeAppearance(@PathVariable Integer requestId){
+        SuperFrogAppearanceRequest doneRequest = this.superFrogAppearanceRequestService.setComplete(requestId);
+        SuperFrogAppearanceRequestDto requestDto = this.superFrogAppearanceRequestToSuperFrogAppearanceRequestDtoConverter.convert(doneRequest);
+        return new Result(true, HttpStatusCode.SUCCESS, "Appearance complete success", requestDto);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<SuperFrogAppearanceRequest> createRequest(@RequestBody SuperFrogAppearanceRequest request) {
+        SuperFrogAppearanceRequest savedRequest = superFrogAppearanceRequestService.createRequest(request);
+        return ResponseEntity.ok(savedRequest);
+    }
+
+    @PutMapping("/assign/{requestId}/{studentId}")
+    public ResponseEntity<SuperFrogAppearanceRequest> assignStudent(@PathVariable Integer requestId, @PathVariable String studentId) {
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignStudent(requestId, studentId);
+        return ResponseEntity.ok(updatedRequest);
+    }
+
+    @PutMapping("/updateStatus/{requestId}")
+    public ResponseEntity<SuperFrogAppearanceRequest> updateStatus(@PathVariable Integer requestId, @RequestParam("status") String status) {
+        SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.updateStatus(requestId, status);
+        return ResponseEntity.ok(updatedRequest);
+    }
+
+    @GetMapping("/search")
+    public List<SuperFrogAppearanceRequest> search(
+            @RequestParam(required = false) String eventTitle,
+            @RequestParam(required = false) String customerName,
+            @RequestParam(required = false) String status) {
+
+        Specification<SuperFrogAppearanceRequest> spec = Specification.where(null);
+
+        if (eventTitle != null) {
+            spec = spec.and((root, query, cb) -> cb.like(root.get("eventTitle"), "%" + eventTitle + "%"));
+        }
+        if (customerName != null) {
+            spec = spec.and((root, query, cb) -> cb.or(
+                    cb.like(root.get("customerFirstName"), "%" + customerName + "%"),
+                    cb.like(root.get("customerLastName"), "%" + customerName + "%")
+            ));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+
+        return superFrogAppearanceRequestService.findByCriteria(spec);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAppearanceRequestById(@PathVariable Integer id) {
+        SuperFrogAppearanceRequest appearanceRequest = superFrogAppearanceRequestService.findById(id);
+        if (appearanceRequest != null) {
+            return ResponseEntity.ok(appearanceRequest);  // Return the found appearance request
+        } else {
+            return ResponseEntity.notFound().build();  // Return 404 Not Found if not present
+        }
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAppearanceRequest(@PathVariable Integer id, @RequestBody SuperFrogAppearanceRequest request) {
+        try {
+            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.updateRequest(id, request);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating request: " + e.getMessage());
+        }
+    }
+    @PutMapping("/{requestId}/assign/{studentId}")
+    public ResponseEntity<?> assignSuperFrogToRequest(@PathVariable Integer requestId, @PathVariable String studentId) {
+        try {
+            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignSuperFrogToRequest(requestId, studentId);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error assigning SuperFrog: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{requestId}/assign/{studentId}")
+    public ResponseEntity<?> assignSuperFrog(@PathVariable Integer requestId, @PathVariable String studentId) {
+        try {
+            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignSuperFrogToRequest(requestId, studentId);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+    }
+
+

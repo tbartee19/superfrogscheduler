@@ -10,5 +10,7 @@ public enum RequestStatus {
 
     ASSIGNED,
 
-    CANCELLED
+    CANCELLED,
+
+    INCOMPLETE
 }
