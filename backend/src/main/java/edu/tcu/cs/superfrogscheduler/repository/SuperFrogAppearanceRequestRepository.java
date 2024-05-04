@@ -21,4 +21,7 @@ public interface SuperFrogAppearanceRequestRepository extends JpaRepository<Supe
 
     @Query("select r from SuperFrogAppearanceRequest r where r.eventDate = :date and r.startTime <= :endTime and r.endTime >= :startTime")
     List<SuperFrogAppearanceRequest> findByEventDateAndStartTimeAndEndTime(LocalDate date, LocalTime startTime, LocalTime endTime);
+
+
+
 }

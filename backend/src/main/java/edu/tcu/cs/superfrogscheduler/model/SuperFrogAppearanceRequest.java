@@ -8,11 +8,6 @@ import java.time.LocalTime;
 
 import javax.persistence.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 // customer can request a SuperFrog appearance by submitting a SuperFrogAppearanceRequest
 // SuperFrogAppearanceRequest includes event-related information
 @Entity
@@ -110,7 +105,7 @@ public class SuperFrogAppearanceRequest implements Serializable {
         this.email = email;
     }
 
-    public EventType getEventType() {
+    public String getEventType() {
         return eventType;
     }
 

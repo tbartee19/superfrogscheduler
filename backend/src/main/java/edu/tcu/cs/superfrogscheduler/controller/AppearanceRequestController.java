@@ -206,4 +206,44 @@ public class AppearanceRequestController {
 
         return superFrogAppearanceRequestService.findByCriteria(spec);
     }
-}
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAppearanceRequestById(@PathVariable Integer id) {
+        SuperFrogAppearanceRequest appearanceRequest = superFrogAppearanceRequestService.findById(id);
+        if (appearanceRequest != null) {
+            return ResponseEntity.ok(appearanceRequest);  // Return the found appearance request
+        } else {
+            return ResponseEntity.notFound().build();  // Return 404 Not Found if not present
+        }
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAppearanceRequest(@PathVariable Integer id, @RequestBody SuperFrogAppearanceRequest request) {
+        try {
+            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.updateRequest(id, request);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating request: " + e.getMessage());
+        }
+    }
+    @PutMapping("/{requestId}/assign/{studentId}")
+    public ResponseEntity<?> assignSuperFrogToRequest(@PathVariable Integer requestId, @PathVariable String studentId) {
+        try {
+            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignSuperFrogToRequest(requestId, studentId);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error assigning SuperFrog: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{requestId}/assign/{studentId}")
+    public ResponseEntity<?> assignSuperFrog(@PathVariable Integer requestId, @PathVariable String studentId) {
+        try {
+            SuperFrogAppearanceRequest updatedRequest = superFrogAppearanceRequestService.assignSuperFrogToRequest(requestId, studentId);
+            return ResponseEntity.ok(updatedRequest);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+    }
+
+

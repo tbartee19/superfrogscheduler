@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -25,15 +26,16 @@ public class SuperFrogAppearanceRequestService {
     public List<SuperFrogAppearanceRequest> findByCriteria(Specification<SuperFrogAppearanceRequest> spec) {
         return superFrogAppearanceRequestRepository.findAll(spec);
     }
+
     public SuperFrogAppearanceRequestService(
             SuperFrogAppearanceRequestRepository superFrogAppearanceRequestRepository) {
         this.superFrogAppearanceRequestRepository = superFrogAppearanceRequestRepository;
     }
 
 
-    public SuperFrogAppearanceRequest findById(Integer requestId) {
-        return this.superFrogAppearanceRequestRepository.findById(requestId)
-                .orElseThrow(() -> new ObjectNotFoundException("SuperFrogAppearanceRequest", requestId));
+
+    public SuperFrogAppearanceRequest findById(Integer id) {
+        return superFrogAppearanceRequestRepository.findById(id).orElse(null); // Returns null if not found
     }
 
     public SuperFrogAppearanceRequest approveRequest(Integer requestId) throws Exception {
@@ -222,7 +224,52 @@ public class SuperFrogAppearanceRequestService {
         request.setStatus(RequestStatus.valueOf(status));
         return superFrogAppearanceRequestRepository.save(request);
     }
+
+    public SuperFrogAppearanceRequest updateRequest(Integer id, SuperFrogAppearanceRequest updatedRequest) throws Exception {
+        // Fetch the existing request from the database
+        SuperFrogAppearanceRequest existingRequest = superFrogAppearanceRequestRepository.findById(id)
+                .orElseThrow(() -> new Exception("Request not found with ID: " + id));
+
+        // Update the existing request with the values from the updated request
+        existingRequest.setContactFirstName(updatedRequest.getContactFirstName());
+        existingRequest.setContactLastName(updatedRequest.getContactLastName());
+        existingRequest.setPhoneNumber(updatedRequest.getPhoneNumber());
+        existingRequest.setEmail(updatedRequest.getEmail());
+        existingRequest.setEventDate(updatedRequest.getEventDate());
+        existingRequest.setStartTime(updatedRequest.getStartTime());
+        existingRequest.setEndTime(updatedRequest.getEndTime());
+        existingRequest.setEventType(updatedRequest.getEventType());
+        existingRequest.setEventTitle(updatedRequest.getEventTitle());
+        existingRequest.setNameOfOrg(updatedRequest.getNameOfOrg());
+        existingRequest.setAddress(updatedRequest.getAddress());
+        existingRequest.setSpecialInstructions(updatedRequest.getSpecialInstructions());
+        existingRequest.setExpenses(updatedRequest.getExpenses());
+        existingRequest.setOutsideOrgs(updatedRequest.getOutsideOrgs());
+        existingRequest.setDescription(updatedRequest.getDescription());
+        existingRequest.setStatus(updatedRequest.getStatus());
+
+        // Save the updated request back to the database
+        return superFrogAppearanceRequestRepository.save(existingRequest);
+    }
+
+    public SuperFrogAppearanceRequest assignSuperFrogToRequest(Integer requestId, String superFrogStudentId) throws Exception {
+        SuperFrogAppearanceRequest request = superFrogAppearanceRequestRepository.findById(requestId)
+                .orElseThrow(() -> new Exception("Request not found with ID: " + requestId));
+
+        if (!request.getStatus().equals(RequestStatus.APPROVED)) {
+            throw new IllegalArgumentException("Request must be in 'Approved' status to assign a SuperFrog Student.");
+        }
+
+        request.setAssignedSuperFrog(superFrogStudentId);
+        request.setStatus(RequestStatus.ASSIGNED);
+
+        return superFrogAppearanceRequestRepository.save(request);
+    }
+
+
+
 }
+
 
 
 
